@@ -1,0 +1,14 @@
+entorno/
+py_cache
+.py_cache
+*.pyc
+.sqlite
+__pycache__/
+venv/
+env/
+.env/
+*.log
+*.tmp
+*.bak
+.pyc
+.vscode/
