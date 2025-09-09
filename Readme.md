@@ -51,3 +51,34 @@ MODEL (models.py): Se guarda o recupera información de la base de datos.
 PERMISSIONS (permissions.py): Verifica si el usuario tiene permiso para hacer lo que pide.
 
 VIEW: Devuelve una respuesta al cliente (por ejemplo: 201 Created o 403 Forbidden).
+
+
+
+
+
+
+
+
+my-react-app/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/           # Imágenes, estilos globales, fuentes
+│   ├── components/       # Componentes reutilizables (Botones, Cards, etc.)
+│   ├── pages/            # Vistas principales (Home, About, etc.)
+│   ├── services/         # Lógica para consumir APIs
+│   ├── hooks/            # Custom hooks (ej. useFetch)
+│   ├── context/          # Context API para manejo de estado global
+│   ├── utils/            # Funciones auxiliares (formateo, validaciones)
+│   ├── App.jsx
+│   └── main.jsx
+├── .env                  # Variables de entorno (ej. URL de la API)
+├── package.json
+└── README.md
+
+
+
+
+
+
+npm install bootstrap @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/free-brands-svg-icons aos

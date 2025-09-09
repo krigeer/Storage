@@ -12,3 +12,10 @@ env/
 *.bak
 .pyc
 .vscode/
+
+
+node_modules
+.env
+.env.example
+migrations/
+db.sqlite3
