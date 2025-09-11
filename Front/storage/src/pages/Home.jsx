@@ -67,7 +67,6 @@ export default function Home() {
               className="ms-3"
               onClick={handleLogin}
             >
-              <FaSignInAlt className="me-2" />
               Ingresar
             </Button>
           </div>

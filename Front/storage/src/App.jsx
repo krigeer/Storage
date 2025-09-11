@@ -1,16 +1,42 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { MenuProvider } from './context/MenuContext';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Recordar_contrasena from "./pages/Recordar_contrasena";
+import Dashboard from "./pages/users/Dashboard";
+import { useEffect } from 'react';
+
+function AppContent() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Redirect from /dashboard to /dashboard/inicio
+  useEffect(() => {
+    if (location.pathname === '/dashboard') {
+      navigate('/dashboard/inicio', { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/recordar-contrasena" element={<Recordar_contrasena />} />
+      <Route path="/dashboard/*" element={
+        <ErrorBoundary>
+          <Dashboard />
+        </ErrorBoundary>
+      } />
+    </Routes>
+  );
+}
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        {/* Puedes agregar más rutas aquí */}
-      </Routes>
-    </Router>
+    <MenuProvider>
+      <AppContent />
+    </MenuProvider>
   );
 }
 

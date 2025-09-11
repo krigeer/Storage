@@ -1,10 +1,26 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './index.css';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+// Clear any existing content
+const container = document.getElementById('root');
+container.innerHTML = '';
+
+// Create a root.
+const root = createRoot(container);
+
+// Initial render
+root.render(
+  <BrowserRouter>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </BrowserRouter>
+);
+
+// Log any errors
+window.addEventListener('error', (event) => {
+  console.error('Global error caught:', event.error);
+});
