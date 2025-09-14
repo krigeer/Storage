@@ -54,8 +54,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    "rest_framework_simplejwt",
+
     'api_storage',
     'django_filters',
+    'corsheaders',
 ]
 
 # Middleware
@@ -88,7 +91,13 @@ TEMPLATES = [
 
 
 # Configuración de CORS 
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+]
+
+
 
 # Configuración de internacionalización
 LANGUAGE_CODE = 'es-co'
@@ -109,6 +118,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -125,3 +135,23 @@ STATIC_URL = os.getenv('STATIC_URL', '/static/')
 MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Configuración de CORS
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = False 
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CSRF_TRUSTED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
+CSRF_COOKIE_SECURE = False  # True en producción con HTTPS
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # True en producción con HTTPS

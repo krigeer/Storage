@@ -82,3 +82,30 @@ my-react-app/
 
 
 npm install bootstrap @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/free-brands-svg-icons aos
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Realizar pruebas de rendimiento
+
+
+
+
+
+- Analiza la funcionalidad de tu proyecto y diseña-aplica 20 casos de pruebas para el mismo. (DEBES DOCUMENTAR LOS CASOS DE PRUEBAS) (excel)
+
+
+- Realiza una presentación donde tu grupo explique el tipo de caso de prueba asignado. (Se debe explicar: conceptualización, aplicación en el desarrollo de software, ejemplos de aplicación, ejemplos prácticos. Dependiendo el tipo de prueba asignado y el lenguaje de programación utilizado para el desarrollo de su proyecto, explica un ejemplo práctico para pruebas manuales y uno para pruebas automatizadas. 
+
+- Realiza un informe de pruebas en base a los casos de pruebas de tu proyecto. (word)
+

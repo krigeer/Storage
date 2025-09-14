@@ -1,8 +1,18 @@
 export default {
-    content: ["./src/**/*.{html,js}"],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
     theme: {
       extend: {},
     },
     plugins: [],
   }
   
+
+
+  // {
+  //   "totalUsers": 150,
+  //   "techItems": 85,
+  //   "eduMaterials": 120,
+  //   "reports": 23
+  // }

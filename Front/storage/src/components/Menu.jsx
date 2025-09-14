@@ -1,31 +1,55 @@
 import React from 'react';
 import { useMenu } from '../context/MenuContext';
+import Estadisticas from '../pages/users/Estadisticas';
+import Gestionar_bd from '../pages/users/Gestionar_bd';
+import Gestion_usuario from '../pages/users/Gestion_usuario';
+import Reportes from '../pages/users/Ver_reportes';
+import Configuracio from '../pages/users/Configuracio';
+import Prestamos from '../pages/users/Prestamos';
+import Tecnologia from '../pages/users/Tecnologia';
+import Materiales from '../pages/users/Materiales';
 
 const menuContent = {
     inicio: (
         <div>
-            <h2>Bienvenido al Sistema</h2>
-            <p>Seleccione una opción del menú para comenzar.</p>
+           <Estadisticas/>
         </div>
     ),
-    productos: (
+    GestionarTecnologia: (
         <div>
-            <h2>Gestión de Productos</h2>
-            <p>Contenido de la sección de productos.</p>
+            <Tecnologia/>
         </div>
     ),
-    usuarios: (
+    GestionarMateriales: (
         <div>
-            <h2>Gestión de Usuarios</h2>
-            <p>Contenido de la sección de usuarios.</p>
+            <Materiales/>
         </div>
     ),
-    configuracion: (
+    GestionarPrestamos: (
         <div>
-            <h2>Configuración</h2>
-            <p>Ajustes de configuración del sistema.</p>
+           <Prestamos/>
         </div>
-    )
+    ),
+    GestionarUsuarios:(
+        <div>
+           <Gestion_usuario/>
+        </div>
+    ),
+    GestionarReportes:(
+        <div>
+            <Reportes/>
+        </div>
+    ),
+    GestionarBD:(
+        <div>
+            <Gestionar_bd/>
+        </div>
+    ),
+    configuracion:(
+        <div>
+           <Configuracio/>
+        </div>
+    ),
 };
 
 export default function Menu() {

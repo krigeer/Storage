@@ -1,33 +1,51 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
     FaHome, 
-    FaBox, 
+    FaLaptop, 
+    FaBoxes,
+    FaExchangeAlt,
     FaUsers, 
+    FaChartBar,
+    FaDatabase,
     FaCog, 
+    FaRobot,
     FaChevronLeft, 
     FaChevronRight,
     FaBars
 } from 'react-icons/fa';
 import { useMenu } from '../context/MenuContext';
-import './Nav.css';
+import '../styles/Nav.css';
 
 const Nav = ({ isCollapsed, toggleCollapse }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { activeMenu, setActiveMenu } = useMenu();
 
     const navItems = [
         { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
-        { id: 'productos', icon: <FaBox />, label: 'Productos' },
-        { id: 'usuarios', icon: <FaUsers />, label: 'Usuarios' },
+        { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnologia' },
+        { id: 'GestionarMateriales', icon: <FaBoxes />, label: 'Gestionar Materiales' },
+        { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
+        { id: 'GestionarUsuarios', icon: <FaUsers />, label: 'Gestionar Usuarios' },
+        { id: 'GestionarReportes', icon: <FaChartBar />, label: 'Gestionar Reportes' },
+        { id: 'GestionarBD', icon: <FaDatabase />, label: 'Gestionar BD' },
         { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
     ];
 
     const handleMenuClick = (menuId) => {
         setActiveMenu(menuId);
-        // Actualizar la URL sin recargar la página
         navigate(`/dashboard/${menuId}`, { replace: true });
     };
+
+   
+    useEffect(() => {
+        const pathSegments = location.pathname.split('/');
+        const currentMenu = pathSegments[pathSegments.length - 1];
+        if (currentMenu && currentMenu !== activeMenu && navItems.some(item => item.id === currentMenu)) {
+            setActiveMenu(currentMenu);
+        }
+    }, [location.pathname, activeMenu, setActiveMenu, navItems]);
 
     return (
         <>

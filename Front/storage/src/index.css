@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 * {
   margin: 0;
   padding: 0;
@@ -29,3 +28,4 @@
   flex-direction: column;
   flex: 1;
 }
+

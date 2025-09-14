@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaRobot } from 'react-icons/fa';
-import './AIChatButton.css';
+import '../styles/AIChatButton.css';
 
 const AIChatButton = () => {
   const [isHovered, setIsHovered] = useState(false);

@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { MenuProvider } from './context/MenuContext';
 import ErrorBoundary from './components/ErrorBoundary';
+// import PrivateRoute from "./components/PrivateRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Recordar_contrasena from "./pages/Recordar_contrasena";
@@ -11,7 +12,6 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Redirect from /dashboard to /dashboard/inicio
   useEffect(() => {
     if (location.pathname === '/dashboard') {
       navigate('/dashboard/inicio', { replace: true });
@@ -23,11 +23,25 @@ function AppContent() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/recordar-contrasena" element={<Recordar_contrasena />} />
-      <Route path="/dashboard/*" element={
-        <ErrorBoundary>
-          <Dashboard />
-        </ErrorBoundary>
-      } />
+      <Route 
+        path="/dashboard/*" 
+        element={
+          <ErrorBoundary>
+            <Dashboard />
+          </ErrorBoundary>
+        } 
+      />
+      {/* Uncomment this when you want to enable protected routes */}
+      {/* <Route 
+        path="/dashboard/*" 
+        element={
+          <ErrorBoundary>
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          </ErrorBoundary>
+        } 
+      /> */}
     </Routes>
   );
 }

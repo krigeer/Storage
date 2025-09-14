@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaSearch, FaUserCircle } from 'react-icons/fa';
-import './Header.css';
+import '../styles/Header.css';
 
 export default function Header() {
     const userName = "Usuario"; 

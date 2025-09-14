@@ -1,33 +1,26 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    CentroViewSet, RolViewSet, LoginView,
-    UbicacionViewSet, UsuarioViewSet,
-    TipoTecnologiaViewSet, MarcaViewSet, TecnologiaViewSet,
-    MaterialDidacticoViewSet, PrestamoViewSet, PrestamoDevolverView
-)
+from .views import LoginWiew, RolViewSet, CentroViewSet, TipoDocumentosViewSet, UbicacionViewSet, StadisticsViewSet
+from  .views import EstadoInventarioViewSet, TipoTecnologiaViewSet, MarcaViewSet, TipoReporteViewSet, PrioridadReporteViewSet, EstadoReporteViewSet, TecnologiaViewSet, MaterialDidacticoViewSet, PrestamoViewSet, ReporteViewSet
 
 router = DefaultRouter()
-# Rutas existentes
-router.register(r'centros', CentroViewSet, basename='centro')
-router.register(r'ubicaciones', UbicacionViewSet, basename='ubicacion')
-router.register(r'roles', RolViewSet, basename='rol')
-router.register(r'usuarios', UsuarioViewSet, basename='usuario')
-
-# Nuevas rutas para Tecnología
-router.register(r'tipos-tecnologia', TipoTecnologiaViewSet, basename='tipo-tecnologia')
-router.register(r'marcas', MarcaViewSet, basename='marca')
-router.register(r'tecnologias', TecnologiaViewSet, basename='tecnologia')
-
-# Ruta para Material Didáctico
-router.register(r'materiales-didacticos', MaterialDidacticoViewSet, basename='material-didactico')
-
-# Ruta para Préstamos
-router.register(r'prestamos', PrestamoViewSet, basename='prestamo')
+router.register(r'centros', CentroViewSet, basename='centros')
+router.register(r'roles', RolViewSet, basename='roles')
+router.register(r'tipos_documentos', TipoDocumentosViewSet, basename='tipos_documentos')
+router.register(r'ubicaciones', UbicacionViewSet, basename='ubicaciones')
+router.register(r'estados_inventario', EstadoInventarioViewSet, basename='estados_inventario')
+router.register(r'tipos_tecnologia', TipoTecnologiaViewSet, basename='tipos_tecnologia')
+router.register(r'marcas', MarcaViewSet, basename='marcas')
+router.register(r'tipos_reporte', TipoReporteViewSet, basename='tipos_reporte')
+router.register(r'prioridades_reporte', PrioridadReporteViewSet, basename='prioridades_reporte')
+router.register(r'estados_reporte', EstadoReporteViewSet, basename='estados_reporte')
+router.register(r'tecnologias', TecnologiaViewSet, basename='tecnologias')
+router.register(r'materiales_didacticos', MaterialDidacticoViewSet, basename='materiales_didacticos')
+router.register(r'prestamos', PrestamoViewSet, basename='prestamos')
+router.register(r'reportes', ReporteViewSet, basename='reportes')
+router.register(r'estadisticas', StadisticsViewSet, basename='estadisticas')
 
 urlpatterns = [
+    path('login/', LoginWiew.as_view(), name='login'),
     path('', include(router.urls)),
-    path('auth/login/', LoginView.as_view(), name='login'),
-    path('prestamos/<int:pk>/devolver/', PrestamoDevolverView.as_view(), name='prestamo-devolver'),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
