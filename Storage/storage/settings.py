@@ -1,16 +1,22 @@
+# settings.py
+
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
 # Cargar variables de entorno
 load_dotenv()
 
-# Configuración de base de datos (SQLite para desarrollo)
+# Configuración de Django
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+
+# Configuración de base de datos
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE'),
@@ -30,20 +36,6 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS') == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
-# Configuración de Django
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-
-# Archivos estáticos
-STATIC_URL = os.getenv('STATIC_URL', '/static/')
-MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
-STATIC_ROOT = os.getenv('STATIC_ROOT')
-MEDIA_ROOT = os.getenv('MEDIA_ROOT')
-
-
-
-
 # Aplicaciones instaladas
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,12 +45,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
-    "rest_framework_simplejwt",
-
+    "rest_framework_simplejwt", # ✅ Solo usamos Simple JWT
+    'corsheaders',              # ✅ Esencial para la comunicación con React
     'api_storage',
     'django_filters',
-    'corsheaders',
 ]
 
 # Middleware
@@ -76,35 +66,19 @@ MIDDLEWARE = [
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages', 
             ],
         },
     },
 ]
 
-
-# Configuración de CORS 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-]
-
-
-
-# Configuración de internacionalización
-LANGUAGE_CODE = 'es-co'
-TIME_ZONE = 'America/Bogota'
-USE_I18N = True
-USE_L10N = True
-USE_TZ = True
 
 # URLs
 ROOT_URLCONF = 'storage.urls'
@@ -113,12 +87,10 @@ WSGI_APPLICATION = 'storage.wsgi.application'
 # Configuración de autenticación
 AUTH_USER_MODEL = 'api_storage.Usuario'
 
-# Configuración de Django REST Framework
+# ✅ Configuración de Django REST Framework (corregida)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -127,16 +99,23 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-# Configuración de tokens
-TOKEN_EXPIRED_AFTER_SECONDS = 60 * 60 * 24 * 7  # 1 semana
+# ✅ Configuración de Simple JWT (corregida)
+SIMPLE_JWT = {
+    # El token de acceso expira en 5 horas (lo suficiente para desarrollo)
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),
+    # El token de refresco expira en 14 días
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
-# Configuración de archivos estáticos
-STATIC_URL = os.getenv('STATIC_URL', '/static/')
-MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Configuración de CORS
+# Configuración de CORS 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173", # Puerto por defecto de Vite
+    "http://127.0.0.1:5173",
+]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = False 
 CORS_ALLOW_HEADERS = [
@@ -151,7 +130,21 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CSRF_TRUSTED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
-CSRF_COOKIE_SECURE = False  # True en producción con HTTPS
+# Configuración de CSRF
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SECURE = False  # True en producción con HTTPS
+SESSION_COOKIE_SECURE = False
+
+# Configuración de internacionalización
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+
+# Archivos estáticos
+STATIC_URL = os.getenv('STATIC_URL', '/static/')
+MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

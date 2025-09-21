@@ -1,57 +1,67 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { 
-    FaHome, 
-    FaLaptop, 
+import {removeAccessToken} from '../services/authService';
+import {
+    FaHome,
+    FaLaptop,
     FaBoxes,
     FaExchangeAlt,
-    FaUsers, 
+    FaUsers,
     FaChartBar,
     FaDatabase,
-    FaCog, 
-    FaRobot,
-    FaChevronLeft, 
+    FaCog,
+    FaChevronLeft,
     FaChevronRight,
-    FaBars
+    FaSignOutAlt
 } from 'react-icons/fa';
-import { useMenu } from '../context/MenuContext';
 import '../styles/Nav.css';
 
-const Nav = ({ isCollapsed, toggleCollapse }) => {
+const Nav = ({ isCollapsed, toggleCollapse, rol }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { activeMenu, setActiveMenu } = useMenu();
 
-    const navItems = [
-        { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
-        { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnologia' },
-        { id: 'GestionarMateriales', icon: <FaBoxes />, label: 'Gestionar Materiales' },
-        { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
-        { id: 'GestionarUsuarios', icon: <FaUsers />, label: 'Gestionar Usuarios' },
-        { id: 'GestionarReportes', icon: <FaChartBar />, label: 'Gestionar Reportes' },
-        { id: 'GestionarBD', icon: <FaDatabase />, label: 'Gestionar BD' },
-        { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
-    ];
+    
+    const pathSegments = location.pathname.split('/');
+    const activePath = pathSegments[pathSegments.length - 1];
+
+    let navItems = [];
+
+    if (rol === "1") {
+        navItems = [
+            { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
+            { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnologia' },
+            { id: 'GestionarMateriales', icon: <FaBoxes />, label: 'Gestionar Materiales' },
+            { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
+            { id: 'GestionarUsuarios', icon: <FaUsers />, label: 'Gestionar Usuarios' },
+            { id: 'GestionarReportes', icon: <FaChartBar />, label: 'Gestionar Reportes' },
+            { id: 'GestionarBD', icon: <FaDatabase />, label: 'Gestionar BD' },
+            { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
+            { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
+        ];
+    } else if (rol === "2") {
+        navItems = [
+            { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
+            { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
+            { id: 'GestionarReportes', icon: <FaChartBar />, label: 'Gestionar Reportes' },
+            { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
+            { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
+        ];
+    }
 
     const handleMenuClick = (menuId) => {
-        setActiveMenu(menuId);
-        navigate(`/dashboard/${menuId}`, { replace: true });
+        // Verifica si el ID del menú es 'cerrarSesion'
+        if (menuId === 'cerrarSesion') {
+            removeAccessToken(); // Llama a la función para eliminar el token
+            navigate('/login', { replace: true }); // Redirige al usuario a la página de login
+        } else {
+            // Si es otro elemento, navega normalmente
+            navigate(`/dashboard/${menuId}`, { replace: true });
+        }
     };
 
-   
-    useEffect(() => {
-        const pathSegments = location.pathname.split('/');
-        const currentMenu = pathSegments[pathSegments.length - 1];
-        if (currentMenu && currentMenu !== activeMenu && navItems.some(item => item.id === currentMenu)) {
-            setActiveMenu(currentMenu);
-        }
-    }, [location.pathname, activeMenu, setActiveMenu, navItems]);
 
     return (
         <>
-            <div className="mobile-menu-toggle" onClick={toggleCollapse}>
-                <FaBars />
-            </div>
             <div className={`nav-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
                 <div className="nav-header">
                     {!isCollapsed && <h3>Menú</h3>}
@@ -59,12 +69,13 @@ const Nav = ({ isCollapsed, toggleCollapse }) => {
                         {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
                     </button>
                 </div>
-                
+
                 <ul className="nav-menu">
                     {navItems.map((item) => (
-                        <li 
-                            key={item.id} 
-                            className={`nav-item ${activeMenu === item.id ? 'active' : ''}`}
+                        <li
+                            key={item.id}
+                            // La clase 'active' se determina si el id del item coincide con la ruta activa
+                            className={`nav-item ${activePath === item.id ? 'active' : ''}`}
                             onClick={() => handleMenuClick(item.id)}
                         >
                             <div className="nav-link">

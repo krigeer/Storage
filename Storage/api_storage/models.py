@@ -306,3 +306,6 @@ class Reporte(models.Model):
 
     def __str__(self):
         return f"Reporte {self.id} - {self.usuario}"
+
+    
+    

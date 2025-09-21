@@ -1,32 +1,40 @@
+// src/services/authService.js
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/inventario"; 
+const API_URL = "http://127.0.0.1:8000/inventario";
 
 export const login = async ({ documento, password }) => {
   try {
-    const response = await axios.post(`${API_URL}/login/`, {
-      documento,
-      password,
-    });
+    const response = await axios.post(
+      `${API_URL}/login/`,
+      { documento, password },
+      { headers: { "Content-Type": "application/json" } }
+    );
 
-    localStorage.setItem("access", response.data.access);
-    localStorage.setItem("refresh", response.data.refresh);
-    localStorage.setItem("user", JSON.stringify(response.data.user));
+    const { Refresh, Access, user } = response.data;
+
+    localStorage.setItem("accessToken", Access);
+    localStorage.setItem("refreshToken", Refresh);
+    localStorage.setItem("user", JSON.stringify(user));
 
     return response.data;
   } catch (error) {
+    console.error("Error login:", error.response?.data);
     throw new Error(
-      error.response?.data?.error || "Error en el inicio de sesión"
+      error.response?.data?.message ||
+      error.response?.data?.detail ||
+      error.response?.data?.non_field_errors?.[0] ||
+      "Error en la autenticación"
     );
   }
 };
 
-export const logout = () => {
-  localStorage.removeItem("access");
-  localStorage.removeItem("refresh");
-  localStorage.removeItem("user");
+export const getAccessToken = () => {
+  return localStorage.getItem("accessToken");
 };
 
-
-export const getAccessToken = () => localStorage.getItem("access");
-export const getUser = () => JSON.parse(localStorage.getItem("user") || "{}");
+export function removeAccessToken() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+}

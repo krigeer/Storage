@@ -2,8 +2,11 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from rest_framework.decorators import permission_classes
 from .models import Usuario, Rol, TipoDocumento, Centro, EstadoUsuario, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, TipoTecnologia, MaterialDidactico
 from .models import Tecnologia, Prestamo, Reporte, PrioridadReporte, EstadoReporte
+import secrets
+import string
 
 class LoginSerializer(serializers.Serializer):
     documento = serializers.IntegerField()
@@ -16,20 +19,17 @@ class LoginSerializer(serializers.Serializer):
         try:
             usuario = Usuario.objects.get(documento=documento)
         except Usuario.DoesNotExist:
-            raise serializers.ValidationError("Usuario no encontrado")
-
+            raise serializers.ValidationError({"message": "Usuario no encontrado"})
 
         if not usuario.check_password(password):
-            raise serializers.ValidationError("Contraseña incorrecta")
+            raise serializers.ValidationError({"message": "Contraseña incorrecta"})
 
-        user = authenticate(username=usuario.username, password=password)
-        if not user:
-            raise serializers.ValidationError("Credenciales inválidas")
+        if not usuario.is_active:
+            raise serializers.ValidationError({"message": "Usuario inactivo"})
+        
+        
 
-        if not user.is_active:
-            raise serializers.ValidationError("Usuario inactivo")
-
-        data["user"] = user
+        data["user"] = usuario
         return data
 
 
@@ -37,46 +37,46 @@ class LoginSerializer(serializers.Serializer):
 class CentroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Centro
-        fields = '__all__'
+        exclude = ['id', 'actualizado_en', 'creado_en']
 
 class RolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rol
-        fields = '__all__'
+        exclude = ['id']
 
 class TipoDocumentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoDocumento
-        fields = '__all__'
+        exclude = ['id']
 
 
 class UbicacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ubicacion
-        fields = '__all__'
+        exclude = ['id']
 
 class EstadoInventarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = EstadoInventario
-        fields = '__all__'
+        exclude = ['id']
 
 
 class TipoTecnologiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoTecnologia
-        fields = '__all__'
+        exclude = ['id']
         
     
 class MarcaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Marca
-        fields = '__all__'
+        exclude = ['id']
 
 
 class TipoReporteSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoReporte
-        fields = '__all__'
+        exclude = ['id']
 
 
 class PrioridadReporteSerializer(serializers.ModelSerializer):
@@ -119,25 +119,19 @@ class ReporteSerializer(serializers.ModelSerializer):
 class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
-        fields = '__all__'
-        extra_kwargs = {
-            "password": {"write_only": True, "required": False},
-        }
+        exclude = ["groups", "user_permissions", "password"]
 
     def create(self, validated_data):
-        # Generar contraseña segura (12 caracteres con letras, dígitos y símbolos)
+        # Generar contraseña aleatoria segura
         alfabeto = string.ascii_letters + string.digits + "!@#$%^&*()"
         contrasena_generada = ''.join(secrets.choice(alfabeto) for _ in range(12))
 
-        # Crear instancia sin guardar aún
+        # Crear usuario con contraseña
         usuario = Usuario(**validated_data)
-        usuario.establecer_contrasena(contrasena_generada)  # Usa tu método seguro
-
-        # Guardar en DB
+        usuario.set_password(contrasena_generada)
         usuario.save()
 
-        # Enviar correo con credenciales
-        enviar_correo_credenciales(usuario.email, contrasena_generada)
-
+        # Retornar usuario y contraseña generada
+        usuario._contrasena_plana = contrasena_generada
         return usuario
 

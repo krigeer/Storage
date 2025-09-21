@@ -1,10 +1,11 @@
 #metodos
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .services import enviar_correo_credenciales
 #decoradores
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -13,7 +14,7 @@ from .permissions import IsAdministrador
 
 #modelos
 from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario
-from .serializers import LoginSerializer, RolSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer, EstadoInventarioSerializer, TipoTecnologiaSerializer, MarcaSerializer, TipoReporteSerializer, PrioridadReporteSerializer, EstadoReporteSerializer, TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer
+from .serializers import LoginSerializer, RolSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer, EstadoInventarioSerializer, TipoTecnologiaSerializer, MarcaSerializer, TipoReporteSerializer, PrioridadReporteSerializer, EstadoReporteSerializer, TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
 
 
 
@@ -36,98 +37,105 @@ class LoginWiew(APIView):
                     "documento": user.documento,
                     "rol": user.rol,
                     "centro": user.centro,
-                    "fecha_creacion": user.fecha_creacion,
-                    "fecha_actualizacion": user.fecha_actualizacion,
+                    "contacto": user.contacto_principal,
+                    "fecha_creacion": user.date_joined,
                 }
-            }, status_status.HTTP_200_OK)
+            }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     
 class CentroViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = Centro.objects.all()
     serializer_class = CentroSerializer
-    # permission_classes = [IsAdministrador] 1
+    permission_classes = [IsAdministrador]
 
 class RolViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    # permission_classes = [IsAdministrador] 2
+    permission_classes = [IsAdministrador]
 
 
 class TipoDocumentosViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
     queryset = TipoDocumento.objects.all()
     serializer_class = TipoDocumentoSerializer
-    # permission_classes = [IsAdministrador]  3
+    permission_classes = [IsAdministrador]
 
 
 class UbicacionViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
     queryset = Ubicacion.objects.all()
     serializer_class = UbicacionSerializer
-    # permission_classes = [IsAdministrador]  4
+    permission_classes = [IsAdministrador]
 
 class EstadoInventarioViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = EstadoInventario.objects.all()
     serializer_class = EstadoInventarioSerializer
-    # permission_classes = [IsAdministrador] 
+    permission_classes = [IsAdministrador] 
 
 class TipoTecnologiaViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
     queryset = TipoTecnologia.objects.all()
     serializer_class = TipoTecnologiaSerializer
-    # permission_classes = [IsAdministrador] 6
+    permission_classes = [IsAdministrador]
 
 class MarcaViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
     queryset = Marca.objects.all()
     serializer_class = MarcaSerializer
-    # permission_classes = [IsAdministrador] 7
+    permission_classes = [IsAdministrador]
 
 class TipoReporteViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = TipoReporte.objects.all()
     serializer_class = TipoReporteSerializer
     # permission_classes = [IsAdministrador]
 
 class PrioridadReporteViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = PrioridadReporte.objects.all()
     serializer_class = PrioridadReporteSerializer
     # permission_classes = [IsAdministrador]
 
 class EstadoReporteViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = EstadoReporte.objects.all()
     serializer_class = EstadoReporteSerializer
     # permission_classes = [IsAdministrador]
 
 class TecnologiaViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = Tecnologia.objects.all()
     serializer_class = TecnologiaSerializer
     # permission_classes = [IsAdministrador]
 
 class MaterialDidacticoViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = MaterialDidactico.objects.all()
     serializer_class = MaterialDidacticoSerializer
     # permission_classes = [IsAdministrador]
 
 class PrestamoViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = Prestamo.objects.all()
     serializer_class = PrestamoSerializer
     # permission_classes = [IsAdministrador]
 
 class ReporteViewSet(viewsets.ModelViewSet):
-    permissions = [AllowAny]
+    permission_classes = [AllowAny]
     queryset = Reporte.objects.all()
     serializer_class = ReporteSerializer
+    # permission_classes = [IsAdministrador]
+
+class ReporteListViewSet(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+    def list(self, request):
+        data = {
+            'total_reportes': Reporte.objects.all().count(),
+            'pendientes': Reporte.objects.filter(estado__nombre='pendiente').count(),
+            'en_proceso': Reporte.objects.filter(estado__nombre='en_proceso').count(),
+            'finalizados': Reporte.objects.filter(estado__nombre='finalizado').count(),
+        }
+        return Response(data)
     # permission_classes = [IsAdministrador]
 
 
@@ -142,3 +150,33 @@ class StadisticsViewSet(viewsets.ViewSet):
             'total_reportes': Reporte.objects.all().count(),
         }
         return Response(data)
+
+
+class UsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
+
+
+class CrearUsuarioView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = UsuarioSerializer(data=request.data)
+        if serializer.is_valid():
+            usuario = serializer.save()
+            contrasena_generada = usuario._contrasena_plana
+
+            # Enviar correo con credenciales
+            enviar_correo_credenciales(usuario.email, contrasena_generada)
+
+            return Response(
+                {"mensaje": "Usuario creado y credenciales enviadas al correo"},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EditarUsuarioViewSet(RetrieveUpdateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Usuario.objects.all()
+    lookup_field = 'id'
+    serializer_class = UsuarioSerializer

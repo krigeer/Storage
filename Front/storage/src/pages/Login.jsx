@@ -34,14 +34,15 @@ export default function SenaSplitScreenLogin() {
 
         if (!formData.documento.trim()) {
             newErrors.documento = 'El usuario es requerido';
+        }else if(formData.documento.length > 20){
+            newErrors.documento = 'Documento no valido';
         }
 
         if (!formData.password) {
             newErrors.password = 'La contraseña es requerida';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
         }
-
         return newErrors;
     };
 
@@ -63,7 +64,6 @@ export default function SenaSplitScreenLogin() {
                 password: formData.password
             });
 
-            //  el inicio de sesión fue exitoso
             await Swal.fire({
                 icon: 'success',
                 title: '¡Bienvenido!',
@@ -71,12 +71,10 @@ export default function SenaSplitScreenLogin() {
                 showConfirmButton: false,
                 timer: 1500
             });
-
-            // Redirigir al dashboard o página principal
             navigate('/dashboard');
 
         } catch (error) {
-            // Mostrar mensaje de error con SweetAlert2
+
             await Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -86,10 +84,6 @@ export default function SenaSplitScreenLogin() {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleGoBack = () => {
-        window.history.back();
     };
 
     const handleRecordarContrasena = (e) => {
@@ -105,15 +99,6 @@ export default function SenaSplitScreenLogin() {
         <div className="min-h-screen flex bg-gray-100">
             {/* Left Side - Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-800 to-green-600 relative">
-             {/* Back Button */}
-                <div className="mb-6 z-10 ">
-                        <button
-                            onClick={handleGoBack}
-                            className="flex items-centertext-black-600/100  dark:text-dark-400  hover:text-red-600 transition-colors">
-                            <FaArrowLeft className="mr-2" style={{ width: '16px', height: '16px' }} />
-                            <span className="text-sm font-medium">Regresar</span>
-                        </button>
-                </div>
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="grid grid-cols-8 gap-4 h-full p-8">

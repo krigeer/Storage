@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Form, Alert, Spinner } from "react-bootstrap";
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/materiales/"; // Ajusta la ruta según tu API
+const API_URL = "http://localhost:8000/api/materiales/"; 
 
 const MaterialDidacticoManager = () => {
   const [materiales, setMateriales] = useState([]);
@@ -10,7 +10,7 @@ const MaterialDidacticoManager = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Modal
+ 
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
@@ -21,7 +21,7 @@ const MaterialDidacticoManager = () => {
     ubicacion: "",
   });
 
-  // Obtener materiales
+  
   const fetchMateriales = async () => {
     setLoading(true);
     try {
@@ -38,7 +38,7 @@ const MaterialDidacticoManager = () => {
     fetchMateriales();
   }, []);
 
-  // Manejo de inputs
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -72,7 +72,7 @@ const MaterialDidacticoManager = () => {
     }
   };
 
-  // Eliminar material
+  
   const handleDelete = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este material?")) return;
 

@@ -20,7 +20,11 @@
   --blanco:#ffffff;
 }
 
-
+.bg-v {
+  background-color: var(--primary-color);
+  color: var(--blanco);
+  font-weight: bold;
+}
 
 .wrapper {
   min-height: 100dvi;

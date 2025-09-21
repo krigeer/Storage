@@ -5,7 +5,7 @@
         "header header"
         "nav main"
         "footer footer";
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 240px 1fr;
     grid-template-rows: auto 1fr auto;
     min-height: 100vh;
     background-color: #f5f5f5;
@@ -20,12 +20,11 @@
 
 .dashboard-nav {
     grid-area: nav;
-    /* background-color: #2c3e50; */
     color: white;
     min-height: calc(100vh - 60px);
     position: sticky;
-    width: auto;
     top: 0;
+    width: 100px;
     height: 100vh;
     overflow-y: auto;
 }
@@ -45,17 +44,26 @@
     text-align: center;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-    .dashboard-layout {
-        grid-template-areas:
-            "header"
-            "main"
-            "footer";
-        grid-template-columns: 1fr;
-    }
-    
-    .dashboard-nav {
-        display: none; /* You can replace this with a mobile menu toggle */
-    }
+  .dashboard-layout {
+    grid-template-areas:
+      "header"
+      "nav main"
+      "footer";
+      grid-template-columns:  1fr;
+  }
+
+  .dashboard-nav {
+    display: block;      
+    position: static;     
+    height: auto;         
+    min-height: auto;     
+    width: 100%;
+    overflow: visible;    
+  }
+
+
+  .dashboard-main {
+    padding: 60px;
+  }
 }
