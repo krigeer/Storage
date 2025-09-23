@@ -37,46 +37,46 @@ class LoginSerializer(serializers.Serializer):
 class CentroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Centro
-        exclude = ['id', 'actualizado_en', 'creado_en']
+        exclude = ['actualizado_en', 'creado_en']
 
 class RolSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rol
-        exclude = ['id']
+        fields = '__all__'
 
 class TipoDocumentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoDocumento
-        exclude = ['id']
+        fields = '__all__'
 
 
 class UbicacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ubicacion
-        exclude = ['id']
+        fields = '__all__'
 
 class EstadoInventarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = EstadoInventario
-        exclude = ['id']
+        fields = '__all__'
 
 
 class TipoTecnologiaSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoTecnologia
-        exclude = ['id']
+        fields = '__all__'
         
     
 class MarcaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Marca
-        exclude = ['id']
+        fields = '__all__'
 
 
 class TipoReporteSerializer(serializers.ModelSerializer):
     class Meta:
         model = TipoReporte
-        exclude = ['id']
+        fields = '__all__'  
 
 
 class PrioridadReporteSerializer(serializers.ModelSerializer):
@@ -135,3 +135,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
         usuario._contrasena_plana = contrasena_generada
         return usuario
 
+# class ReporteSerializer(serializers.ModelSerializer):
+#     usuario = UsuarioSerializer()
+#     ubicacion = UbicacionSerializer()
+#     prioridad = PrioridadReporteSerializer()
+#     estado = EstadoReporteSerializer()
+
+#     class Meta:
+#         model = Reporte
+#         fields = ['id', 'titulo', 'usuario', 'ubicacion', 'prioridad', 'estado', 'observacion', 'creado_en']

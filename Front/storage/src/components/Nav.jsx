@@ -26,7 +26,7 @@ const Nav = ({ isCollapsed, toggleCollapse, rol }) => {
 
     let navItems = [];
 
-    if (rol === "1") {
+    if (rol === 1) {
         navItems = [
             { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
             { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnologia' },
@@ -38,7 +38,7 @@ const Nav = ({ isCollapsed, toggleCollapse, rol }) => {
             { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
             { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
         ];
-    } else if (rol === "2") {
+    } else if (rol === 2) {
         navItems = [
             { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
             { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
@@ -46,15 +46,18 @@ const Nav = ({ isCollapsed, toggleCollapse, rol }) => {
             { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
             { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
         ];
+    }else{
+        navItems = [
+            { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
+            { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
+        ];
     }
 
     const handleMenuClick = (menuId) => {
-        // Verifica si el ID del menú es 'cerrarSesion'
         if (menuId === 'cerrarSesion') {
-            removeAccessToken(); // Llama a la función para eliminar el token
-            navigate('/login', { replace: true }); // Redirige al usuario a la página de login
+            removeAccessToken();
+            navigate('/login', { replace: true });
         } else {
-            // Si es otro elemento, navega normalmente
             navigate(`/dashboard/${menuId}`, { replace: true });
         }
     };
@@ -74,7 +77,6 @@ const Nav = ({ isCollapsed, toggleCollapse, rol }) => {
                     {navItems.map((item) => (
                         <li
                             key={item.id}
-                            // La clase 'active' se determina si el id del item coincide con la ruta activa
                             className={`nav-item ${activePath === item.id ? 'active' : ''}`}
                             onClick={() => handleMenuClick(item.id)}
                         >

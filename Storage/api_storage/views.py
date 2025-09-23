@@ -35,10 +35,8 @@ class LoginWiew(APIView):
                     "last_name": user.last_name,
                     "email": user.email,
                     "documento": user.documento,
-                    "rol": user.rol,
-                    "centro": user.centro,
+                    "rol": user.rol.id,
                     "contacto": user.contacto_principal,
-                    "fecha_creacion": user.date_joined,
                 }
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -49,40 +47,40 @@ class CentroViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Centro.objects.all()
     serializer_class = CentroSerializer
-    permission_classes = [IsAdministrador]
+    # permission_classes = [IsAdministrador]
 
 class RolViewSet(viewsets.ModelViewSet):
     queryset = Rol.objects.all()
     serializer_class = RolSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 class TipoDocumentosViewSet(viewsets.ModelViewSet):
     queryset = TipoDocumento.objects.all()
     serializer_class = TipoDocumentoSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 class UbicacionViewSet(viewsets.ModelViewSet):
     queryset = Ubicacion.objects.all()
     serializer_class = UbicacionSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class EstadoInventarioViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = EstadoInventario.objects.all()
     serializer_class = EstadoInventarioSerializer
-    permission_classes = [IsAdministrador] 
+    permission_classes = [AllowAny] 
 
 class TipoTecnologiaViewSet(viewsets.ModelViewSet):
     queryset = TipoTecnologia.objects.all()
     serializer_class = TipoTecnologiaSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class MarcaViewSet(viewsets.ModelViewSet):
     queryset = Marca.objects.all()
     serializer_class = MarcaSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class TipoReporteViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -176,6 +174,13 @@ class CrearUsuarioView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class EditarUsuarioViewSet(RetrieveUpdateAPIView):
+    permission_classes = [AllowAny]
+    queryset = Usuario.objects.all()
+    lookup_field = 'id'
+    serializer_class = UsuarioSerializer
+
+
+class DetalleUsuarioViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = Usuario.objects.all()
     lookup_field = 'id'

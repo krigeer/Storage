@@ -1,225 +1,91 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Form, Alert, Spinner } from "react-bootstrap";
-import axios from "axios";
+import Titulo  from "../../components/UI/Titulo";
+import Button from "../../components/UI/Button";
+import Tabla from "../../components/UI/Tabla";
+import  handleAction from "../../components/UI/Form";
+import { apiCall } from "../../services/apiCutoms";
 
-const API_URL = "http://localhost:8000/api/materiales/"; 
+const options = [
+  {
+      title: "Añadir Material Didáctico",
+      description: "Añade nuevos materiales didácticos al sistema con sus datos y permisos.",
+      key: "materiales_didacticos",
+    },
+    {
+      title: "Generar QR de un elemento Tecnologico",
+      description: "Genera un QR para un elemento tecnologico existente en el sistema.",
+      key: "generar_qr_tecnologia",
+    },
+]
 
+const headers ={
+  nombre: "nombre",
+  descripcion: "descripcion",
+  serie_fabricante: "serial fabricante",
+  serie_sena: "serial sena",
+  estado: "estado",
+}
+const campos ={
+  nombre: "nombre",
+  descripcion: "descripcion",
+  serie_fabricante: "serie_fabricante",
+  serie_sena: "serie_sena",
+  estado: "estado",
+}
 const MaterialDidacticoManager = () => {
   const [materiales, setMateriales] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
- 
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-
-  const [formData, setFormData] = useState({
-    nombre: "",
-    descripcion: "",
-    cantidad: "",
-    ubicacion: "",
-  });
-
-  
-  const fetchMateriales = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(API_URL);
-      setMateriales(res.data);
-    } catch (err) {
-      setError("Error al cargar materiales");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchMateriales();
-  }, []);
-
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // Registrar / Editar material
-  const handleSave = async () => {
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
+    const fetchMateriales = async () => {
     try {
-      if (editingId) {
-        await axios.put(`${API_URL}${editingId}/`, formData);
-        setSuccess("Material actualizado ✅");
-      } else {
-        await axios.post(API_URL, formData);
-        setSuccess("Material registrado ✅");
+      setLoading(true);
+      const response = await apiCall("materiales_didacticos");
+      if (response && Array.isArray(response.results)){
+        setMateriales(response.results)
+      }else{
+        console.log("error cargando los datos");
+        setMateriales([]);
       }
-
-      setFormData({ nombre: "", descripcion: "", cantidad: "", ubicacion: "" });
-      setEditingId(null);
-      setShowModal(false);
-      fetchMateriales();
-    } catch (err) {
-      setError("Error al guardar el material");
-    } finally {
+    } catch (error){
+      console.log("datos no cargados");
+      setMateriales([]);
+    } finally{
       setLoading(false);
     }
+    
   };
+    fetchMateriales();
+  }, [])
 
-  
-  const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este material?")) return;
-
-    try {
-      await axios.delete(`${API_URL}${id}/`);
-      setSuccess("Material eliminado ❌");
-      fetchMateriales();
-    } catch (err) {
-      setError("Error al eliminar el material");
-    }
-  };
-
-  // Abrir modal en modo edición
-  const handleEdit = (material) => {
-    setEditingId(material.id);
-    setFormData({
-      nombre: material.nombre,
-      descripcion: material.descripcion,
-      cantidad: material.cantidad,
-      ubicacion: material.ubicacion,
-    });
-    setShowModal(true);
-  };
-
-  // Abrir modal en modo registro
-  const handleNew = () => {
-    setEditingId(null);
-    setFormData({ nombre: "", descripcion: "", cantidad: "", ubicacion: "" });
-    setShowModal(true);
-  };
+  if (loading) {
+    return <div className="text-center mt-5">Cargando datos...</div>;
+  }
 
   return (
-    <div className="p-4 border rounded shadow-sm bg-white">
-      <h4 className="mb-3">Gestión de Material Didáctico</h4>
+    <div>
+      <Titulo titulo="Gestión de Materiales Didácticos"  descripcion="En esta sección podras registrar elementos no tecnologicos"/>
 
-      {error && <Alert variant="danger">{error}</Alert>}
-      {success && <Alert variant="success">{success}</Alert>}
-
-      <Button className="mb-3" onClick={handleNew}>
-        ➕ Registrar Material
-      </Button>
-
-      {loading ? (
-        <Spinner animation="border" />
-      ) : (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Cantidad</th>
-              <th>Ubicación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materiales.map((mat) => (
-              <tr key={mat.id}>
-                <td>{mat.id}</td>
-                <td>{mat.nombre}</td>
-                <td>{mat.descripcion}</td>
-                <td>{mat.cantidad}</td>
-                <td>{mat.ubicacion}</td>
-                <td>
-                  <Button
-                    variant="warning"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleEdit(mat)}
-                  >
-                    ✏️ Editar
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => handleDelete(mat.id)}
-                  >
-                    🗑 Eliminar
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-
-      {/* Modal Registrar/Editar */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {editingId ? "Editar Material Didáctico" : "Registrar Material"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Descripción</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="descripcion"
-                value={formData.descripcion}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Cantidad</Form.Label>
-              <Form.Control
-                type="number"
-                name="cantidad"
-                value={formData.cantidad}
-                onChange={handleChange}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Ubicación</Form.Label>
-              <Form.Control
-                type="text"
-                name="ubicacion"
-                value={formData.ubicacion}
-                onChange={handleChange}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleSave} disabled={loading}>
-            {loading ? "Guardando..." : "Guardar"}
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <div className="row g-4 justify-content-center">
+              {options.map((opt, index) => (
+                <div className="col-md-6 col-xl-4" key={index}>
+                  <div className="card shadow-lg border-0 rounded-4 h-100">
+                    <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
+                      <div>
+                        <h5 className="card-title fw-bold">{opt.title}</h5>
+                        <p className="card-text text-muted">{opt.description}</p>
+                      </div>
+                      <Button onClick={() => handleAction(opt)}>
+                        Seleccionar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5">
+              <Tabla data={materiales} headers={headers} campos={campos} title="Materiales Didácticos" />
+            </div>
     </div>
   );
 };

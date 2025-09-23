@@ -1,105 +1,127 @@
 import React, { useState } from "react";
-import { FaEye } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
-import { FaTrash } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 
 
-export default function Tabla(props) {
-    const { datos } = props;
-    const [currentPage, setCurrentPage] = useState(1);
-    const reportesPerPage = 5;
+export default function Tabla({ title, headers, data, campos }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-    const indexOfLastReporte = currentPage * reportesPerPage;
-    const indexOfFirstReporte = indexOfLastReporte - reportesPerPage;
-    const currentReportes = datos.slice(
-        indexOfFirstReporte,
-        indexOfLastReporte
-    );
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = Array.isArray(data)
+    ? data.slice(indexOfFirstItem, indexOfLastItem)
+    : [];
 
-    const totalPages = Math.ceil(datos.length / reportesPerPage);
-    return (
-        <div className="card shadow-lg border-0 rounded-4">
-            <div className="card-body">
-                <h5 className="fw-bold mb-3">Últimos Reportes</h5>
-                <div className="table-responsive">
-                    <table className="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>{props.titulo}</th>
-                                <th>{props.estado}</th>
-                                <th>{props.fecha}</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {currentReportes.map((rep) => (
-                                <tr key={rep.id}>
-                                    <td>{rep.titulo}</td>
-                                    <td>
-                                        <span
-                                            className={`badge ${rep.estado === "Pendiente"
-                                                    ? "bg-warning text-dark"
-                                                    : rep.estado === "Resuelto"
-                                                        ? "bg-success"
-                                                        : "bg-info text-dark"
-                                                }`}
-                                        >
-                                            {rep.estado}
-                                        </span>
-                                    </td>
-                                    <td>{rep.fecha}</td>
-                                    <td className="d-flex gap-2">
-                                        <button className="btn btn-primary"><FaEye /></button>
-                                        <button className="btn btn-warning"><FaEdit /></button>
-                                        <button className="btn btn-danger"><FaTrash /></button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+  const totalPages = Array.isArray(data)
+    ? Math.ceil(data.length / itemsPerPage)
+    : 0;
 
-                {/* Paginación */}
-                <nav>
-                    <ul className="pagination justify-content-center mt-3">
-                        <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                            <button
-                                className="page-link"
-                                onClick={() => setCurrentPage((prev) => prev - 1)}
-                            >
-                                Anterior
-                            </button>
-                        </li>
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+  };
 
-                        {Array.from({ length: totalPages }, (_, i) => (
-                            <li
-                                key={i}
-                                className={`page-item ${currentPage === i + 1 ? "active" : ""
-                                    }`}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => setCurrentPage(i + 1)}
-                                >
-                                    {i + 1}
-                                </button>
-                            </li>
-                        ))}
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => prev - 1);
+  };
 
-                        <li
-                            className={`page-item ${currentPage === totalPages ? "disabled" : ""
-                                }`}
-                        >
-                            <button
-                                className="page-link"
-                                onClick={() => setCurrentPage((prev) => prev + 1)}
-                            >
-                                Siguiente
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  return (
+    <div className="card shadow-lg border-0 rounded-4">
+      <div className="card-body">
+        <h5 className="fw-bold mb-3">{title}</h5>
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead>
+              <tr>
+                {Object.values(headers).map((headerText) => (
+                  <th key={headerText}>{headerText}</th>
+                ))}
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentItems.length > 0 ? (
+                currentItems.map((item, index) => (
+                  <tr key={item.id || index}>
+                    {Object.keys(campos).map((key) => (
+                      <td key={key}>
+                        {key === 'estado' ? (
+                          <span
+                            className={`badge ${
+                              item[campos[key]] === "activo"
+                                ? "bg-success"
+                                : "bg-warning text-dark"
+                            }`}
+                          >
+                            {item[campos[key]]}
+                          </span>
+                        ) : (
+                          item[campos[key]]
+                        )}
+                      </td>
+                    ))}
+                    <td className="d-flex gap-2">
+                      <button className="btn btn-primary" ><FaEye /></button>
+                      <button className="btn btn-warning"><FaEdit /></button>
+                      <button className="btn btn-danger"><FaTrash /></button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={Object.keys(headers).length + 1} className="text-center">
+                    No hay datos disponibles.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-    )
+
+        {/* Lógica de paginación */}
+        {totalPages > 1 && (
+          <nav>
+            <ul className="pagination justify-content-center mt-3">
+              <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </button>
+              </li>
+
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li
+                  key={i}
+                  className={`page-item ${currentPage === i + 1 ? "active" : ""}`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
+
+              <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                <button
+                  className="page-link"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
+      </div>
+    </div>
+  );
 }

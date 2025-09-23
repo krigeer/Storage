@@ -68,9 +68,9 @@ class EstadoUsuario(models.TextChoices):
 
 class Usuario(AbstractUser):
     documento = models.BigIntegerField(unique=True, verbose_name="Documento")
-    rol = models.CharField(max_length=50, verbose_name="Rol")
-    centro = models.CharField(max_length=100, verbose_name="Centro")
-    tipo_documento = models.CharField(max_length=50, verbose_name="Tipo de documento")
+    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, verbose_name="Rol", default=1)
+    centro = models.ForeignKey(Centro, on_delete=models.PROTECT, verbose_name="Centro", default=1)
+    tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.PROTECT, verbose_name="Tipo de documento", default=1)
     contacto_principal = models.BigIntegerField(verbose_name="Contacto principal")
     contacto_secundario = models.BigIntegerField(null=True, blank=True, verbose_name="Contacto secundario")
     estado = models.CharField(
@@ -286,6 +286,7 @@ class PrioridadReporte(models.Model):
 
 
 class Reporte(models.Model):
+    titulo = models.CharField(max_length=100)
     usuario = models.ForeignKey(Usuario, on_delete=models.PROTECT)
     centro = models.ForeignKey(Centro, on_delete=models.PROTECT)
     ubicacion = models.ForeignKey(Ubicacion, on_delete=models.PROTECT)

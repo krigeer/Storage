@@ -8,6 +8,10 @@ import {
   FaChartLine,
   FaSpinner,
 } from "react-icons/fa";
+import Titulo from "../../components/UI/Titulo";
+import Button from "../../components/UI/Button";
+import handleAction from "../../components/UI/Form";
+import { apiCall } from "../../services/apiCutoms";
 
 const handleRegistrarUsuario = () => {
   Swal.fire({
@@ -188,11 +192,7 @@ const Estadisticas = () => {
       </div>
       {/* opciones rapidas */}
       <div className="container py-5">
-      {/* Header */}
-      <div className="text-center mb-4">
-        <h1 className="fw-bold text-dark">Opciones Rápidas</h1>
-        <p className="text-muted">Acceso directo a las principales funcionalidades</p>
-      </div>
+      <Titulo titulo="Opciones Rápidas"  descripcion="Acceso directo a las principales funcionalidades"/>
 
       {/* Botones */}
       <div className="row g-4">

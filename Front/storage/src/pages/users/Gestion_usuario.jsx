@@ -1,9 +1,10 @@
-import React from 'react';
-import Swal from "sweetalert2";
+import React, { useState, useEffect } from 'react';
 import { FaUserPlus, FaUserEdit } from "react-icons/fa";
 import handleAction from "../../components/UI/Form";
 import Button from "../../components/UI/Button";
 import Titulo from "../../components/UI/Titulo";
+import Tabla from "../../components/UI/Tabla";
+import { apiCall } from '../../services/apiCutoms';
 
 const userOptions = [
   {
@@ -13,17 +14,63 @@ const userOptions = [
     key: "crear_usuarios",
   },
   {
-    title: "Editar Usuario",
-    description: "Modifica la información y permisos de los usuarios existentes.",
+    title: "Buscar Usuario",
+    description: "Busca y modifica la información y permisos de los usuarios existentes.",
     icon: <FaUserEdit size={42} className="text-warning mb-3" />,
-    key: "editar_usuarios/${idUsuario}",
+    key: "buscar_usuarios",
   },
 ];
 
+const headers = {
+  titulo: "Nombre",
+  documento: "Documento",
+  email: "Email",
+  estado: "Estado",
+}
+const campos = {
+  titulo: "first_name",
+  documento: "documento",
+  email: "email",
+  estado: "estado",
+}
+
+
+
 const Gestion_usuario = () => {
+  const [usuarios, setUsuarios] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        setLoading(true);
+        const response = await apiCall("usuarios");
+        if (response && Array.isArray(response.results)) {
+          setUsuarios(response.results);
+        } else {
+          console.error("API response does not contain a valid 'results' array.");
+          setUsuarios([]);
+        }
+      } catch (error) {
+        console.error("Error al obtener los usuarios:", error);
+        setUsuarios([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsuarios();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-5">Cargando datos...</div>;
+  }
+
   return (
     <div>
-      <Titulo titulo="Administración de Usuarios" descripcion="Gestionar la creación y edición de usuarios en el sistema." />
+      <Titulo
+        titulo="Administración de Usuarios"
+        descripcion="Gestionar la creación y edición de usuarios en el sistema."
+      />
       <div className="row g-4 justify-content-center">
         {userOptions.map((opt, index) => (
           <div className="col-md-6 col-xl-4" key={index}>
@@ -41,6 +88,10 @@ const Gestion_usuario = () => {
             </div>
           </div>
         ))}
+      </div>
+      
+      <div className="mt-5">
+        <Tabla data={usuarios} headers={headers} campos={campos} title="Usuarios Registrados" />
       </div>
     </div>
   );

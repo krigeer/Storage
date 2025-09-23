@@ -46,15 +46,29 @@ export const formConfigs = {
   "crear_usuarios":{
     title: "Registrar Usuario",
     fields: [
+      { id: "username", placeholder: "Nombre de Usuario", type: "text", readOnly: true },
       { id: "first_name", placeholder: "Nombres", type: "text" },
       { id: "last_name", placeholder: "Apellidos", type: "text" },
       { id: "email", placeholder: "Correo Electronico", type: "email" },
       { id: "documento", placeholder: "Documento", type: "number" },
       { id: "tipo_documento", placeholder: "Tipo de Documento", type: "select", options: { endpoint: "tipos_documentos", valueKey: "id", textKey: "nombre" } },
       { id: "centro", placeholder: "Centro", type: "select", options: { endpoint: "centros", valueKey: "id", textKey: "nombre" } },
-      { id: "rol", placeholder: "Rol", type: "select", options: { endpoint: "roles", valueKey: "id", textKey: "name" } },
+      { id: "rol", placeholder: "Rol", type: "select", options: { endpoint: "roles", valueKey: "id", textKey: "nombre" } },
       {id: "contacto_principal", placeholder: "Contacto Principal", type: "number"},
       {id: "contacto_secundario", placeholder: "Contacto Secundario", type: "number"},
+      {id: "estado", placeholder: "estado", type: "hidden", defaultValue: "activo"},
+    ],
+  },
+  "materiales_didacticos":{
+    title: "Registrar Material Didáctico",
+    fields: [
+      { id: "nombre", placeholder: "Nombre del Material", type: "text" },
+      { id: "descripcion", placeholder: "Descripción del Material", type: "text" },
+      { id: "serie_fabricante", placeholder: "Serial fabricante", type: "text" },
+      { id: "serie_sena", placeholder: "Serial SENA", type: "text" },
+      { id: "cantidad", placeholder: "Cantidad", type: "number" },
+      { id: "ubicacion", placeholder: "Ubicación", type: "select", options: { endpoint: "ubicaciones", valueKey: "id", textKey: "nombre" } },
+      { id: "estado", placeholder: "Estado", type: "select", options: { endpoint: "estados_inventario", valueKey: "id", textKey: "nombre" } },
     ],
   }
   };
