@@ -233,6 +233,8 @@ class Prestamo(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     objeto_id = models.PositiveIntegerField()
     objeto = GenericForeignKey("content_type", "objeto_id")
+    tecnologia = models.ForeignKey(Tecnologia, on_delete=models.PROTECT, null=True, blank=True)
+    material_didactico = models.ForeignKey(MaterialDidactico, on_delete=models.PROTECT, null=True, blank=True)
     solicitante = models.ForeignKey(Usuario, on_delete=models.PROTECT)
     fecha_prestamo = models.DateTimeField(auto_now_add=True)
     fecha_devolucion = models.DateTimeField(null=True, blank=True)
@@ -243,6 +245,14 @@ class Prestamo(models.Model):
         verbose_name = "Préstamo"
         verbose_name_plural = "Préstamos"
         ordering = ["-fecha_prestamo"]
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(tecnologia__isnull=False) | models.Q(material_didactico__isnull=False)
+                ),
+                name="prestamo_tecnologia_o_material",
+            )
+        ]
 
     def __str__(self):
         return f"Préstamo {self.id} - {self.solicitante}"
@@ -307,6 +317,3 @@ class Reporte(models.Model):
 
     def __str__(self):
         return f"Reporte {self.id} - {self.usuario}"
-
-    
-    

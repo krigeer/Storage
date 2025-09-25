@@ -70,5 +70,29 @@ export const formConfigs = {
       { id: "ubicacion", placeholder: "Ubicación", type: "select", options: { endpoint: "ubicaciones", valueKey: "id", textKey: "nombre" } },
       { id: "estado", placeholder: "Estado", type: "select", options: { endpoint: "estados_inventario", valueKey: "id", textKey: "nombre" } },
     ],
-  }
+  },
+  "tecnologias":{
+    title: "Registrar Tecnologia",
+    fields: [
+      { id: "nombre", placeholder: "Identificador de la Tecnologia", type: "text" },
+      { id: "descripcion", placeholder: "Descripción de la Tecnologia", type: "text" },
+      { id: "serie_fabricante", placeholder: "Serial fabricante", type: "text" },
+      { id: "serie_sena", placeholder: "Serial SENA", type: "text" },
+      { id: "caracteristicas", placeholder: "Caracteristicas", type: "text" },
+      { id: "ubicacion", placeholder: "Ubicación", type: "select", options: { endpoint: "ubicaciones", valueKey: "id", textKey: "nombre" } },
+      { id: "estado", placeholder: "Estado", type: "select", options: { endpoint: "estados_inventario", valueKey: "id", textKey: "nombre" } },
+      { id: "tipo", placeholder: "Tipo", type: "select", options: { endpoint: "tipos_tecnologia", valueKey: "id", textKey: "nombre" } },
+      { id: "marca", placeholder: "Marca", type: "select", options: { endpoint: "marcas", valueKey: "id", textKey: "nombre" } },
+    ],
+  },
+  "seleccion":{
+    title: "Registrar Préstamo",
+    fields: [
+      { id: "usuario", placeholder: "Documento del Usuario", type: "select", options: { endpoint: "usuarios", valueKey: "id", textKey: "username"}},
+      { id: "material_didactico", placeholder: "Serial Material Didáctico", type: "select", options: { endpoint: "materiales_didacticos", valueKey: "id", textKey: "nombre" }},
+      { id: "tecnologia", placeholder: "Serial Tecnología", type: "select", options: { endpoint: "tecnologias", valueKey: "id", textKey: "nombre" }},
+      { id: "fecha_prestamo", placeholder: "Fecha de Préstamo", type: "date" },
+      { id: "estado", placeholder: "Estado del Préstamo", type: "select", options: { endpoint: "estados_prestamos", valueKey: "id", textKey: "nombre" } },
+    ],
+  },
   };

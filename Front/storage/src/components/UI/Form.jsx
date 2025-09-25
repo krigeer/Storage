@@ -10,7 +10,6 @@ const handleAction = async (opt) => {
   const formHtml = formConfig.fields.map((field) => {
     const inputId = `swal-input-${field.id}`;
 
-    // 👇 Campo oculto
     if (field.type === "hidden") {
       return `<input id="${inputId}" type="hidden" value="${field.defaultValue || ""}" />`;
     }
@@ -37,7 +36,6 @@ const handleAction = async (opt) => {
       `;
     }
 
-    // 👇 Inputs normales
     return `
       <div class="form-group">
         <label for="${inputId}" class="form-label">

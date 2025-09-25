@@ -14,18 +14,14 @@ import Button from "../../components/UI/Button";
 const headers = {
   titulo: "Titulo",
   usuario: "Usuario",
-  ubicacion: "Ubicación",
   prioridad: "Prioridad",
   estado: "Estado",
-  fecha: "Fecha",
 };
 const campos = {
   titulo: "titulo",
   usuario: "usuario",
-  ubicacion: "ubicacion",
   prioridad: "prioridad",
   estado: "estado",
-  fecha: "fecha",
 };
 
 const Reportes = () => {

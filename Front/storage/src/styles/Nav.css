@@ -99,6 +99,7 @@
     font-size: 0.95rem;
     white-space: nowrap;
     transition: padding 0.3s ease;
+    cursor: pointer;
 }
 
 .nav-icon {

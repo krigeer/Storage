@@ -19,18 +19,16 @@ const options = [
 ]
 
 const headers ={
-  nombre: "nombre",
+  nombre: "Nombre",
   Tipo: "Tipo",
-  caracteristicas: "Caracteristicas",
-  serie_fabricante: "serial fabricante",
-  serie_sena: "serial sena",
-  estado: "estado",
-  marca: "marca",
+  serie_fabricante: "Serial fabricante",
+  serie_sena: "Serial sena",
+  estado: "Estado",
+  marca: "Marca",
 }
 const campos ={
   nombre: "nombre",
   tipo: "tipo",
-  caracteristicas: "caracteristicas",
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
   estado: "estado",

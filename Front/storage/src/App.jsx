@@ -11,6 +11,7 @@ import Configuracio from "./pages/users/Configuracio";
 import Prestamos from "./pages/users/Prestamos";
 import Tecnologia from "./pages/users/Tecnologia";
 import Materiales from "./pages/users/Materiales";
+import NotFound  from "./pages/errores/NotFound"
 
 function AppContent() {
     return (
@@ -29,6 +30,7 @@ function AppContent() {
                 <Route path="GestionarBD" element={<Gestionar_bd />} />
                 <Route path="configuracion" element={<Configuracio />} />
             </Route>
+            <Route patch="*" element={<NotFound />}/>
         </Routes>
     );
 }

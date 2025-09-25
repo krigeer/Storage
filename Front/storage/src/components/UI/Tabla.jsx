@@ -46,23 +46,26 @@ export default function Tabla({ title, headers, data, campos }) {
               {currentItems.length > 0 ? (
                 currentItems.map((item, index) => (
                   <tr key={item.id || index}>
-                    {Object.keys(campos).map((key) => (
-                      <td key={key}>
-                        {key === 'estado' ? (
-                          <span
-                            className={`badge ${
-                              item[campos[key]] === "activo"
-                                ? "bg-success"
-                                : "bg-warning text-dark"
-                            }`}
-                          >
-                            {item[campos[key]]}
-                          </span>
-                        ) : (
-                          item[campos[key]]
-                        )}
-                      </td>
-                    ))}
+                    {Object.keys(campos).map((key) => {
+                      const campo = campos[key];
+                      const rawValue = typeof campo === 'function' ? campo(item) : item[campo];
+                      if (key === 'estado') {
+                        return (
+                          <td key={key}>
+                            <span
+                              className={`badge ${
+                                rawValue === "activo"
+                                  ? "bg-success"
+                                  : "bg-warning text-dark"
+                              }`}
+                            >
+                              {rawValue}
+                            </span>
+                          </td>
+                        );
+                      }
+                      return <td key={key}>{rawValue}</td>;
+                    })}
                     <td className="d-flex gap-2">
                       <button className="btn btn-primary" ><FaEye /></button>
                       <button className="btn btn-warning"><FaEdit /></button>

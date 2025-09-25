@@ -1,3 +1,4 @@
+from dataclasses import fields
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
@@ -94,22 +95,72 @@ class EstadoReporteSerializer(serializers.ModelSerializer):
 #Tablas que heredan
 
 class TecnologiaSerializer(serializers.ModelSerializer):
+    tipo = serializers.StringRelatedField(read_only=True)
+    marca = serializers.StringRelatedField(read_only=True)
+    estado = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Tecnologia
         fields = '__all__'
 
 class MaterialDidacticoSerializer(serializers.ModelSerializer):
+    estado = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = MaterialDidactico
         fields = '__all__'
 
 
 class PrestamoSerializer(serializers.ModelSerializer):
+    # Campos para la lectura (GET)
+    solicitante = serializers.StringRelatedField(read_only=True)
+    tecnologia = serializers.StringRelatedField(read_only=True)
+    material_didactico = serializers.StringRelatedField(read_only=True)
+
+    # Campos para la escritura (POST, PUT, PATCH)
+    solicitante_id = serializers.PrimaryKeyRelatedField(
+        queryset=Usuario.objects.all(), source='solicitante', write_only=True
+    )
+    tecnologia_id = serializers.PrimaryKeyRelatedField(
+        queryset=Tecnologia.objects.all(), source='tecnologia', write_only=True, required=False, allow_null=True
+    )
+    material_didactico_id = serializers.PrimaryKeyRelatedField(
+        queryset=MaterialDidactico.objects.all(), source='material_didactico', write_only=True, required=False, allow_null=True
+    )
+
     class Meta:
         model = Prestamo
-        fields = '__all__'
+        # Incluye los campos de lectura y los de escritura
+        fields = [
+            'id', 'solicitante', 'tecnologia', 'material_didactico',
+            'solicitante_id', 'tecnologia_id', 'material_didactico_id',
+            'fecha_prestamo', 'fecha_devolucion', 'observacion'
+        ]
+        read_only_fields = ['id', 'fecha_prestamo', 'fecha_devolucion']
+
+    def validate(self, data):
+        tecnologia = data.get('tecnologia')
+        material = data.get('material_didactico')
+
+        if not tecnologia and not material:
+            raise serializers.ValidationError({
+                'non_field_errors': "Debe proporcionar 'tecnologia' o 'material_didactico'."
+            })
+        
+        # Validación extra: si ambos campos tienen valor, levanta un error
+        if tecnologia and material:
+             raise serializers.ValidationError({
+                'non_field_errors': "No se pueden prestar una 'tecnologia' y un 'material_didactico' en la misma solicitud."
+            })
+
+        return data
 
 class ReporteSerializer(serializers.ModelSerializer):
+    usuario = serializers.StringRelatedField()
+    centro = serializers.StringRelatedField()
+    ubicacion = serializers.StringRelatedField()
+    estado = serializers.StringRelatedField()
+    prioridad = serializers.StringRelatedField()
+    tipo = serializers.StringRelatedField()
+
     class Meta:
         model = Reporte
         fields = '__all__'
@@ -122,25 +173,10 @@ class UsuarioSerializer(serializers.ModelSerializer):
         exclude = ["groups", "user_permissions", "password"]
 
     def create(self, validated_data):
-        # Generar contraseña aleatoria segura
         alfabeto = string.ascii_letters + string.digits + "!@#$%^&*()"
         contrasena_generada = ''.join(secrets.choice(alfabeto) for _ in range(12))
-
-        # Crear usuario con contraseña
         usuario = Usuario(**validated_data)
         usuario.set_password(contrasena_generada)
         usuario.save()
-
-        # Retornar usuario y contraseña generada
         usuario._contrasena_plana = contrasena_generada
         return usuario
-
-# class ReporteSerializer(serializers.ModelSerializer):
-#     usuario = UsuarioSerializer()
-#     ubicacion = UbicacionSerializer()
-#     prioridad = PrioridadReporteSerializer()
-#     estado = EstadoReporteSerializer()
-
-#     class Meta:
-#         model = Reporte
-#         fields = ['id', 'titulo', 'usuario', 'ubicacion', 'prioridad', 'estado', 'observacion', 'creado_en']

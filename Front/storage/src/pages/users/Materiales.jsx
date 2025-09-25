@@ -12,22 +12,20 @@ const options = [
       key: "materiales_didacticos",
     },
     {
-      title: "Generar QR de un elemento Tecnologico",
-      description: "Genera un QR para un elemento tecnologico existente en el sistema.",
+      title: "Generar QR de un Material",
+      description: "Genera un QR para un Material existente en el sistema.",
       key: "generar_qr_tecnologia",
     },
 ]
 
 const headers ={
   nombre: "nombre",
-  descripcion: "descripcion",
   serie_fabricante: "serial fabricante",
   serie_sena: "serial sena",
   estado: "estado",
 }
 const campos ={
   nombre: "nombre",
-  descripcion: "descripcion",
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
   estado: "estado",

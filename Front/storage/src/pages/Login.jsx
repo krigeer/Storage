@@ -97,9 +97,7 @@ export default function SenaSplitScreenLogin() {
 
     return (
         <div className="min-h-screen flex bg-gray-100">
-            {/* Left Side - Branding */}
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-800 to-green-600 relative">
-                {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="grid grid-cols-8 gap-4 h-full p-8">
                         {[...Array(64)].map((_, i) => (
@@ -107,8 +105,6 @@ export default function SenaSplitScreenLogin() {
                         ))}
                     </div>
                 </div>
-
-                {/* Content */}
                 <div className="relative flex items-center justify-center w-full p-12">
                     <div className="text-center text-white">
                         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
@@ -123,13 +119,8 @@ export default function SenaSplitScreenLogin() {
                     </div>
                 </div>
             </div>
-
-            {/* Right Side - Login Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
                 <div className="w-full max-w-sm">
-                   
-
-                    {/* Mobile Header */}
                     <div className="lg:hidden text-center mb-8">
                         <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
                             <img
@@ -139,25 +130,17 @@ export default function SenaSplitScreenLogin() {
                             />
                         </div>
                     </div>
-
-                    {/* Login Card */}
                     <div className="bg-white rounded-2xl shadow-lg p-8 border">
-                        {/* Header */}
                         <div className="text-center mb-8">
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Ingresar</h2>
                             <p className="text-gray-600">Accede a tu plataforma de Inventario</p>
                         </div>
-
-                        {/* Error general */}
                         {errors.general && (
                             <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded">
                                 <p className="text-red-700 text-sm">{errors.general}</p>
                             </div>
                         )}
-
-                        {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* documento field */}
                             <div className='mb-8'>
                                 <label htmlFor="documento" className="ms-3 block text-sm font-medium text-gray-700 mb-2" dir="ltr">
                                     Usuario
@@ -189,8 +172,6 @@ export default function SenaSplitScreenLogin() {
                                     </p>
                                 )}
                             </div>
-
-                            {/* Password field */}
                             <div className='mb-8'>
                                 <label htmlFor="password"  className="ms-3 block text-sm font-medium text-gray-700" dir="ltr">
                                     Contraseña
@@ -233,8 +214,6 @@ export default function SenaSplitScreenLogin() {
                                     </p>
                                 )}
                             </div>
-
-                            {/* Remember me & Forgot password */}
                             <div className="flex items-center justify-between text-sm mb-20">
                                 <label className="ms-3 flex items-center" dir="ltr">
                                     <input 
@@ -245,8 +224,6 @@ export default function SenaSplitScreenLogin() {
                                 </label>
                                
                             </div>
-
-                            {/* Submit button */}
                             <button 
                                 type="submit"
                                 disabled={isLoading}
@@ -265,8 +242,6 @@ export default function SenaSplitScreenLogin() {
                                 )}
                             </button>
                         </form>
-
-                        {/* Support link */}
                         <div className="mt-6 pt-6 border-t border-gray-200 text-center">
                             <p className="text-sm text-gray-600">
                                 ¿Necesitas ayuda?{' '}

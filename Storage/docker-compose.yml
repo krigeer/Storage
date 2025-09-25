@@ -17,5 +17,29 @@ services:
       timeout: 5s
       retries: 5
 
+  web:
+    build: .
+    container_name: storage_web
+    env_file:
+      - .env
+    environment:
+      # Asegura que la app use el host del servicio de DB del compose
+      DB_HOST: db
+      # Permite acceder desde navegador local y dentro del contenedor
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      # En desarrollo puedes montar el código para hot-reload (opcional)
+      - .:/app
+      # Volúmenes separados para estáticos y media
+      - static_volume:/app/static
+      - media_volume:/app/media
+
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
