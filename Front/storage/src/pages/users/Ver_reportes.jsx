@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Titulo from "../../components/UI/Titulo";
 import {
   FaExclamationTriangle,
@@ -10,6 +10,7 @@ import Estadistica from "../../components/UI/Estadistica";
 import Tabla from "../../components/UI/Tabla";
 import { apiCall } from "../../services/apiCutoms";
 import Button from "../../components/UI/Button";
+import handleAction from "../../components/UI/Form";
 
 const headers = {
   titulo: "Titulo",
@@ -29,13 +30,28 @@ const Reportes = () => {
   const [reporteStats, setReporteStats] = useState({});
   const [loading, setLoading] = useState(true);
 
+
+  const fetchReportes = useCallback(async () => {
+    try {
+      const reportesResponse = await apiCall("reportes");
+      if (reportesResponse && Array.isArray(reportesResponse.results)) {
+        setReportes(reportesResponse.results);
+      } else {
+        setReportes([]);
+      }
+    } catch (error) {
+      console.error("Error al obtener los reportes:", error);
+      setReportes([]);
+    }
+  }, []); 
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         setLoading(true);
-        const [statsResponse, reportesResponse] = await Promise.all([
+        const [statsResponse] = await Promise.all([
           apiCall("reporte_list"),
-          apiCall("reportes"),
+          fetchReportes(), 
         ]);
 
         if (statsResponse) {
@@ -43,25 +59,21 @@ const Reportes = () => {
         } else {
           setReporteStats({});
         }
-        if (reportesResponse && Array.isArray(reportesResponse.results)) {
-          setReportes(reportesResponse.results);
-        } else {
-          setReportes([]);
-        }
       } catch (error) {
         console.error("Error al obtener los datos:", error);
         setReporteStats({});
-        setReportes([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchAllData();
-  }, []);
+  }, [fetchReportes]); 
 
   if (loading) {
     return <div className="text-center mt-5">Cargando datos...</div>;
   }
+
   const estadisticas = [
     {
       title: "Total de Reportes",
@@ -85,9 +97,6 @@ const Reportes = () => {
     },
   ];
 
-  const createReport = () => {
-    console.log("Creando reporte");
-  };
 
   return (
     <div className="container py-5">
@@ -97,9 +106,17 @@ const Reportes = () => {
       />
       <Estadistica estadisticas={estadisticas} />
       <div className="mb-3">
-        <Button onClick={() => createReport()}>Crear Reporte</Button>
+        <Button onClick={() => handleAction({key: "reportes"})}>Crear Reporte</Button>
       </div>
-      <Tabla data={reportes} headers={headers} campos={campos} title="Reportes" />
+
+      <Tabla
+        data={reportes}
+        headers={headers}
+        campos={campos}
+        title="Reportes"
+        apiEndpoint="reportes" 
+        onDataChange={fetchReportes} 
+      />
     </div>
   );
 };

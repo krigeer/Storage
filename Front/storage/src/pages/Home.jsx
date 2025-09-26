@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card, Navbar, Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'aos/dist/aos.css';
 import AOS from 'aos';
-import { FaSignInAlt, FaBoxes, FaChartLine, FaUsers, FaCogs } from 'react-icons/fa';
+import { FaSignInAlt, FaBoxes, FaChartLine, FaUsers, FaCogs, FaBars } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import Icon from '../assets/img/cgti.png';
@@ -15,7 +15,9 @@ export default function Home() {
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      once: true
+      once: true,
+      // Desactivar AOS en pantallas muy pequeñas para evitar problemas de rendimiento o diseño
+      disable: window.innerWidth < 768, 
     });
 
     const handleScroll = () => {
@@ -55,29 +57,37 @@ export default function Home() {
 
   return (
     <div className="min-vh-100 d-flex flex-column">
-      {/* Navbar */}
-      <nav className={`navbar navbar-expand-lg navbar-light bg-white fixed-top ${isScrolled ? 'shadow-sm' : ''}`} style={{ transition: 'all 0.3s ease' }}>
+      <Navbar 
+        expand="lg" 
+        className={`bg-white fixed-top ${isScrolled ? 'shadow-sm' : ''}`} 
+        style={{ transition: 'all 0.3s ease' }}
+      >
         <Container>
-          <a className="navbar-brand fw-bold text-success" href="#">
+          <Navbar.Brand href="#home" className="fw-bold text-success">
             <span className="h3 mb-0">Inventario Sena</span>
-          </a>
-          <div className="ms-auto d-flex align-items-center">
-            <Button 
-              variant="outline-success" 
-              className="ms-3"
-              onClick={handleLogin}
-            >
-              Ingresar
-            </Button>
-          </div>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0">
+            <FaBars className="text-success" />
+          </Navbar.Toggle>
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto align-items-lg-center">
+              <Button 
+                variant="success" 
+                className="ms-lg-3 mt-3 mt-lg-0 w-100 w-lg-auto" 
+                onClick={handleLogin}
+              >
+               Ingresar
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
         </Container>
-      </nav>
+      </Navbar>
 
       {/* Hero Section */}
       <section className="py-5 mt-5" style={{ backgroundColor: '#f8f9fa', paddingTop: '6rem !important' }}>
         <Container>
-          <Row className="align-items-center">
-            <Col lg={6} className="mb-5 mb-lg-0" data-aos="fade-right">
+          <Row className="align-items-center flex-column-reverse flex-lg-row my-5"> {/* Invertir orden en móvil, my-5 para más espacio en móviles */}
+            <Col lg={6} className="mb-5 mb-lg-0 text-center text-lg-start" data-aos="fade-right"> {/* Alinear texto en móvil */}
               <h1 className="display-4 fw-bold mb-4">
                 Control Total de tu <span className="text-success">Inventario</span>
               </h1>
@@ -85,7 +95,7 @@ export default function Home() {
                 Optimizamos la gestión de inventario con nuestro sistema de inventario en la nube. 
                 Fácil de usar, potente y accesible desde cualquier dispositivo.
               </p>
-              <div className="d-flex gap-3">
+              <div className="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start"> {/* Botones apilados en móviles */}
                 <Button 
                   variant="success" 
                   size="lg"
@@ -98,18 +108,19 @@ export default function Home() {
                 </Button>
               </div>
             </Col>
-            <Col lg={6} data-aos="fade-left">
+            <Col lg={6} data-aos="fade-left" className="text-center"> {/* Centrar imagen en móvil */}
               <img 
                 src={Icon} 
                 alt="Sistema de Inventario" 
-                className="img-fluid rounded-3 shadow"
+                className="img-fluid rounded-3 shadow mb-4 mb-lg-0" // Añadir margen inferior para móvil
+                style={{ maxWidth: '85%' }} // Limitar tamaño de imagen un poco en pantallas grandes si es necesario
               />
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* Features Section */}
+      {/* Features Section - Responsividad en el grid de tarjetas */}
       <section className="py-5">
         <Container>
           <div className="text-center mb-5" data-aos="fade-up">
@@ -118,7 +129,10 @@ export default function Home() {
           </div>
           <Row className="g-4">
             {features.map((feature, index) => (
-              <Col md={6} lg={3} key={index} data-aos="fade-up" data-aos-delay={index * 100}>
+              // sm={12}: Una tarjeta por fila en móviles
+              // md={6}: Dos tarjetas por fila en tabletas
+              // lg={3}: Cuatro tarjetas por fila en escritorio
+              <Col sm={12} md={6} lg={3} key={index} data-aos="fade-up" data-aos-delay={index * 100}>
                 <Card className="h-100 border-0 shadow-sm">
                   <Card.Body className="text-center p-4">
                     {feature.icon}
@@ -137,7 +151,7 @@ export default function Home() {
         <Container className="text-center py-5">
           <h2 className="fw-bold mb-4" data-aos="fade-up">¿Listo para optimizar tu inventario?</h2>
           <p className="lead mb-4" data-aos="fade-up" data-aos-delay="100">
-           Ingresa con tu cuenta y empieza a optimizar tu inventario.
+            Ingresa con tu cuenta y empieza a optimizar tu inventario.
           </p>
           <Button 
             variant="success" 
@@ -152,8 +166,6 @@ export default function Home() {
         </Container>
       </section>
       <Footer />
-    
-
     </div>
   );
 }

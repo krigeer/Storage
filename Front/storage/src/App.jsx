@@ -12,12 +12,14 @@ import Prestamos from "./pages/users/Prestamos";
 import Tecnologia from "./pages/users/Tecnologia";
 import Materiales from "./pages/users/Materiales";
 import NotFound  from "./pages/errores/NotFound"
+import Recordar_contrasena from "./pages/Recordar_contrasena";
 
 function AppContent() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/Recordar-contrasena" element={<Recordar_contrasena />} />
             {/* La ruta del dashboard actúa como un layout para las sub-rutas */}
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>}>
                 <Route index element={<Estadisticas />} /> {/* Ruta por defecto para /dashboard */}

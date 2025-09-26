@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FaUserPlus, FaUserEdit } from "react-icons/fa";
 import handleAction from "../../components/UI/Form";
 import Button from "../../components/UI/Button";
@@ -35,31 +35,32 @@ const campos = {
 }
 
 
-
 const Gestion_usuario = () => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        setLoading(true);
-        const response = await apiCall("usuarios");
-        if (response && Array.isArray(response.results)) {
-          setUsuarios(response.results);
-        } else {
-          console.error("API response does not contain a valid 'results' array.");
-          setUsuarios([]);
-        }
-      } catch (error) {
-        console.error("Error al obtener los usuarios:", error);
+
+  const fetchUsuarios = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await apiCall("usuarios");
+      if (response && Array.isArray(response.results)) {
+        setUsuarios(response.results);
+      } else {
+        console.error("API response does not contain a valid 'results' array.");
         setUsuarios([]);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchUsuarios();
+    } catch (error) {
+      console.error("Error al obtener los usuarios:", error);
+      setUsuarios([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchUsuarios();
+  }, [fetchUsuarios]);
 
   if (loading) {
     return <div className="text-center mt-5">Cargando datos...</div>;
@@ -89,9 +90,18 @@ const Gestion_usuario = () => {
           </div>
         ))}
       </div>
-      
+
       <div className="mt-5">
-        <Tabla data={usuarios} headers={headers} campos={campos} title="Usuarios Registrados" />
+        <Tabla
+          data={usuarios}
+          headers={headers}
+          campos={campos}
+          title="Usuarios Registrados"
+          // 3. Propiedad de ruta para los botones de acción
+          apiEndpoint="usuarios"
+          // 4. Función para refrescar la tabla después de DELETE/EDIT
+          onDataChange={fetchUsuarios}
+        />
       </div>
     </div>
   );

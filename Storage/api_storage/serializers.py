@@ -128,7 +128,7 @@ class PrestamoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Prestamo
-        # Incluye los campos de lectura y los de escritura
+        #  campos de lectura y los de escritura
         fields = [
             'id', 'solicitante', 'tecnologia', 'material_didactico',
             'solicitante_id', 'tecnologia_id', 'material_didactico_id',
@@ -168,9 +168,12 @@ class ReporteSerializer(serializers.ModelSerializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    rol = serializers.StringRelatedField()
+    tipo_documento = serializers.StringRelatedField()
+    centro = serializers.StringRelatedField()
     class Meta:
         model = Usuario
-        exclude = ["groups", "user_permissions", "password"]
+        exclude = ["groups", "user_permissions", "password", "last_login", "is_active", "is_staff", "is_superuser", "date_joined", "contrasena_establecida_en", 'contrasena_expira_en', 'historial_contrasenas']
 
     def create(self, validated_data):
         alfabeto = string.ascii_letters + string.digits + "!@#$%^&*()"

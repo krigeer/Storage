@@ -1,4 +1,3 @@
-// src/services/apiService.js
 import axios from "axios";
 import { getAccessToken } from "./authService";
 
@@ -25,7 +24,6 @@ export const registerData = async (endpoint, data) => {
   }
 };
 
-// Nueva función para editar usuario
 export const updateUser = async (userId, userData) => {
   try {
     const token = getAccessToken();
@@ -50,7 +48,6 @@ export const updateUser = async (userId, userData) => {
   }
 };
 
-// Función genérica para actualizar datos (alternativa más flexible)
 export const updateData = async (endpoint, data) => {
   try {
     const token = getAccessToken();

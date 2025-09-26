@@ -85,6 +85,17 @@ export const formConfigs = {
       { id: "marca", placeholder: "Marca", type: "select", options: { endpoint: "marcas", valueKey: "id", textKey: "nombre" } },
     ],
   },
+  "reportes":{
+    title: "Reportes",
+    fields: [
+      {id: "titulo", placeholder: "Titulo", type: "text"},
+      {id: "usuario", placeholder: "Usuario", type: "hidden", options: { endpoint: "usuarios", valueKey: "id", textKey: ["documento"]}},
+      {id: "prioridad", placeholder: "Prioridad", type: "select", options: { endpoint: "prioridades_reporte", valueKey: "id", textKey: "nombre"}},
+      {id: "estado", placeholder: "Estado", type: "select", options: { endpoint: "estados_reporte", valueKey: "id", textKey: "nombre"}},
+      {id: "observacion", placeholder: "Observacion", type: "text"},
+    ]
+
+  },
   "seleccion":{
     title: "Registrar Préstamo",
     fields: [
