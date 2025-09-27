@@ -10,6 +10,7 @@ import "../../styles/form.css";
 import  handleAction from "../../components/UI/Form";
 import handleView from "../../components/UI/View";
 import Button from "../../components/UI/Button";
+import Titulo from "../../components/UI/Titulo";
 
 const options = [
   {
@@ -48,33 +49,33 @@ const options = [
 const GestionarBD = () => {
   return (
     <div className="container py-5">
-      <div className="text-center mb-5">
-        <h1 className="fw-bold text-dark">Gestionar Base de Datos</h1>
-        <p className="text-muted">
-          En este apartado podrás modificar la información principal de la base de datos.
-        </p>
-      </div>
+      <Titulo titulo="Gestionar Base de Datos" descripcion="En este apartado podrás modificar la información principal de la base de datos." />
+  
       <div className="row g-4">
-        {options.map((opt, index) => (
-          <div className="col-md-6 col-xl-3" key={index}>
-            <div className="card shadow-lg border-0 rounded-4 h-100">
-              <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
-                <div>
-                  {opt.icon}
-                  <h5 className="card-title fw-bold">{opt.title}</h5>
-                  <p className="card-text text-muted">{opt.description}</p>
-                </div>
-                <Button onClick={() => handleAction(opt)}>
-                  Seleccionar
-                </Button>
-                <Button onClick={() => handleView(opt)}>
-                  Ver 
-                </Button>
-              </div>
+    {options.map((opt, index) => (
+      <div className="col-md-6 col-xl-3" key={index}>
+        <div className="card shadow-lg border-0 rounded-4 h-100">
+          <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
+            <div>
+              <div className="card-icon">{opt.icon}</div> 
+              
+              <h4 className="card-custom-title">{opt.title}</h4> 
+              
+              <p className="card-custom-text">{opt.description}</p>
+            </div>
+            <div className="d-grid gap-2 mt-3">
+              <Button onClick={() => handleAction(opt)} className="btn primary">
+                Seleccionar
+              </Button>
+              <Button onClick={() => handleView(opt)} className="btn">
+                Ver 
+              </Button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+    ))}
+</div>
     </div>
   );
 };

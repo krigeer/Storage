@@ -18,7 +18,6 @@ const Footer = () => {
     <footer className="bg-dark text-white mt-5">
       <Container className="py-5">
         <Row>
-          {/* Columna Sobre Nosotros */}
           <Col lg={4} className="mb-4 mb-lg-0">
             <div className="m-auto">
               <h5 className="fw-bold mb-3">Sobre Nosotros</h5>
@@ -44,7 +43,6 @@ const Footer = () => {
             </div>
           </Col>
 
-          {/* Columna Enlaces Rápidos */}
           <Col lg={2} className="mb-4 mb-lg-0 flex m-auto">
             <div>
               <h5 className="fw-bold mb-3">Enlaces Rápidos</h5>
@@ -66,7 +64,6 @@ const Footer = () => {
             </div>
           </Col>
 
-          {/* Columna Aliados y Boletín */}
           <Col lg={4}>
             <div>
               <h5 className="fw-bold mb-3">Nuestros Aliados</h5>
@@ -101,7 +98,6 @@ const Footer = () => {
         </Row>
       </Container>
 
-      {/* Línea inferior */}
       <div className="border-top border-secondary py-3">
         <Container>
           <Row className="align-items-center">

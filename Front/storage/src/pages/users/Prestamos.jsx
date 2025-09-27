@@ -59,23 +59,26 @@ const PrestamoElementos = () => {
   return (
     <div>
       <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras buscar elementos prestados o prestar elementos" />
-      <div className="row g-4 justify-content-center">
-        {options.map((opt, index) => (
-          <div className="col-md-6 col-xl-4" key={index}>
-            <div className="card shadow-lg border-0 rounded-4 h-100">
-              <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
-                <div>
-                  <h5 className="card-title fw-bold">{opt.title}</h5>
-                  <p className="card-text text-muted">{opt.description}</p>
-                </div>
-                <Button onClick={() => handleAction(opt)}>
-                  Seleccionar
-                </Button>
-              </div>
+      <div className="options-layout-centered">
+    {options.map((opt, index) => (
+      <div className="card-option-col" key={index}>
+        <div className="card h-100"> 
+          <div className="card-body-theme">
+            <div>
+              <h4 className="card-custom-title">{opt.title}</h4> 
+              
+              <p className="card-custom-text">{opt.description}</p>
+            </div>
+            <div className="d-grid mt-3">
+              <Button onClick={() => handleAction(opt)} className="btn primary">
+                Seleccionar
+              </Button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+    ))}
+</div>
       <div className="mt-5">
         <Tabla
           data={prestamos}

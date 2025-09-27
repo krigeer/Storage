@@ -1,7 +1,6 @@
-// src/components/DeleteButton.jsx
 import React from 'react';
 import { FaTrash } from 'react-icons/fa';
-import { API_BASE_URL } from '../../config/data'; // Importamos la URL base
+import { API_BASE_URL } from '../../config/data'; 
 
 export default function DeleteButton({ endpoint, itemId, onActionSuccess }) {
 
@@ -19,7 +18,7 @@ export default function DeleteButton({ endpoint, itemId, onActionSuccess }) {
       });
 
       if (response.ok || response.status === 204) {
-        alert('✅ Elemento eliminado con éxito!');
+        alert('Elemento eliminado con éxito!');
         // Llama a la función de refresco de la tabla
         if (onActionSuccess) onActionSuccess(); 
       } else {

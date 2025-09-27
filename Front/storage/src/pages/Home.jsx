@@ -86,8 +86,8 @@ export default function Home() {
       {/* Hero Section */}
       <section className="py-5 mt-5" style={{ backgroundColor: '#f8f9fa', paddingTop: '6rem !important' }}>
         <Container>
-          <Row className="align-items-center flex-column-reverse flex-lg-row my-5"> {/* Invertir orden en móvil, my-5 para más espacio en móviles */}
-            <Col lg={6} className="mb-5 mb-lg-0 text-center text-lg-start" data-aos="fade-right"> {/* Alinear texto en móvil */}
+          <Row className="align-items-center flex-column-reverse flex-lg-row my-5"> 
+            <Col lg={6} className="mb-5 mb-lg-0 text-center text-lg-start" data-aos="fade-right"> 
               <h1 className="display-4 fw-bold mb-4">
                 Control Total de tu <span className="text-success">Inventario</span>
               </h1>
@@ -95,7 +95,7 @@ export default function Home() {
                 Optimizamos la gestión de inventario con nuestro sistema de inventario en la nube. 
                 Fácil de usar, potente y accesible desde cualquier dispositivo.
               </p>
-              <div className="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start"> {/* Botones apilados en móviles */}
+              <div className="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start"> 
                 <Button 
                   variant="success" 
                   size="lg"
@@ -108,19 +108,18 @@ export default function Home() {
                 </Button>
               </div>
             </Col>
-            <Col lg={6} data-aos="fade-left" className="text-center"> {/* Centrar imagen en móvil */}
+            <Col lg={6} data-aos="fade-left" className="text-center"> 
               <img 
                 src={Icon} 
                 alt="Sistema de Inventario" 
-                className="img-fluid rounded-3 shadow mb-4 mb-lg-0" // Añadir margen inferior para móvil
-                style={{ maxWidth: '85%' }} // Limitar tamaño de imagen un poco en pantallas grandes si es necesario
+                className="img-fluid rounded-3 shadow mb-4 mb-lg-0" 
+                style={{ maxWidth: '85%' }} 
               />
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* Features Section - Responsividad en el grid de tarjetas */}
       <section className="py-5">
         <Container>
           <div className="text-center mb-5" data-aos="fade-up">
@@ -129,9 +128,6 @@ export default function Home() {
           </div>
           <Row className="g-4">
             {features.map((feature, index) => (
-              // sm={12}: Una tarjeta por fila en móviles
-              // md={6}: Dos tarjetas por fila en tabletas
-              // lg={3}: Cuatro tarjetas por fila en escritorio
               <Col sm={12} md={6} lg={3} key={index} data-aos="fade-up" data-aos-delay={index * 100}>
                 <Card className="h-100 border-0 shadow-sm">
                   <Card.Body className="text-center p-4">

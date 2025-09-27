@@ -1,4 +1,3 @@
-// src/components/ViewButton.jsx
 import React from 'react';
 import { FaEye } from 'react-icons/fa';
 import Swal from 'sweetalert2';
@@ -12,13 +11,13 @@ const formatDataForSwal = (data) => {
             <tbody>
     `;
     
-    // Iteramos sobre las propiedades del objeto de datos
+    //ropiedades del objeto de datos
     for (const [key, value] of Object.entries(data)) {
         // Formateamos la clave: 'first_name' -> 'Nombre'
         const formattedKey = key.replace(/_/g, ' ')
                                 .replace(/\b\w/g, c => c.toUpperCase());
                                 
-        // Convertimos objetos o arrays anidados a JSON string con formato (pre-tag)
+        //  objetos o arrays anidados a JSON string con formato (pre-tag)
         let displayValue;
         if (typeof value === 'object' && value !== null) {
             displayValue = `<pre style="background: #f8f9fa; padding: 5px; border-radius: 4px; font-size: 0.85em;">${JSON.stringify(value, null, 2)}</pre>`;
@@ -28,7 +27,7 @@ const formatDataForSwal = (data) => {
             displayValue = value.toString();
         }
         
-        // Añadimos una fila a la tabla
+        //fila a la tabla
         htmlContent += `
             <tr>
                 <td style="font-weight: bold; width: 35%; padding: 5px 10px; border-top: 1px solid #dee2e6;">${formattedKey}</td>
@@ -79,7 +78,7 @@ export default function ViewButton({ endpoint, itemId }) {
           icon: 'info',
           confirmButtonText: 'Cerrar',
           showCloseButton: true,
-          // Añade una clase para personalizar el ancho del modal si usas Bootstrap o CSS personalizado
+          //  ancho del modal 
           customClass: {
               container: 'swal2-container',
               popup: 'swal2-responsive' 

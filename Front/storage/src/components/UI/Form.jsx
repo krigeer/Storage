@@ -139,7 +139,7 @@ const handleAction = async (opt) => {
         }
       });
     
-      // Username autogenerado
+      //  autogenerado
       if (formConfig.fields.some(f => f.id === "username")) {
         const firstName = values.first_name ? values.first_name.split(" ")[0] : "";
         const lastName = values.last_name ? values.last_name.split(" ")[0] : "";
@@ -167,7 +167,7 @@ const handleAction = async (opt) => {
         const input = document.getElementById(`swal-input-${field.id}`);
         const errorElement = document.getElementById(`error-${field.id}`);
 
-        // 👇 Cargar opciones dinámicas en selects
+        //  opciones dinámicas en selects
         if (field.type === 'select' && field.options?.endpoint && input) {
           try {
             const endpoint = field.options.endpoint;

@@ -7,7 +7,7 @@ import {
   FaExclamationTriangle,
   FaChartLine,
   FaSpinner,
-  FaHandHoldingUsd 
+  FaHandHoldingUsd
 } from "react-icons/fa";
 import { apiCall } from "../../services/apiCutoms";
 
@@ -45,14 +45,14 @@ const STATS_MAP = {
 };
 
 const StatCard = ({ icon, title, value, color, description, isLoading }) => (
-  <div className="col-md-6 col-xl-3 mb-4">
-    <div className="card shadow-sm h-100 border-0">
-      <div className="card-body">
+  <div className="card-col">
+    <div className="card h-100">
+      <div className="card-body-theme"> 
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <div className={`p-3 rounded bg-light text-${color}`}>
+          <div className={`p-3 rounded bg-icon-light text-color-${color}`}>
             {icon}
           </div>
-          <FaChartLine className="text-success" />
+          <FaChartLine className="text-color-success" />
         </div>
 
         <div className="mb-2">
@@ -64,19 +64,18 @@ const StatCard = ({ icon, title, value, color, description, isLoading }) => (
               </div>
             </div>
           ) : (
-            <h2 className="fw-bold text-dark">
+            <h2 className="fw-bold card-statistic-value">
               {value !== undefined ? value.toLocaleString() : 0}
             </h2>
           )}
         </div>
 
-        <h6 className="text-muted text-uppercase fw-bold small">{title}</h6>
-        <p className="text-muted small mb-0">{description}</p>
+        <h6 className="card-statistic-title">{title}</h6>
+        <p className="card-statistic-description">{description}</p>
       </div>
     </div>
   </div>
 );
-
 const Estadisticas = () => {
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -87,9 +86,9 @@ const Estadisticas = () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await apiCall("estadisticas");
-        
+
         if (response && typeof response === 'object' && !Array.isArray(response)) {
           setData(response);
         } else {
@@ -101,9 +100,9 @@ const Estadisticas = () => {
         console.error("Error al obtener datos:", err);
         setError("Error al obtener las estadísticas. Intenta de nuevo.");
         Swal.fire({
-            icon: 'error',
-            title: 'Error de Carga',
-            text: 'Hubo un problema al obtener los datos de la API.',
+          icon: 'error',
+          title: 'Error de Carga',
+          text: 'Hubo un problema al obtener los datos de la API.',
         });
         setData({});
       } finally {
@@ -112,27 +111,27 @@ const Estadisticas = () => {
     };
     fecthEstadisticas();
   }, []);
-  
+
 
   const tarjetasData = Object.keys(data).map(key => {
-      const config = STATS_MAP[key];
-      if (config) {
-          return {
-              key, 
-              value: data[key],
-              ...config 
-          };
-      }
-      return null; 
-  }).filter(stat => stat !== null); 
+    const config = STATS_MAP[key];
+    if (config) {
+      return {
+        key,
+        value: data[key],
+        ...config
+      };
+    }
+    return null;
+  }).filter(stat => stat !== null);
 
 
   if (loading) {
     return (
-        <div className="text-center mt-5 p-5">
-            <FaSpinner className="fa-spin text-primary" size={30} />
-            <p className="mt-2">Cargando datos...</p>
-        </div>
+      <div className="text-center mt-5 p-5">
+        <FaSpinner className="fa-spin text-color-primary" size={30} />
+        <p className="subtitle">Cargando datos...</p>
+      </div>
     );
   }
 
@@ -156,30 +155,34 @@ const Estadisticas = () => {
       </div>
     );
   }
-  
+
   if (tarjetasData.length === 0) {
-     return (
-        <div className="text-center mt-5 p-5">
-            <FaExclamationTriangle className="text-warning" size={30} />
-            <p className="mt-2">No se encontraron estadísticas para mostrar.</p>
-        </div>
+    return (
+      <div className="text-center mt-5 p-5">
+        <FaExclamationTriangle className="text-warning" size={30} />
+        <p className="subtitle">No se encontraron estadísticas para mostrar.</p>
+      </div>
     );
   }
   return (
     <div className="container py-5">
-      <div className="text-center mb-5">
-        <h1 className="fw-bold text-dark">Bienvenido</h1>
-        <p className="text-muted">Resumen general del sistema de inventario</p>
-        <div className="d-inline-flex align-items-center px-3 py-2 bg-white border rounded-pill shadow-sm">
+      {/* Título y subtítulo con clases temáticas */}
+      <div className="text-center mb-5 title-section">
+        <h1 className="main-title">Bienvenido</h1>
+        <p className="subtitle">Resumen general del sistema de inventario</p>
+
+        {/* Widget de estado de datos adaptado al tema */}
+        <div className="d-inline-flex align-items-center px-3 py-2 rounded-pill bg-status-widget shadow-sm">
           <div
-            className={`rounded-circle bg-success me-2`}
+            className={`rounded-circle bg-color-success me-2`}
             style={{ width: "10px", height: "10px" }}
           ></div>
           <span className="small">Datos actualizados</span>
         </div>
       </div>
 
-      <div className="row mb-5">
+      {/* Tarjetas de Estadísticas con layout temático */}
+      <div className="cards-layout-wrapper mb-5">
         {tarjetasData.map((stat) => (
           <StatCard
             key={stat.key}
@@ -193,11 +196,12 @@ const Estadisticas = () => {
         ))}
       </div>
 
+      {/* Widget de última actualización adaptado al tema */}
       <div className="text-center mt-5">
-        <div className="card shadow-sm border-0 mx-auto" style={{ maxWidth: "300px" }}>
-          <div className="card-body">
-            <small className="text-muted d-block mb-1">Última actualización</small>
-            <span className="fw-semibold text-dark">
+        <div className="card bg-status-widget mx-auto" style={{ maxWidth: "300px" }}>
+          <div className="card-body-theme p-3">
+            <small className="statistic-value d-block mb-1">Última actualización</small>
+            <span className="fw-semibold card-statistic-title">
               {new Date().toLocaleString("es-ES")}
             </span>
           </div>

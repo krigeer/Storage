@@ -1,4 +1,3 @@
-// src/components/EditButton.jsx
 import React from 'react';
 import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
@@ -17,7 +16,7 @@ const fetchSelectOptions = async (endpoint, valueKey, textKey) => {
     }
 
     const data = await response.json();
-    // Asume que la respuesta tiene un array en 'results' (como en Django REST Framework)
+    // la respuesta tiene un array en 'results'
     const results = Array.isArray(data) ? data : data.results || [];
 
     return results.map(item => ({
@@ -31,7 +30,7 @@ const fetchSelectOptions = async (endpoint, valueKey, textKey) => {
 };
 
 // --- 2. Función auxiliar para generar el HTML del formulario ---
-// Ahora acepta un objeto de 'selectOptions'
+//cepta un objeto de 'selectOptions'
 const generateFormHTML = (fields, itemData, selectOptions) => {
   let htmlContent = '<div style="text-align: left;">';
 
@@ -39,7 +38,6 @@ const generateFormHTML = (fields, itemData, selectOptions) => {
     const fieldId = field.id;
     // El valor actual del ítem puede ser el ID (para FKs) o el valor directo.
     // Si el valor es un objeto (porque el serializador incluye StringRelatedField), 
-    // asumimos que el ID es la clave real que debemos enviar para la edición.
     const currentValue = itemData[fieldId] || field.defaultValue || '';
 
     // Formatear la etiqueta
@@ -133,7 +131,7 @@ export default function EditButton({ endpoint, itemId, onActionSuccess }) {
       // --- PASO 2: Abrir el SweetAlert con el formulario dinámico ---
       const { value: formValues } = await Swal.fire({
         title: `Editar ${config.title}`,
-        // 💥 Generamos el HTML pasando los datos del item y las opciones
+        // el HTML pasando los datos del item y las opciones
         html: generateFormHTML(config.fields, itemData, selectOptions),
         focusConfirm: false,
         showCancelButton: true,
@@ -186,7 +184,7 @@ export default function EditButton({ endpoint, itemId, onActionSuccess }) {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            // Agrega tus tokens de autenticación aquí
+            // tokens de autenticación 
           },
           body: JSON.stringify(formValues),
         });

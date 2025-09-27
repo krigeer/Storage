@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    "rest_framework_simplejwt", # ✅ Solo usamos Simple JWT
-    'corsheaders',              # ✅ Esencial para la comunicación con React
+    "rest_framework_simplejwt", 
+    'corsheaders',            
     'api_storage',
     'django_filters',
 ]
@@ -87,7 +87,7 @@ WSGI_APPLICATION = 'storage.wsgi.application'
 # Configuración de autenticación
 AUTH_USER_MODEL = 'api_storage.Usuario'
 
-# ✅ Configuración de Django REST Framework (corregida)
+# Configuración de Django REST Framework 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -99,7 +99,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 }
 
-# ✅ Configuración de Simple JWT (corregida)
+#  Configuración de Simple JWT 
 SIMPLE_JWT = {
     # El token de acceso expira en 5 horas (lo suficiente para desarrollo)
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),

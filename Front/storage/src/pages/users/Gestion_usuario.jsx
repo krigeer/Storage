@@ -72,24 +72,26 @@ const Gestion_usuario = () => {
         titulo="Administración de Usuarios"
         descripcion="Gestionar la creación y edición de usuarios en el sistema."
       />
-      <div className="row g-4 justify-content-center">
-        {userOptions.map((opt, index) => (
-          <div className="col-md-6 col-xl-4" key={index}>
-            <div className="card shadow-lg border-0 rounded-4 h-100">
-              <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
-                <div>
-                  {opt.icon}
-                  <h5 className="card-title fw-bold">{opt.title}</h5>
-                  <p className="card-text text-muted">{opt.description}</p>
-                </div>
-                <Button onClick={() => handleAction(opt)}>
-                  Seleccionar
-                </Button>
-              </div>
+      <div className="options-layout-centered">
+    {userOptions.map((opt, index) => (
+      <div className="card-option-col" key={index}>
+        <div className="card h-100"> 
+          <div className="card-body-theme">
+            <div>
+              <div className="card-icon">{opt.icon}</div> 
+              <h4 className="card-custom-title">{opt.title}</h4> 
+              <p className="card-custom-text">{opt.description}</p>
+            </div>
+            <div className="d-grid mt-3">
+              <Button onClick={() => handleAction(opt)} className="btn primary">
+                Seleccionar
+              </Button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+    ))}
+</div>
 
       <div className="mt-5">
         <Tabla
@@ -97,9 +99,7 @@ const Gestion_usuario = () => {
           headers={headers}
           campos={campos}
           title="Usuarios Registrados"
-          // 3. Propiedad de ruta para los botones de acción
           apiEndpoint="usuarios"
-          // 4. Función para refrescar la tabla después de DELETE/EDIT
           onDataChange={fetchUsuarios}
         />
       </div>

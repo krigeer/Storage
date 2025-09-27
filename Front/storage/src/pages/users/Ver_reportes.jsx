@@ -105,6 +105,7 @@ const Reportes = () => {
         descripcion="Aquí podrás consultar el estado y las estadísticas de los reportes generados."
       />
       <Estadistica estadisticas={estadisticas} />
+      
       <div className="mb-3">
         <Button onClick={() => handleAction({key: "reportes"})}>Crear Reporte</Button>
       </div>

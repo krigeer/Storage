@@ -6,18 +6,24 @@
   box-sizing: border-box;
 }
 
+/* Colores Base (Globales) */
 :root {
-   --primary-color: #227128;
-  --secondary-color: #1aac0d;
-  --accent-color: #0e2f46;
-  --transition-speed: 0.3s;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --info-color: #17a2b8;
-  --gray-color: #6c757d;
-  --accent-color: #e74c3c;
-  --negro:#232323;
-  --blanco:#ffffff;
+    /* Colores primarios del tema (verde y acento) */
+    --primary-color: #227128;
+    --secondary-color: #1aac0d;
+    --brand-accent: #0e2f46;
+    
+    /* Colores del sistema */
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --gray-color: #6c757d;
+    
+    /* Colores base (Texto y Fondo NO de Panel) */
+    --negro: #232323;
+    --blanco: #ffffff;
+    
+    --transition-speed: 0.3s;
 }
 
 .bg-v {
@@ -26,10 +32,13 @@
   font-weight: bold;
 }
 
+.hiden{
+  overflow: hidden;
+}
+
 .wrapper {
   min-height: 100dvi;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
-

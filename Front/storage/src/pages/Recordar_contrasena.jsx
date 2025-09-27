@@ -22,8 +22,7 @@ function Recordar_contrasena() {
         setIsLoading(true);
 
         try {
-            // Aquí iría la llamada a tu API para recuperar la contraseña
-            // Simulación de llamada API
+            // API para recuperar la contraseña
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             toast.success('Se ha enviado un enlace de recuperación a tu correo');
@@ -31,7 +30,6 @@ function Recordar_contrasena() {
                 navigate('/login');
             }, 2000);
         } catch (error) {
-            // Ejemplo de manejo de error (sustituir por lógica de API real)
             toast.error('Error al enviar el correo. Intenta nuevamente.');
         } finally {
             setIsLoading(false);
@@ -39,13 +37,10 @@ function Recordar_contrasena() {
     };
 
     return (
-        // 1. Contenedor principal: Centra el contenido vertical y horizontalmente
         <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-8 sm:pt-12 pb-12">
             
-            {/* Contenido centrado que no es el Footer */}
             <div className="w-full max-w-md px-4 sm:px-6 lg:px-8 flex flex-col items-center">
                 
-                {/* Logo y Encabezado */}
                 <div className="w-full">
                     <div className="flex justify-center">
                         <img
@@ -62,10 +57,9 @@ function Recordar_contrasena() {
                     </p>
                 </div>
 
-                {/* Contenedor del Formulario (Tarjeta) */}
-                <div className="mt-8 w-full bg-white py-8 px-4 shadow rounded-lg sm:px-10"> {/* Añadido rounded-lg y sm:px-10 para mejor estética y responsividad */}
+                <div className="mt-8 w-full bg-white py-8 px-4 shadow rounded-lg sm:px-10">
                     <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div className="mb-4"> {/* Ajustado a mb-4 para un espaciado más estándar */}
+                        <div className="mb-4"> 
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Correo electrónico
                             </label>
@@ -81,7 +75,6 @@ function Recordar_contrasena() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    // Clases de input optimizadas
                                     className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                                 />
                             </div>
@@ -112,7 +105,6 @@ function Recordar_contrasena() {
                         </div>
                     </form>
 
-                    {/* Botón de Volver */}
                     <div className="mt-6">
                         <button
                             onClick={() => navigate(-1)}

@@ -13,6 +13,7 @@ import Tecnologia from "./pages/users/Tecnologia";
 import Materiales from "./pages/users/Materiales";
 import NotFound  from "./pages/errores/NotFound"
 import Recordar_contrasena from "./pages/Recordar_contrasena";
+import Buscar from "./pages/users/Buscar";
 
 function AppContent() {
     return (
@@ -24,6 +25,7 @@ function AppContent() {
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>}>
                 <Route index element={<Estadisticas />} /> {/* Ruta por defecto para /dashboard */}
                 <Route path="inicio" element={<Estadisticas />} />
+                <Route path="buscar" element={<Buscar />} />
                 <Route path="GestionarTecnologia" element={<Tecnologia />} />
                 <Route path="GestionarMateriales" element={<Materiales />} />
                 <Route path="GestionarPrestamos" element={<Prestamos />} />

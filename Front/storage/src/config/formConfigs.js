@@ -102,8 +102,6 @@ export const formConfigs = {
       { id: "usuario", placeholder: "Documento del Usuario", type: "select", options: { endpoint: "usuarios", valueKey: "id", textKey: "username"}},
       { id: "material_didactico", placeholder: "Serial Material Didáctico", type: "select", options: { endpoint: "materiales_didacticos", valueKey: "id", textKey: "nombre" }},
       { id: "tecnologia", placeholder: "Serial Tecnología", type: "select", options: { endpoint: "tecnologias", valueKey: "id", textKey: "nombre" }},
-      { id: "fecha_prestamo", placeholder: "Fecha de Préstamo", type: "date" },
-      { id: "estado", placeholder: "Estado del Préstamo", type: "select", options: { endpoint: "estados_prestamos", valueKey: "id", textKey: "nombre" } },
     ],
   },
   };

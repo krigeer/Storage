@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"; // 1. Importar 'useCallback'
+import React, { useState, useEffect, useCallback } from "react";
 import Titulo from "../../components/UI/Titulo";
 import Button from "../../components/UI/Button";
 import Tabla from "../../components/UI/Tabla";
@@ -28,22 +28,21 @@ const headers = {
 }
 const campos = {
   nombre: "nombre",
-  tipo: "tipo", // Asumimos que el serializador devuelve el nombre del tipo
+  tipo: "tipo", 
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
   estado: "estado",
-  marca: "marca", // Asumimos que el serializador devuelve el nombre de la marca
+  marca: "marca", 
 }
 
 const TecnologiaManager = () => {
   const [tecnologias, setTecnologias] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. Encapsulamos la lógica de carga en una función useCallback
   const fetchTecnologias = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiCall("tecnologias"); // <-- El endpoint es 'tecnologias'
+      const response = await apiCall("tecnologias"); 
       if (response && Array.isArray(response.results)) {
         setTecnologias(response.results)
       } else {
@@ -56,12 +55,12 @@ const TecnologiaManager = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // No tiene dependencias externas
+  }, []); 
 
   useEffect(() => {
-    // Llamada inicial a la función de carga
+   
     fetchTecnologias();
-  }, [fetchTecnologias]); // Dependencia: fetchTecnologias (asegura que se llama solo una vez al inicio)
+  }, [fetchTecnologias]); 
 
   if (loading) {
     return <div className="text-center mt-5">Cargando datos...</div>;
@@ -71,23 +70,26 @@ const TecnologiaManager = () => {
     <div>
       <Titulo titulo="Gestión de Tecnologías" descripcion="En esta sección podras registrar elementos tecnologicos" />
 
-      <div className="row g-4 justify-content-center">
-        {options.map((opt, index) => (
-          <div className="col-md-6 col-xl-4" key={index}>
-            <div className="card shadow-lg border-0 rounded-4 h-100">
-              <div className="card-body p-4 text-center d-flex flex-column justify-content-between">
-                <div>
-                  <h5 className="card-title fw-bold">{opt.title}</h5>
-                  <p className="card-text text-muted">{opt.description}</p>
-                </div>
-                <Button onClick={() => handleAction(opt)}>
-                  Seleccionar
-                </Button>
-              </div>
+      <div className="options-layout-centered">
+    {options.map((opt, index) => (
+      <div className="card-option-col" key={index}>
+        <div className="card h-100"> 
+          <div className="card-body-theme">
+            <div>
+              <h4 className="card-custom-title">{opt.title}</h4> 
+              
+              <p className="card-custom-text">{opt.description}</p>
+            </div>
+            <div className="d-grid mt-3">
+              <Button onClick={() => handleAction(opt)} className="btn primary">
+                Seleccionar
+              </Button>
             </div>
           </div>
-        ))}
+        </div>
       </div>
+    ))}
+</div>
 
       <div className="mt-5">
         <Tabla
@@ -95,9 +97,8 @@ const TecnologiaManager = () => {
           headers={headers}
           campos={campos}
           title="Tecnologías"
-          // 2. Props para habilitar los botones de acción
-          apiEndpoint="tecnologias" // <-- Endpoint para la API (GET, PUT, DELETE)
-          onDataChange={fetchTecnologias} // <-- Función para recargar la tabla después de una acción
+          apiEndpoint="tecnologias" 
+          onDataChange={fetchTecnologias} 
         />
       </div>
     </div>

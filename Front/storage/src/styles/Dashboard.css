@@ -1,69 +1,463 @@
-/* Dashboard Layout */
-.dashboard-layout {
-    display: grid;
-    grid-template-areas:
-        "header header"
-        "nav main"
-        "footer footer";
-    grid-template-columns: 240px 1fr;
-    grid-template-rows: auto 1fr auto;
-    min-height: 100vh;
-    background-color: #f5f5f5;
+/* ========================================================= */
+/* 1. DEFINICIÓN DE VARIABLES DE TEMA Y COLORES BASE         */
+/* ========================================================= */
+
+/* Modo Oscuro (Dark Mode - Default) */
+:root {
+  /* Fondos y Texto generales (Header, Cards, Body) */
+  --bg: var(--negro); 
+  --panel: #11161d;
+  --text: var(--blanco);
+  --muted: #8a97a7;
+  --border: #1f2937;
+
+  /* Estilos específicos de la Sidebar (NAV) */
+  --sidebar-panel: #145e19; /* Verde más oscuro que --primary-color */
+  --sidebar-text: #d1d5db; /* Texto gris claro sobre verde oscuro */
+
+  /* Colores de marca y sistema */
+  --brand: #4f46e5;
+  --brand-600: #4338ca;
+  --success: var(--success-color, #16a34a);
+  --warning: var(--warning-color, #f59e0b);
 }
 
-.dashboard-header {
-    grid-area: header;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 10;
+body.light {
+  /* Fondos y Texto generales */
+  --bg: #f8fafc;
+  --panel: var(--blanco);
+  --text: var(--negro);
+  --muted: #667085;
+  --border: #e5e7eb;
+
+  /* Estilos específicos de la Sidebar (NAV) */
+  --sidebar-panel: var(--primary-color); /* Fondo verde principal */
+  --sidebar-text: var(--blanco); /* Texto blanco sobre verde */
+
+  /* Colores de marca y sistema */
+  --brand: #4f46e5;
+  --brand-600: #4338ca;
+  --success: var(--success-color, #28aa45);
+  --warning: var(--warning-color, #ffc107);
 }
 
-.dashboard-nav {
-    grid-area: nav;
-    color: white;
-    min-height: calc(100vh - 60px);
-    position: sticky;
-    top: 0;
-    width: 100px;
-    height: 100vh;
-    overflow-y: auto;
+/* ========================================================= */
+/* 2. ESTILOS GLOBALES Y LAYOUT                              */
+/* ========================================================= */
+
+* { box-sizing: border-box; }
+html, body { height: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  color: var(--text); 
+  background: var(--bg); 
 }
 
-.dashboard-main {
-    grid-area: main;
-    padding: 20px;
-    background-color: #f5f5f5;
-    min-height: calc(100vh - 120px);
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
 }
 
-.dashboard-footer {
-    grid-area: footer;
-    background-color: var(--negro);
-    color: var(--blanco);
-    padding: 15px;
-    text-align: center;
+/* Sidebar (Nav) */
+.sidebar {
+  background: var(--sidebar-panel);
+  border-right: 1px solid var(--border);
+  padding: 16px 12px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
-@media (max-width: 768px) {
-  .dashboard-layout {
-    grid-template-areas:
-      "header"
-      "nav main"
-      "footer";
-      grid-template-columns:  1fr;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  color: var(--sidebar-text); 
+}
+.logo { font-size: 22px; }
+.brand-text { font-weight: 700; letter-spacing: .2px; }
+
+.menu { display: grid; gap: 4px; margin-top: 8px; }
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--sidebar-text); /* Color del texto del menú adaptado */
+  text-decoration: none;
+  border: 1px solid transparent;
+  text-align: left;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.menu-item span:first-child { margin-right: 8px; }
+
+.menu-item:hover { background: rgba(79,70,229,.08); border-color: rgba(79,70,229,.25); }
+.menu-item.active { background: rgba(79,70,229,.12); border-color: rgba(79,70,229,.35); }
+
+.content { display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh; }
+
+
+/* ========================================================= */
+/* 3. HEADER (Unificado de .header y .header-container)      */
+/* ========================================================= */
+
+.header, .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px; /* Ajuste basado en el original del dashboard */
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  color: var(--text);
+  height: 64px; /* Ajuste la altura para que sea más consistente */
+}
+
+/* Renombramos o mantenemos las clases del header.jsx */
+.header-left { display: flex; align-items: center; gap: 10px; }
+.title { margin: 0; font-size: 18px; color: var(--text); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+/* Barra de Búsqueda (ajustado de searchbar y search-bar) */
+.searchbar, .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 10px;
+  min-width: 320px;
+  max-width: 500px;
+}
+
+.search-icon { 
+  opacity: .8;
+  color: var(--muted); 
+}
+
+/* Input de Búsqueda */
+.searchbar input, .search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  width: 100%;
+  padding: 0; /* padding ya está en el contenedor .searchbar */
+  font-size: 14px;
+}
+
+.searchbar input:focus, .search-input:focus {
+  border-color: transparent;
+  box-shadow: none; 
+}
+
+
+/* Botones de Icono */
+.icon-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--brand); }
+
+/* Perfil de Usuario (ajustado de user-profile) */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-name {
+    font-size: 14px;
+    color: var(--text); 
+    font-weight: 500;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--brand), var(--brand-600));
+  color: white; font-weight: 700; font-size: 12px;
+}
+
+
+/* ========================================================= */
+/* 4. MAIN CONTENT Y COMPONENTES                             */
+/* ========================================================= */
+
+.main { padding: 16px; overflow: auto; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+.card-title { color: var(--muted); font-size: 13px; }
+.card-value { font-size: 22px; font-weight: 700; margin-top: 6px; }
+
+/* Estilo para el ícono */
+.card-icon {
+  font-size: 3rem; /* Icono grande */
+  margin-bottom: 0.75rem;
+  color: var(--brand); /* Usamos el color de marca para el icono */
+}
+
+/* Estilo para el título de la tarjeta (Más grande que el texto) */
+.card-custom-title {
+  font-size: 1.35rem; /* Hacemos el título más grande que el h5 original */
+  font-weight: 700;
+  color: var(--text); /* Se adapta al tema (blanco/negro) */
+  margin-bottom: 0.5rem;
+}
+
+/* Estilo para la descripción de la tarjeta */
+.card-custom-text {
+  font-size: 1rem;
+  color: var(--muted); /* Usa el color silenciado (gris) */
+  margin-bottom: 1.5rem;
+}
+
+.table-section { margin-top: 14px; }
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.actions { display: flex; gap: 8px; }
+.btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--brand); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn.primary:hover { background: var(--brand-600); }
+
+.table-wrapper {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: auto;
+}
+
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .3px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr:hover { background: rgba(79,70,229,.07); }
+th.num, td.num { text-align: right; }
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px; color: var(--muted);
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+.footer a { color: inherit; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+.sep { opacity: .6; margin: 0 6px; }
+
+/* ========================================================= */
+/* 5. RESPONSIVE                                             */
+/* ========================================================= */
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 72px 1fr; }
+  .brand-text { display: none; }
+  /* Ajuste para modo compacto */
+  .menu-item { justify-content: center; } 
+  .menu-item span:first-child { margin-right: 0 !important; }
+  .menu-item span:last-child { display: none; }
+  .searchbar { min-width: 0; width: 250px; }
+}
+@media (max-width: 720px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; left: -280px; width: 260px; height: 100vh; z-index: 20; }
+  .sidebar.open { left: 0; transition: left .25s ease; }
+  .content { grid-template-rows: auto 1fr auto; }
+  .searchbar { min-width: 0; width: 52vw; }
+  .cards { grid-template-columns: 1fr; }
+}
+
+/* ========================================================= */
+/* 6. SOPORTE DE TEMAS PARA ESTADÍSTICAS DINÁMICAS           */
+/* ========================================================= */
+
+/* Colores Dinámicos para Texto y Fondos de Íconos */
+.text-color-primary { color: var(--primary-color) !important; }
+.bg-color-primary { background-color: var(--primary-color) !important; color: var(--blanco); }
+
+.text-color-success { color: var(--success-color) !important; }
+.bg-color-success { background-color: var(--success-color) !important; color: var(--blanco); }
+
+.text-color-warning { color: var(--warning-color) !important; }
+/* El fondo warning debe tener texto oscuro para contraste */
+.bg-color-warning { background-color: var(--warning-color) !important; color: var(--negro); }
+
+.text-color-info { color: var(--info-color) !important; }
+.bg-color-info { background-color: var(--info-color) !important; color: var(--blanco); }
+
+/* Color 'purple' personalizado */
+.text-color-purple { color: #800080 !important; } 
+.bg-color-purple { background-color: #800080 !important; color: var(--blanco); }
+
+/* Fondo claro para iconos */
+.bg-icon-light {
+    background-color: var(--bg); /* Usa el fondo del tema como fondo base para el icono */
+    border: 1px solid var(--border);
+}
+
+/* Clave para el widget de estatus de datos */
+.bg-status-widget {
+    background-color: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+/* ========================================================= */
+/* ESTILOS DE TARJETAS DE ESTADÍSTICAS (Estadistica.jsx)     */
+/* ========================================================= */
+
+/* Contenedor principal de las estadísticas (reemplaza 'row g-4') */
+.cards-layout-wrapper {
+  display: grid;
+  /* Usa la definición de cards que ya tenías: 4 columnas en desktop */
+  grid-template-columns: repeat(4, minmax(0, 1fr)); 
+  gap: 12px; /* Espaciado entre tarjetas (g-4) */
+  margin-bottom: 2rem; /* Espaciado inferior (mb-5) */
+}
+
+/* La tarjeta (.card) ya tiene el fondo y borde adaptado al tema */
+
+.card-statistic-body {
+  padding: 1rem; /* p-4 */
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* gap-3 */
+}
+
+/* Icono de la estadística */
+.statistic-icon {
+  font-size: 2.5rem; /* Tamaño adecuado para el icono */
+  color: var(--brand); /* Usamos el color de marca */
+}
+
+/* Título de la estadística */
+.statistic-title {
+  font-size: 1rem;
+  font-weight: 700; /* fw-bold */
+  margin-bottom: 4px; /* mb-1 */
+  color: var(--text); /* ¡CLAVE! Se adapta al tema (blanco/negro) */
+  line-height: 1.2;
+}
+
+/* Valor de la estadística */
+.statistic-value {
+  font-size: 0.95rem; 
+  font-weight: 500;
+  color: var(--muted); /* ¡CLAVE! Se adapta al tema (gris claro/oscuro) */
+}
+
+/* Aseguramos que se vea bien en dispositivos medianos */
+@media (max-width: 1024px) {
+  .cards-layout-wrapper {
+      /* Dos columnas en tabletas */
+      grid-template-columns: repeat(2, 1fr); 
   }
-
-  .dashboard-nav {
-    display: block;      
-    position: static;     
-    height: auto;         
-    min-height: auto;     
-    width: 100%;
-    overflow: visible;    
+}
+@media (max-width: 640px) {
+  .cards-layout-wrapper {
+      /* Una columna en móviles */
+      grid-template-columns: 1fr; 
   }
+}
 
 
-  .dashboard-main {
-    padding: 60px;
+/* ========================================================= */
+/* ESTILOS ESPECÍFICOS DE LA SECCIÓN DE OPCIONES CENTRADAS    */
+/* (userOptions)                                             */
+/* ========================================================= */
+
+/* Contenedor principal para la fila y centrado */
+.options-layout-centered {
+  display: grid;
+  /* Define la cuadrícula de 3 columnas (col-xl-4) */
+  grid-template-columns: repeat(3, minmax(0, 1fr)); 
+  gap: 1.5rem; /* Espaciado (g-4) */
+  
+  /* Centra las tarjetas en el medio si la fila no está llena */
+  justify-content: center; 
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+/* Manejo de columnas (Reemplaza col-md-6, col-xl-4) */
+.card-option-col {
+  /* No necesitamos estilos adicionales aquí si usamos grid-template-columns arriba */
+}
+
+/* Cuerpo de la tarjeta para adaptar a flex-column y theme */
+.card-body-theme {
+  padding: 1rem; /* p-4 */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* H-100 */
+  color: var(--text); /* Asegura que el texto general herede el color del tema */
+}
+
+/* El responsive es clave para el centrado: */
+@media (max-width: 1200px) { /* xl */
+  .options-layout-centered {
+      /* Pasa a 2 columnas y el centrado sigue funcionando */
+      grid-template-columns: repeat(2, minmax(0, 350px));
+  }
+}
+@media (max-width: 768px) { /* md */
+  .options-layout-centered {
+      /* 1 columna, centrado automático */
+      grid-template-columns: 1fr;
   }
 }
