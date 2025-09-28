@@ -41,10 +41,12 @@ router.register(r'tipos_reporte', TipoReporteViewSet, basename='tipos_reporte') 
 router.register(r'prestamos', PrestamoViewSet, basename='prestamos') # prestamos
 router.register(r'estadisticas', StadisticsViewSet, basename='estadisticas') # estadisticas
 
-
+#IA
+from .views import GeminiChatView
 
 
 urlpatterns = [
+    path('gemini-chat/', GeminiChatView.as_view(), name='gemini_chat'), #ia
     path('editar_usuarios/<int:id>/', EditarUsuarioViewSet.as_view(), name='editar_usuarios'), # editar usuario
     path("crear_usuarios/", CrearUsuarioView.as_view(), name="crear-usuario"), # crear usuario
     path('login/', LoginWiew.as_view(), name='login'), # login

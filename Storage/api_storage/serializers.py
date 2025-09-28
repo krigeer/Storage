@@ -301,18 +301,23 @@ class ReporteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    rol = serializers.StringRelatedField()
-    tipo_documento = serializers.StringRelatedField()
-    centro = serializers.StringRelatedField()
+    rol_id = serializers.PrimaryKeyRelatedField(
+        queryset=Rol.objects.all(), source='rol', write_only=True
+    )
+    rol = serializers.StringRelatedField(read_only=True)
+    tipo_documento = serializers.StringRelatedField(read_only=True)
+    centro = serializers.StringRelatedField(read_only=True)
+
     class Meta:
         model = Usuario
-        exclude = ["groups", "user_permissions", "password", "last_login", "is_active", "is_staff", "is_superuser", "date_joined", "contrasena_establecida_en", 'contrasena_expira_en', 'historial_contrasenas']
+        exclude = [
+            "groups", "user_permissions", "password", "last_login", "is_active",
+            "is_staff", "is_superuser", "date_joined", "contrasena_establecida_en",
+            "contrasena_expira_en", "historial_contrasenas"
+        ]
 
     def create(self, validated_data):
+        # Aquí puedes agregar tu lógica de creación personalizada
         alfabeto = string.ascii_letters + string.digits + "!@#$%^&*()"
-        contrasena_generada = ''.join(secrets.choice(alfabeto) for _ in range(12))
-        usuario = Usuario(**validated_data)
-        usuario.set_password(contrasena_generada)
-        usuario.save()
-        usuario._contrasena_plana = contrasena_generada
-        return usuario
+        # ejemplo: validated_data['some_field'] = generate_password(alfabeto)
+        return super().create(validated_data)

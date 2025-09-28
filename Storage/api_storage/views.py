@@ -18,7 +18,13 @@ from rest_framework.response import Response
 from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario
 from .serializers import LoginSerializer, RolSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer, EstadoInventarioSerializer, TipoTecnologiaSerializer, MarcaSerializer, TipoReporteSerializer, PrioridadReporteSerializer, EstadoReporteSerializer, TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
 
+#IA
+from google import genai
+from google.genai import types
+from .gemini_tools import GEMINI_FUNCTIONS, contar_activos_por_ubicacion, obtener_prestamos_activos_recientes, obtener_conteo_reportes_por_estado_y_prioridad
 
+#python
+import os
 
 class LoginWiew(APIView):
     permission_classes = [AllowAny]
@@ -236,3 +242,109 @@ class DetalleUsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
+
+
+
+
+
+
+# Inicialización del Cliente Gemini
+
+try:
+    client = genai.Client()
+except Exception as e:
+    # Manejo de error si la clave no se encuentra
+    print(f"Error al inicializar el cliente Gemini: {e}")
+    client = None 
+
+# Definición del Modelo
+MODEL = 'gemini-2.5-flash' 
+
+# Mapeo de nombres de función a las funciones reales (para ejecución)
+function_map = {
+    'contar_activos_por_ubicacion': contar_activos_por_ubicacion,
+    'obtener_prestamos_activos_recientes': obtener_prestamos_activos_recientes,
+    'obtener_conteo_reportes_por_estado_y_prioridad': obtener_conteo_reportes_por_estado_y_prioridad,
+}
+
+
+class GeminiChatView(APIView):
+    permission_classes = [AllowAny]
+    """
+    Endpoint para manejar la conversación con Gemini, integrando Function Calling
+    para acceder a la base de datos  (RAG).
+    """
+    def post(self, request):
+        user_prompt = request.data.get('prompt')
+        
+        if not user_prompt:
+            return Response({"error": "Prompt (pregunta) es requerido."}, status=400)
+        
+        if not client:
+             return Response({"error": "El cliente Gemini no está inicializado. Verifica tu clave API."}, status=500)
+
+        #  historial de mensajes (solo el prompt inicial)
+        contents = [user_prompt]
+        
+        #  Bucle de Function Calling (permite llamadas encadenadas, aunque Gemini suele usar una)
+        try:
+            #Primer llamado a Gemini 
+            response = client.models.generate_content(
+                model=MODEL,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    tools=GEMINI_FUNCTIONS # lista de funciones 
+                )
+            )
+
+            #  Procesar las llamadas a funciones devueltas por Gemini
+            if response.function_calls:
+                
+                # Gemini suele devolver UNA sola llamada a función a la vez. (intente varias pero da error, solo usar una a la vez)
+                function_call = response.function_calls[0]
+                func_name = function_call.name
+                func_args = dict(function_call.args)
+                
+                print(f"-> Gemini solicitó la función: {func_name} con argumentos: {func_args}")
+
+                #  Ejecutar la función localmente (Acceso a la BD de Django aqui)
+                if func_name in function_map:
+                    function_to_call = function_map[func_name]
+                    #consultas  de la BD y devuelve un string con el resultado
+                    function_response_content = function_to_call(**func_args)
+                else:
+                    function_response_content = f"Error: La función '{func_name}' solicitada por Gemini no está definida en el mapeo local."
+
+                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:150]}...") # depuración
+
+                # Preparamos el contexto para el segundo llamado a Gemini
+                contents.append(
+                    types.Part.from_function_call(function_call) # La llamada inicial de Gemini
+                )
+                contents.append(
+                    types.Part.from_function_response(
+                        name=func_name,
+                        response={"content": function_response_content} # El resultado de la BD
+                    )
+                )
+
+                # Segundo llamado a Gemini (RAG) para generar la respuesta final
+                second_response = client.models.generate_content(
+                    model=MODEL,
+                    contents=contents, # Enviamos todo el historial (prompt, llamada, resultado)
+                    config=types.GenerateContentConfig(
+                        tools=GEMINI_FUNCTIONS # Reenviamos las herramientas por si acaso (aveces salian 3 errores toca depurar y organizar si no se enviar)
+                    )
+                )
+                
+                final_text = second_response.text
+
+            else:
+                #  Si no hubo Function Calling, es una respuesta directa
+                final_text = response.text
+
+            return Response({"response": final_text})
+
+        except Exception as e:
+            print(f"Error general en la vista GeminiChatView: {e}")
+            return Response({"error": f"Ocurrió un error en el proceso de IA: {str(e)}"}, status=500)

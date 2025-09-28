@@ -468,38 +468,7 @@ th.num, td.num { text-align: right; }
 
 
 
-/* ---------------------------------- */
-/* ESTILOS DEL BOTÓN FLOTANTE (AIChatButton) */
-/* ---------------------------------- */
-.ai-chat-button {
-    /* Posicionamiento fijo */
-    position: fixed; 
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000; 
-    /* Apariencia temática */
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: var(--brand); 
-    color: var(--text); /* No aplica a FaRobot */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    transition: background-color 0.2s, transform 0.2s;
-}
 
-.ai-chat-button:hover {
-    background-color: var(--brand-600);
-    transform: scale(1.05);
-}
-
-.ai-icon {
-    color: white; /* El ícono siempre será blanco para contraste con --brand */
-    font-size: 24px;
-}
 
 /* ---------------------------------- */
 /* CONTENEDOR PRINCIPAL DEL CHAT (AIChatBox) */
@@ -533,7 +502,7 @@ th.num, td.num { text-align: right; }
 
 .chat-header {
     padding: 10px 15px;
-    background-color: var(--brand); 
+    background-color: var(--sidebar-panel); 
     color: white; 
     display: flex;
     justify-content: space-between;
