@@ -1,111 +1,116 @@
+📦 Proyecto de Inventario
+
+Este proyecto es una aplicación web para la gestión de inventario de equipos y recursos, construida con:
+
+Backend (API): Django + Django REST Framework
+
+Frontend: React + Vite
+
+Base de datos: configurada en Django (ejemplo: PostgreSQL, MySQL o SQLite en desarrollo)
+
+El sistema permite registrar, consultar, actualizar y eliminar elementos de inventario, con control de accesos y reglas de negocio personalizadas.
+
+⚙️ Estructura del Proyecto
+🖥️ Backend (Django API)
+
 mi_proyecto/
 ├── api/
-│   ├── __init__.py
-│   ├── models.py              # Modelos de base de datos
-│   ├── serializers.py         # Serialización y validación de datos
-│   ├── views.py               # Controladores (vistas)
-│   ├── urls.py                # Rutas específicas de esta app
-│   ├── services.py            # Lógica de negocio o cálculos complejos
-│   ├── permissions.py         # Reglas de acceso personalizadas
-│   └── authentication.py      # Opcional: autenticación personalizada
+│   ├── models.py          # Modelos de base de datos (ORM)
+│   ├── serializers.py     # Serialización y validación de datos
+│   ├── views.py           # Controladores de solicitudes HTTP
+│   ├── urls.py            # Rutas específicas de la API
+│   ├── services.py        # Lógica de negocio
+│   ├── permissions.py     # Reglas de acceso personalizadas
+│   └── authentication.py  # Autenticación personalizada (opcional)
 │
-├── mi_proyecto/               # Configuración general de Django
-│   ├── __init__.py
-│   ├── settings.py            # Configuración global del proyecto
-│   ├── urls.py                # Rutas principales del proyecto
-│   └── wsgi.py                # Para despliegue
+├── mi_proyecto/           # Configuración global del proyecto Django
+│   ├── settings.py        # Configuración (DB, JWT, apps, etc.)
+│   ├── urls.py            # Rutas principales del backend
+│   └── wsgi.py            # Configuración para despliegue
 │
 ├── manage.py
-├── requirements.txt
-└── .env                       # Variables de entorno (por seguridad)
+├── requirements.txt        # Dependencias del backend
+└── .env                    # Variables de entorno (credenciales, secretos, etc.)
 
 
+🔄 Flujo de una petición (ejemplo POST /api/tareas/):
 
-models.py	Clases que representan tus datos (tablas de la base de datos) usando ORM de Django.
-serializers.py	Convierte datos entre JSON y modelos. También valida la entrada del usuario.
-views.py	Controla lo que pasa cuando llega una solicitud HTTP.
-services.py	Funciones con la lógica de negocio. Separa esto de views.py para mantener limpio.
-permissions.py	Clases que controlan el acceso a los datos (por ejemplo, "solo el dueño puede ver esto").
-authentication.py	Si necesitas lógica de autenticación personalizada. Opcional.
-urls.py	Rutas específicas de la app. Se importan en el urls.py global.
-settings.py	Configuración general (base de datos, JWT, apps, etc.).
-.env	Variables de entorno (para no poner contraseñas en el código).
+urls.py: Detecta la ruta.
 
+views.py: Decide la acción y usa serializer.
 
+serializers.py: Valida los datos recibidos.
 
+services.py: Aplica lógica de negocio (si aplica).
 
+models.py: Guarda/lee de la base de datos.
 
-POST /api/tareas/
-El flujo sería:
+permissions.py: Verifica permisos de usuario.
 
-URLS (urls.py): Detecta la ruta y manda la solicitud a una vista.
-
-VIEW (views.py): Decide qué hacer con la solicitud. Pide al serializer que valide los datos.
-
-SERIALIZER (serializers.py): Valida los datos (por ejemplo: "¿el título está vacío?").
-
-SERVICE (services.py): Si es necesario, se ejecuta lógica de negocio (por ejemplo: crear una tarea especial).
-
-MODEL (models.py): Se guarda o recupera información de la base de datos.
-
-PERMISSIONS (permissions.py): Verifica si el usuario tiene permiso para hacer lo que pide.
-
-VIEW: Devuelve una respuesta al cliente (por ejemplo: 201 Created o 403 Forbidden).
-
-
-
-
-
-
-
+views.py: Devuelve la respuesta (ejemplo: 201 Created o 403 Forbidden).
 
 my-react-app/
 ├── public/
 │   └── index.html
 ├── src/
-│   ├── assets/           # Imágenes, estilos globales, fuentes
-│   ├── components/       # Componentes reutilizables (Botones, Cards, etc.)
-│   ├── pages/            # Vistas principales (Home, About, etc.)
-│   ├── services/         # Lógica para consumir APIs
-│   ├── hooks/            # Custom hooks (ej. useFetch)
-│   ├── context/          # Context API para manejo de estado global
-│   ├── utils/            # Funciones auxiliares (formateo, validaciones)
+│   ├── assets/         # Imágenes, estilos globales, fuentes
+│   ├── components/     # Componentes reutilizables (Botones, Cards, etc.)
+│   ├── pages/          # Vistas principales (Home, Dashboard, etc.)
+│   ├── services/       # Lógica para consumir APIs (fetch/axios)
+│   ├── hooks/          # Custom hooks (ej. useFetch, useAuth)
+│   ├── context/        # Context API para manejo de estado global
+│   ├── utils/          # Funciones auxiliares
 │   ├── App.jsx
 │   └── main.jsx
-├── .env                  # Variables de entorno (ej. URL de la API)
-├── package.json
+├── .env                # Variables de entorno (ej. URL de la API)
+├── package.json        # Dependencias frontend
 └── README.md
 
 
+🌐 Frontend (React)
+my-react-app/
+├── public/
+│   └── index.html
+├── src/
+│   ├── assets/         # Imágenes, estilos globales, fuentes
+│   ├── components/     # Componentes reutilizables (Botones, Cards, etc.)
+│   ├── pages/          # Vistas principales (Home, Dashboard, etc.)
+│   ├── services/       # Lógica para consumir APIs (fetch/axios)
+│   ├── hooks/          # Custom hooks (ej. useFetch, useAuth)
+│   ├── context/        # Context API para manejo de estado global
+│   ├── utils/          # Funciones auxiliares
+│   ├── App.jsx
+│   └── main.jsx
+├── .env                # Variables de entorno (ej. URL de la API)
+├── package.json        # Dependencias frontend
+└── README.md
 
-
-
-
+📦 Dependencias recomendadas:
 npm install bootstrap @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/free-brands-svg-icons aos
 
 
+🧪 Pruebas de rendimiento y calidad
+
+El proyecto debe someterse a pruebas manuales y automatizadas para garantizar su correcto funcionamiento.
+
+✅ Actividades:
+
+Diseñar y documentar 20 casos de prueba (Excel).
+
+Realizar una presentación explicando el tipo de pruebas asignado:
+
+Conceptualización
+
+Aplicación en el desarrollo de software
+
+Ejemplos prácticos (manuales y automatizados)
+
+Elaborar un informe de pruebas (Word) con resultados y conclusiones.
 
 
 
+🚀 Despliegue
 
+Backend: Puede desplegarse en Heroku, Render, Railway o servidores con WSGI.
 
-
-
-
-
-
-
-
-Realizar pruebas de rendimiento
-
-
-
-
-
-- Analiza la funcionalidad de tu proyecto y diseña-aplica 20 casos de pruebas para el mismo. (DEBES DOCUMENTAR LOS CASOS DE PRUEBAS) (excel)
-
-
-- Realiza una presentación donde tu grupo explique el tipo de caso de prueba asignado. (Se debe explicar: conceptualización, aplicación en el desarrollo de software, ejemplos de aplicación, ejemplos prácticos. Dependiendo el tipo de prueba asignado y el lenguaje de programación utilizado para el desarrollo de su proyecto, explica un ejemplo práctico para pruebas manuales y uno para pruebas automatizadas. 
-
-- Realiza un informe de pruebas en base a los casos de pruebas de tu proyecto. (word)
-
+Frontend: Desplegable en Vercel o Netlify (recuerda configurar redirecciones para React Router).
