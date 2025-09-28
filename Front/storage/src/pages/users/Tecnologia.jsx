@@ -11,11 +11,6 @@ const options = [
     description: "Añade nuevas tecnologías al sistema con sus datos y permisos.",
     key: "tecnologias",
   },
-  {
-    title: "Generar QR de un elemento Tecnologico",
-    description: "Genera un QR para un elemento tecnologico existente en el sistema.",
-    key: "generar_qr_tecnologia",
-  },
 ]
 
 const headers = {
@@ -28,11 +23,11 @@ const headers = {
 }
 const campos = {
   nombre: "nombre",
-  tipo: "tipo", 
+  tipo: "tipo_nombre", 
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
-  estado: "estado",
-  marca: "marca", 
+  estado: "estado_nombre",
+  marca: "marca_nombre", 
 }
 
 const TecnologiaManager = () => {

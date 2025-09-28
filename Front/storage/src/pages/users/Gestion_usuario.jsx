@@ -13,12 +13,6 @@ const userOptions = [
     icon: <FaUserPlus size={42} className="text-success mb-3" />,
     key: "crear_usuarios",
   },
-  {
-    title: "Buscar Usuario",
-    description: "Busca y modifica la información y permisos de los usuarios existentes.",
-    icon: <FaUserEdit size={42} className="text-warning mb-3" />,
-    key: "buscar_usuarios",
-  },
 ];
 
 const headers = {

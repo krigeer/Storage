@@ -11,6 +11,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, permissions
 from .permissions import IsAdministrador
+from rest_framework.decorators import action 
+from rest_framework.response import Response
 
 #modelos
 from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario
@@ -40,7 +42,6 @@ class LoginWiew(APIView):
                 }
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
     
 class CentroViewSet(viewsets.ModelViewSet):
@@ -113,10 +114,60 @@ class MaterialDidacticoViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAdministrador]
 
 class PrestamoViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
-    queryset = Prestamo.objects.all()
-    serializer_class = PrestamoSerializer
-    # permission_classes = [IsAdministrador]
+   queryset = Prestamo.objects.all().select_related('solicitante', 'tecnologia', 'material_didactico')
+   permission_classes = [AllowAny]
+   serializer_class = PrestamoSerializer
+    # ------------------ Endpoint de BÚSQUEDA por Documento ------------------
+   @action(detail=False, methods=['get'], url_path='activos')
+   def listar_activos(self, request):
+        documento_raw = request.query_params.get('documento') 
+        if not documento_raw:
+            return Response({"detail": "Se requiere el parámetro 'documento'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        #  Limpiar la cadena eliminando cualquier caracter no numérico
+        documento = documento_raw.strip().strip('/').replace('/', '')
+
+        if not documento.isdigit():
+             return Response({"detail": f"El documento '{documento_raw}' debe contener solo números."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # consulta se hace con el valor limpio
+            usuario = Usuario.objects.get(documento=documento) 
+        except Usuario.DoesNotExist:
+            return Response({"detail": f"Usuario con documento {documento} no encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Filtra préstamos activos para ese usuario
+        queryset = self.queryset.filter(
+            solicitante=usuario,
+            fecha_devolucion__isnull=True
+        )
+        
+        serializer = self.get_serializer(queryset, many=True) 
+        return Response(serializer.data)
+    # ------------------ Endpoint de DEVOLUCIÓN ------------------
+   @action(detail=True, methods=['patch'])
+   def devolver(self, request, pk=None):
+        prestamo = self.get_object()
+        serializer = self.get_serializer(prestamo, data={}, partial=True)
+        
+        # FORZAMOS LA REVELACIÓN DE LA EXCEPCIÓN DEL SERIALIZER
+        try:
+            serializer.is_valid(raise_exception=True) # Esto lanza 400 
+            serializer.save() 
+        except Exception as e:
+            # CAPTURARÁ CUALQUIER ERROR DE BASE DE DATOS O VALIDACION NO CAPTURADO
+            print("--- ERROR FATAL DE DEVOLUCIÓN ---")
+            import traceback
+            traceback.print_exc()
+            print("--- FIN DEL ERROR FATAL ---")
+            
+            #  500 para ver la traza de error en la consola
+            return Response({"error": "Error interno al procesar la devolución."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(
+            {"detail": "Devolución procesada exitosamente.", "data": serializer.data}, 
+            status=status.HTTP_200_OK
+        )
 
 class ReporteViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -144,8 +195,8 @@ class StadisticsViewSet(viewsets.ViewSet):
             'total_usuarios': Usuario.objects.all().count(),
             'total_tecnologias': Tecnologia.objects.all().count(),
             'total_material': MaterialDidactico.objects.all().count(),
-            'total_prestamos': Prestamo.objects.all().count(),
-            'total_reportes': Reporte.objects.all().count(),
+            'total_prestamos': Prestamo.objects.filter(fecha_devolucion__isnull=True).count(),
+            'total_reportes': Reporte.objects.filter(estado__nombre='pendiente').count(),
         }
         return Response(data)
 

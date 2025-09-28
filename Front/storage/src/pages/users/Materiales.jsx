@@ -11,11 +11,6 @@ const options = [
     description: "Añade nuevos materiales didácticos al sistema con sus datos y permisos.",
     key: "materiales_didacticos",
   },
-  {
-    title: "Generar QR de un Material",
-    description: "Genera un QR para un Material existente en el sistema.",
-    key: "generar_qr_material",
-  },
 ]
 
 const headers = {
@@ -28,7 +23,7 @@ const campos = {
   nombre: "nombre",
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
-  estado: "estado",
+  estado: "estado_nombre",
 }
 
 const MaterialDidacticoManager = () => {

@@ -9,8 +9,8 @@ import {
 import Estadistica from "../../components/UI/Estadistica";
 import Tabla from "../../components/UI/Tabla";
 import { apiCall } from "../../services/apiCutoms";
-import Button from "../../components/UI/Button";
-import handleAction from "../../components/UI/Form";
+
+
 
 const headers = {
   titulo: "Titulo",
@@ -106,9 +106,7 @@ const Reportes = () => {
       />
       <Estadistica estadisticas={estadisticas} />
       
-      <div className="mb-3">
-        <Button onClick={() => handleAction({key: "reportes"})}>Crear Reporte</Button>
-      </div>
+      
 
       <Tabla
         data={reportes}

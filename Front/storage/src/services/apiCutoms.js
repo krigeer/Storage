@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getAccessToken } from "./authService";
+import { API_BASE_URL } from "../config/data";
 
 export const apiCall = async (endpoint) => {
   try {
@@ -10,7 +11,7 @@ export const apiCall = async (endpoint) => {
     }
 
     const response = await axios.get(
-      `http://127.0.0.1:8000/inventario/${endpoint}/`,
+      `${API_BASE_URL}${endpoint}/`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
