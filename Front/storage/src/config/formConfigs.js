@@ -53,7 +53,7 @@ export const formConfigs = {
       { id: "documento", placeholder: "Documento", type: "number" },
       { id: "tipo_documento", placeholder: "Tipo de Documento", type: "select", options: { endpoint: "tipos_documentos", valueKey: "id", textKey: "nombre" } },
       { id: "centro", placeholder: "Centro", type: "select", options: { endpoint: "centros", valueKey: "id", textKey: "nombre" } },
-      { id: "rol", placeholder: "Rol", type: "select", options: { endpoint: "roles", valueKey: "id", textKey: "nombre" } },
+      { id: "rol_id", placeholder: "Rol", type: "select", options: { endpoint: "roles", valueKey: "id", textKey: "nombre" } },
       { id: "contacto_principal", placeholder: "Contacto Principal", type: "number" },
       { id: "contacto_secundario", placeholder: "Contacto Secundario", type: "number" },
       { id: "estado", placeholder: "estado", type: "hidden", defaultValue: "activo" },
