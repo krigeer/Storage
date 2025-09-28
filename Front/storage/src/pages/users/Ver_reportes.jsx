@@ -9,7 +9,9 @@ import {
 import Estadistica from "../../components/UI/Estadistica";
 import Tabla from "../../components/UI/Tabla";
 import { apiCall } from "../../services/apiCutoms";
-
+import { useOutletContext } from "react-router-dom";
+import Button from "../../components/UI/Button";
+import handleAction from "../../components/UI/Form";
 
 
 const headers = {
@@ -29,6 +31,8 @@ const Reportes = () => {
   const [reportes, setReportes] = useState([]);
   const [reporteStats, setReporteStats] = useState({});
   const [loading, setLoading] = useState(true);
+  const {rol} = useOutletContext();
+  // const {} = useOutletContext();
 
 
   const fetchReportes = useCallback(async () => {
@@ -97,16 +101,40 @@ const Reportes = () => {
     },
   ];
 
+  if  (rol == "1"){
+    return (
+      <div className="container py-5">
+        <Titulo
+          titulo="Visualización de Reportes"
+          descripcion="Aquí podrás consultar el estado y las estadísticas de los reportes generados."
+        />
+        <Estadistica estadisticas={estadisticas} />
+        
+        
+  
+        <Tabla
+          data={reportes}
+          headers={headers}
+          campos={campos}
+          title="Reportes"
+          apiEndpoint="reportes" 
+          onDataChange={fetchReportes} 
+        />
+      </div>
+    );
 
-  return (
-    <div className="container py-5">
-      <Titulo
+  }else{
+    if (rol == "2"){
+      return(
+        <div className="container py-5">
+        <Titulo
         titulo="Visualización de Reportes"
-        descripcion="Aquí podrás consultar el estado y las estadísticas de los reportes generados."
+        descripcion="Aquí podrás consultar el estado de tus reportes"
       />
-      <Estadistica estadisticas={estadisticas} />
-      
-      
+
+      <Button onClick={() => handleAction("reportes")}>
+        Crear reporte
+      </Button>
 
       <Tabla
         data={reportes}
@@ -116,8 +144,11 @@ const Reportes = () => {
         apiEndpoint="reportes" 
         onDataChange={fetchReportes} 
       />
-    </div>
-  );
+      </div>
+      );
+    }
+  }
+  
 };
 
 export default Reportes;

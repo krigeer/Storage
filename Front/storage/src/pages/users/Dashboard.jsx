@@ -69,7 +69,6 @@ export default function Dashboard() {
       });
     }
   }, [navigate]);
-
   const onSearchChange = (e) => setSearch(e.target.value);
   const onSearchSubmit = () => {
     const q = encodeURIComponent(search.trim());
@@ -83,6 +82,7 @@ export default function Dashboard() {
   if (loading) return null;
 
   return (
+    
     <div className="layout">
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         {Nav && (
@@ -106,7 +106,7 @@ export default function Dashboard() {
         )}
 
         <main className="main">
-          <Outlet />
+          <Outlet context={{ rol: user?.rol, documento: user?.documento }} />
           {AIChatButton && <AIChatButton />}
         </main>
 

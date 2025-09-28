@@ -43,7 +43,7 @@ const Nav = ({ rol }) => {
         }
     };
 
-    // 1. Lógica de Cierre por Click Fuera 
+    //  Cierre por Click Fuera 
     useEffect(() => {
         const handleClickOutside = (event) => {
             // Solo aplica  si esta en un dispositivo móvil
