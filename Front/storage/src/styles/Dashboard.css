@@ -10,6 +10,13 @@
   --text: var(--blanco);
   --muted: #8a97a7;
   --border: #1f2937;
+  --home-bg-primary: #f8f9fa; /* Color de fondo claro por defecto  */
+  --home-bg-secondary: white;
+  --home-text-color: #212529; /* Texto oscuro por defecto */
+  --home-text-muted: #6c757d; /* Gris oscuro por defecto */
+  --home-nav-bg: white;
+  --home-card-bg: white;
+  --sena-green: #28a745;
 
   /* Estilos específicos de la Sidebar (NAV) */
   --sidebar-panel: #145e19; /* Verde más oscuro que --primary-color */
@@ -88,7 +95,7 @@ body {
   align-items: center;
   padding: 10px 12px;
   border-radius: 8px;
-  color: var(--sidebar-text); /* Color del texto del menú adaptado */
+  color: var(--sidebar-text); 
   text-decoration: none;
   border: 1px solid transparent;
   text-align: left;
@@ -103,29 +110,29 @@ body {
 
 
 /* ========================================================= */
-/* 3. HEADER (Unificado de .header y .header-container)      */
+/*  HEADER  .header y .header-container    */
 /* ========================================================= */
 
 .header, .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px; /* Ajuste basado en el original del dashboard */
+  padding: 12px 16px; 
   background: var(--panel);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 10;
   color: var(--text);
-  height: 64px; /* Ajuste la altura para que sea más consistente */
+  height: 64px; 
 }
 
-/* Renombramos o mantenemos las clases del header.jsx */
+/* clases del header.jsx */
 .header-left { display: flex; align-items: center; gap: 10px; }
 .title { margin: 0; font-size: 18px; color: var(--text); }
 .header-right { display: flex; align-items: center; gap: 10px; }
 
-/* Barra de Búsqueda (ajustado de searchbar y search-bar) */
+/* Barra de Búsqueda */
 .searchbar, .search-bar {
   display: flex;
   align-items: center;
@@ -151,7 +158,7 @@ body {
   outline: none;
   color: var(--text);
   width: 100%;
-  padding: 0; /* padding ya está en el contenedor .searchbar */
+  padding: 0; 
   font-size: 14px;
 }
 
@@ -172,7 +179,7 @@ body {
 }
 .icon-btn:hover { border-color: var(--brand); }
 
-/* Perfil de Usuario (ajustado de user-profile) */
+/* Perfil de Usuario */
 .user-profile {
     display: flex;
     align-items: center;
@@ -193,7 +200,7 @@ body {
 
 
 /* ========================================================= */
-/* 4. MAIN CONTENT Y COMPONENTES                             */
+/*  MAIN CONTENT Y COMPONENTES                             */
 /* ========================================================= */
 
 .main { padding: 16px; overflow: auto; }
@@ -216,12 +223,12 @@ body {
 .card-icon {
   font-size: 3rem; /* Icono grande */
   margin-bottom: 0.75rem;
-  color: var(--brand); /* Usamos el color de marca para el icono */
+  color: var(--brand); 
 }
 
-/* Estilo para el título de la tarjeta (Más grande que el texto) */
+/* Estilo para el título de la tarjeta  */
 .card-custom-title {
-  font-size: 1.35rem; /* Hacemos el título más grande que el h5 original */
+  font-size: 1.35rem; 
   font-weight: 700;
   color: var(--text); /* Se adapta al tema (blanco/negro) */
   margin-bottom: 0.5rem;
@@ -230,7 +237,7 @@ body {
 /* Estilo para la descripción de la tarjeta */
 .card-custom-text {
   font-size: 1rem;
-  color: var(--muted); /* Usa el color silenciado (gris) */
+  color: var(--muted); /* Usa el color gris */
   margin-bottom: 1.5rem;
 }
 
@@ -299,7 +306,7 @@ th.num, td.num { text-align: right; }
 .sep { opacity: .6; margin: 0 6px; }
 
 /* ========================================================= */
-/* 5. RESPONSIVE                                             */
+/*  RESPONSIVE                                             */
 /* ========================================================= */
 
 @media (max-width: 1024px) {
@@ -321,7 +328,7 @@ th.num, td.num { text-align: right; }
 }
 
 /* ========================================================= */
-/* 6. SOPORTE DE TEMAS PARA ESTADÍSTICAS DINÁMICAS           */
+/*  SOPORTE DE TEMAS PARA ESTADÍSTICAS DINÁMICAS           */
 /* ========================================================= */
 
 /* Colores Dinámicos para Texto y Fondos de Íconos */
@@ -332,23 +339,23 @@ th.num, td.num { text-align: right; }
 .bg-color-success { background-color: var(--success-color) !important; color: var(--blanco); }
 
 .text-color-warning { color: var(--warning-color) !important; }
-/* El fondo warning debe tener texto oscuro para contraste */
+/*  fondo warning, texto oscuro  */
 .bg-color-warning { background-color: var(--warning-color) !important; color: var(--negro); }
 
 .text-color-info { color: var(--info-color) !important; }
 .bg-color-info { background-color: var(--info-color) !important; color: var(--blanco); }
 
-/* Color 'purple' personalizado */
+/* Color 'purple' */
 .text-color-purple { color: #800080 !important; } 
 .bg-color-purple { background-color: #800080 !important; color: var(--blanco); }
 
 /* Fondo claro para iconos */
 .bg-icon-light {
-    background-color: var(--bg); /* Usa el fondo del tema como fondo base para el icono */
+    background-color: var(--bg); 
     border: 1px solid var(--border);
 }
 
-/* Clave para el widget de estatus de datos */
+/*  widget de estatus de datos */
 .bg-status-widget {
     background-color: var(--panel);
     border: 1px solid var(--border);
@@ -359,16 +366,13 @@ th.num, td.num { text-align: right; }
 /* ESTILOS DE TARJETAS DE ESTADÍSTICAS (Estadistica.jsx)     */
 /* ========================================================= */
 
-/* Contenedor principal de las estadísticas (reemplaza 'row g-4') */
+/* Contenedor principal de las estadísticas */
 .cards-layout-wrapper {
   display: grid;
-  /* Usa la definición de cards que ya tenías: 4 columnas en desktop */
   grid-template-columns: repeat(4, minmax(0, 1fr)); 
-  gap: 12px; /* Espaciado entre tarjetas (g-4) */
-  margin-bottom: 2rem; /* Espaciado inferior (mb-5) */
+  gap: 12px;
+  margin-bottom: 2rem;
 }
-
-/* La tarjeta (.card) ya tiene el fondo y borde adaptado al tema */
 
 .card-statistic-body {
   padding: 1rem; /* p-4 */
@@ -379,8 +383,8 @@ th.num, td.num { text-align: right; }
 
 /* Icono de la estadística */
 .statistic-icon {
-  font-size: 2.5rem; /* Tamaño adecuado para el icono */
-  color: var(--brand); /* Usamos el color de marca */
+  font-size: 2.5rem; 
+  color: var(--brand); 
 }
 
 /* Título de la estadística */
@@ -388,7 +392,7 @@ th.num, td.num { text-align: right; }
   font-size: 1rem;
   font-weight: 700; /* fw-bold */
   margin-bottom: 4px; /* mb-1 */
-  color: var(--text); /* ¡CLAVE! Se adapta al tema (blanco/negro) */
+  color: var(--text); /* Se adapta al tema (blanco/negro) */
   line-height: 1.2;
 }
 
@@ -396,10 +400,10 @@ th.num, td.num { text-align: right; }
 .statistic-value {
   font-size: 0.95rem; 
   font-weight: 500;
-  color: var(--muted); /* ¡CLAVE! Se adapta al tema (gris claro/oscuro) */
+  color: var(--muted); /* CLAVE de api Se adapta al tema (gris claro/oscuro) */
 }
 
-/* Aseguramos que se vea bien en dispositivos medianos */
+/* dispositivos medianos */
 @media (max-width: 1024px) {
   .cards-layout-wrapper {
       /* Dos columnas en tabletas */
@@ -422,19 +426,19 @@ th.num, td.num { text-align: right; }
 /* Contenedor principal para la fila y centrado */
 .options-layout-centered {
   display: grid;
-  /* Define la cuadrícula de 3 columnas (col-xl-4) */
   grid-template-columns: repeat(3, minmax(0, 1fr)); 
-  gap: 1.5rem; /* Espaciado (g-4) */
-  
-  /* Centra las tarjetas en el medio si la fila no está llena */
+  gap: 1.5rem; 
   justify-content: center; 
   width: 100%;
   margin-bottom: 2rem;
 }
 
+.text-color{
+  color:#28a745
+}
 /* Manejo de columnas (Reemplaza col-md-6, col-xl-4) */
 .card-option-col {
-  /* No necesitamos estilos adicionales aquí si usamos grid-template-columns arriba */
+
 }
 
 /* Cuerpo de la tarjeta para adaptar a flex-column y theme */
@@ -445,13 +449,13 @@ th.num, td.num { text-align: right; }
   flex-direction: column;
   justify-content: space-between;
   height: 100%; /* H-100 */
-  color: var(--text); /* Asegura que el texto general herede el color del tema */
+  color: var(--text); /* texto general herede el color del tema */
 }
 
-/* El responsive es clave para el centrado: */
+/*  responsive  para el centrado: */
 @media (max-width: 1200px) { /* xl */
   .options-layout-centered {
-      /* Pasa a 2 columnas y el centrado sigue funcionando */
+      /* Pasa a 2 columnas y el centrado sigue */
       grid-template-columns: repeat(2, minmax(0, 350px));
   }
 }
@@ -462,18 +466,7 @@ th.num, td.num { text-align: right; }
   }
 }
 
-¡Absolutamente! Integrar el chat en tu sistema de temas con variables CSS es la mejor práctica para el Modo Oscuro/Claro (Dark/Light Mode). 🎨
 
-He ajustado el CSS del chat para que use tus variables de tema (--bg, --panel, --text, etc.) y he utilizado el color --brand (que parece ser tu azul primario) para los elementos interactivos.
-
-Aquí tienes el bloque CSS actualizado para el chat. Puedes reemplazar la sección de estilos de chat anterior con este nuevo código, asumiendo que ya tienes definidas tus variables base como var(--negro), var(--blanco), etc.
-
-Estilos del Chat de IA Adaptados al Tema
-CSS
-
-/* ========================================================= */
-/* 7. ESTILOS DEL BOTÓN Y CHAT FLOTANTE DE IA (THEMED)      */
-/* ========================================================= */
 
 /* ---------------------------------- */
 /* ESTILOS DEL BOTÓN FLOTANTE (AIChatButton) */
@@ -484,14 +477,12 @@ CSS
     bottom: 30px;
     right: 30px;
     z-index: 1000; 
-    
     /* Apariencia temática */
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    /* Usa el color de marca como fondo principal del botón */
     background-color: var(--brand); 
-    color: var(--text); /* No aplica a FaRobot, pero es buena práctica */
+    color: var(--text); /* No aplica a FaRobot */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -523,7 +514,7 @@ CSS
     /* Dimensiones y apariencia temática */
     width: 350px;
     height: 450px;
-    background-color: var(--panel); /* Fondo del panel o tarjeta del tema */
+    background-color: var(--panel); /* Fondo del panel  */
     border: 1px solid var(--border); /* Borde del tema */
     color: var(--text); /* Texto general del tema */
     border-radius: 10px;
@@ -539,9 +530,9 @@ CSS
 /* ---------------------------------- */
 /* ENCABEZADO DEL CHAT */
 /* ---------------------------------- */
+
 .chat-header {
     padding: 10px 15px;
-    /* Usamos el color de marca para el header del chat */
     background-color: var(--brand); 
     color: white; 
     display: flex;
@@ -573,11 +564,10 @@ CSS
     flex-grow: 1; 
     padding: 15px;
     overflow-y: auto; 
-    /* El fondo del cuerpo usa el color de fondo general del tema */
     background-color: var(--bg); 
 }
 
-/* Estilos generales del mensaje */
+/* Estilos del mensaje */
 .message {
     padding: 8px 12px;
     margin-bottom: 10px;
@@ -597,11 +587,11 @@ CSS
 
 /* Mensajes de la IA (izquierda) */
 .message.ai {
-    /* Usa un color que contraste bien con el fondo, como el del panel o un gris claro */
+    /* Usa un color un gris claro */
     background-color: var(--panel); 
     color: var(--text); /* Color de texto del tema */
     margin-right: auto; 
-    border: 1px solid var(--border); /* Añadimos borde para mejor separación en modo light */
+    border: 1px solid var(--border); /* borde para mejor separación en modo light */
     border-bottom-left-radius: 2px; 
 }
 
