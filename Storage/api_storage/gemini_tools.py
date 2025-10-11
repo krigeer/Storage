@@ -5,12 +5,12 @@ from django.db.models import Count, F
 from .models import (
     Centro, Rol, TipoDocumento, EstadoUsuario, Ubicacion, EstadoInventario, 
     TipoTecnologia, Marca, Activo, Tecnologia, MaterialDidactico, Prestamo, 
-    TipoReporte, EstadoReporte, PrioridadReporte, Reporte, Usuario # Agregué Usuario
+    TipoReporte, EstadoReporte, PrioridadReporte, Reporte, Usuario 
 )
 
-# ////////////////////////////////////////// FUNCIONES DE INVENTARIO (Necesarias para el views.py) //////////////////////////////////////////
+# ////////////////////////////////////////// FUNCIONES DE INVENTARIO  //////////////////////////////////////////
 
-# (Debes incluir las 3 funciones que tu views.py está importando)
+
 
 def contar_activos_por_ubicacion(nombre_ubicacion: str) -> str:
     """

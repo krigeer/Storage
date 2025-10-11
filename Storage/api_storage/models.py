@@ -73,6 +73,7 @@ class Usuario(AbstractUser):
     tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.PROTECT, verbose_name="Tipo de documento", default=1)
     contacto_principal = models.BigIntegerField(verbose_name="Contacto principal")
     contacto_secundario = models.BigIntegerField(null=True, blank=True, verbose_name="Contacto secundario")
+    fecha_nacimiento = models.DateField(null = True)
     estado = models.CharField(
         max_length=10,
         choices=EstadoUsuario.choices,

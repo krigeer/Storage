@@ -253,20 +253,15 @@ class DetalleUsuarioViewSet(viewsets.ModelViewSet):
 try:
     client = genai.Client()
 except Exception as e:
-    # Manejo de error si la clave no se encuentra
     print(f"Error al inicializar el cliente Gemini: {e}")
     client = None 
-
-# Definición del Modelo
 MODEL = 'gemini-2.5-flash' 
 
-# Mapeo de nombres de función a las funciones reales (para ejecución)
 function_map = {
     'contar_activos_por_ubicacion': contar_activos_por_ubicacion,
     'obtener_prestamos_activos_recientes': obtener_prestamos_activos_recientes,
     'obtener_conteo_reportes_por_estado_y_prioridad': obtener_conteo_reportes_por_estado_y_prioridad,
 }
-
 
 class GeminiChatView(APIView):
     permission_classes = [AllowAny]
@@ -285,62 +280,46 @@ class GeminiChatView(APIView):
 
         #  historial de mensajes (solo el prompt inicial)
         contents = [user_prompt]
-        
-        #  Bucle de Function Calling (permite llamadas encadenadas, aunque Gemini suele usar una)
         try:
-            #Primer llamado a Gemini 
             response = client.models.generate_content(
                 model=MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    tools=GEMINI_FUNCTIONS # lista de funciones 
+                    tools=GEMINI_FUNCTIONS 
                 )
             )
-
-            #  Procesar las llamadas a funciones devueltas por Gemini
             if response.function_calls:
-                
-                # Gemini suele devolver UNA sola llamada a función a la vez. (intente varias pero da error, solo usar una a la vez)
                 function_call = response.function_calls[0]
                 func_name = function_call.name
                 func_args = dict(function_call.args)
                 
                 print(f"-> Gemini solicitó la función: {func_name} con argumentos: {func_args}")
-
-                #  Ejecutar la función localmente (Acceso a la BD de Django aqui)
                 if func_name in function_map:
                     function_to_call = function_map[func_name]
-                    #consultas  de la BD y devuelve un string con el resultado
                     function_response_content = function_to_call(**func_args)
                 else:
                     function_response_content = f"Error: La función '{func_name}' solicitada por Gemini no está definida en el mapeo local."
 
-                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:150]}...") # depuración
-
-                # Preparamos el contexto para el segundo llamado a Gemini
+                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:150]}...")
                 contents.append(
-                    types.Part.from_function_call(function_call) # La llamada inicial de Gemini
+                    types.Part.from_function_call(function_call)
                 )
                 contents.append(
                     types.Part.from_function_response(
                         name=func_name,
-                        response={"content": function_response_content} # El resultado de la BD
+                        response={"content": function_response_content}
                     )
                 )
-
-                # Segundo llamado a Gemini (RAG) para generar la respuesta final
                 second_response = client.models.generate_content(
                     model=MODEL,
-                    contents=contents, # Enviamos todo el historial (prompt, llamada, resultado)
+                    contents=contents,
                     config=types.GenerateContentConfig(
-                        tools=GEMINI_FUNCTIONS # Reenviamos las herramientas por si acaso (aveces salian 3 errores toca depurar y organizar si no se enviar)
+                        tools=GEMINI_FUNCTIONS
                     )
                 )
-                
                 final_text = second_response.text
-
             else:
-                #  Si no hubo Function Calling, es una respuesta directa
+
                 final_text = response.text
 
             return Response({"response": final_text})
