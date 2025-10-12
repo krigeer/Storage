@@ -9,6 +9,7 @@ import string
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.decorators import action
 from django.db.models import Q
+from .utils import solo_letras
 
 class LoginSerializer(serializers.Serializer):
     documento = serializers.IntegerField()
@@ -32,87 +33,152 @@ class LoginSerializer(serializers.Serializer):
         data["user"] = usuario
         return data
 
-# Tablas Heredadas 
+
 class CentroSerializer(serializers.ModelSerializer):
+    def validate_nombre(self, value):
+        if any(char.isdigit() for char in value ):
+            raise serializers.ValidationError("El nombre del documento no debe contener numeros")
+        if len(value) > 50:
+            raise serializers.ValidationError("El nombre no debe contener mas de 50 letras")
+        if not value:
+            raise serializers.ValidationError("El campo no debe estar vacio")
+        return value
+    
+    def validate_direccion(self, value):
+        if len(value)>50:
+            raise serializers.ValidationError("La direccion no debe contener mas de 50 caracteres")
+        if not value:
+            raise serializers.ValidationError("El campo no debe estar vacio")
+        return value
+    
+    def validate_descripcion(self, value):
+        if len(value)>200:
+            raise serializers.ValidationError("La descripcion es demasiado Larga, debe ser menor a 200 caracteres")
+        if not value:
+            raise serializers.ValidationError("El campo no debe estar vacio")
+        return value 
     class Meta:
         model = Centro
         exclude = ['actualizado_en', 'creado_en']
 
-class RolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Rol
-        fields = '__all__'
+
 
 class TipoDocumentoSerializer(serializers.ModelSerializer):
+    # nombre = serializers.CharField(validators=[solo_letras])
+    def validate_nombre(self, value):
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El nombre del documento no debe contener números.")
+        return value
+    
+    def validate_simbolo(self, value):
+        if len(value) > 4:
+            raise serializers.ValidationError("El simbolo no debe tener mas de 4 letras")
+        if not value.isalpha() or not value.isupper():
+            raise serializers.ValidationError("El simbolo solo debe contener letras mayusculas")
+        return value
+    
+    
     class Meta:
         model = TipoDocumento
         fields = '__all__'
 
 
 class UbicacionSerializer(serializers.ModelSerializer):
+    def validate_centro(self, value):
+        if not value:
+            raise serializers.ValidationError("el campo no debe estar vacio")
+        return value
+    
+    def validate_nombre(self, value):
+        if not value:
+            raise serializers.ValidationError("el campo no debe estar vacio")
+        if len(value)>50:
+            raise serializers.ValidationError("Elnombre no debe contener mas de 50 caracteres")
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El campo no debe contener numeros")
+        return value
+    
+    def validate_descripcion(self, value):
+        if not value:
+            raise serializers.ValidationError("el campo no debe estar vacio")
+        if len(value)>200:
+            raise serializers.ValidationError("Elnombre no debe contener mas de 200 caracteres")
+        return value
+    
     class Meta:
         model = Ubicacion
         fields = '__all__'
 
-class EstadoInventarioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EstadoInventario
-        fields = '__all__'
 
 
 class TipoTecnologiaSerializer(serializers.ModelSerializer):
+    def validate_nombre(self, value):
+        if len(value)>50:
+            raise serializers.ValidationError("El nombre no debe ser mayor a 50 caracteres")
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El campo no debe contener numeros")
+        if not value:
+            raise serializers.ValidationError("El campo no debe estar vacio")
+        return value
     class Meta:
         model = TipoTecnologia
         fields = '__all__'
         
     
 class MarcaSerializer(serializers.ModelSerializer):
+    def validate_nombre(self, value):
+        if len(value)>50:
+            raise serializers.ValidationError("El nombre no debe ser mayor a 50 caracteres")
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El campo no debe contener numeros")
+        if not value:
+            raise serializers.ValidationError("El campo no debe estar vacio")
+        return value
     class Meta:
         model = Marca
         fields = '__all__'
 
-
-class TipoReporteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TipoReporte
-        fields = '__all__'  
+ 
 
 
-class PrioridadReporteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PrioridadReporte
-        fields = '__all__'
-
-class EstadoReporteSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EstadoReporte
-        fields = '__all__'
-
-
-# Tablas que heredan (CORREGIDOS)
 class TecnologiaSerializer(serializers.ModelSerializer):
-    #  (GET)
+    # --- GET ---
     tipo_nombre = serializers.StringRelatedField(source='tipo', read_only=True)
     marca_nombre = serializers.StringRelatedField(source='marca', read_only=True)
-    estado_nombre = serializers.StringRelatedField(source='estado', read_only=True)
     ubicacion_nombre = serializers.StringRelatedField(source='ubicacion', read_only=True)
 
-    # (POST)
-    tipo_id = serializers.PrimaryKeyRelatedField(
-        queryset=TipoTecnologia.objects.all(), source='tipo', write_only=True)
-    marca_id = serializers.PrimaryKeyRelatedField(
-        queryset=Marca.objects.all(), source='marca', write_only=True)
-    estado_id = serializers.PrimaryKeyRelatedField(
-        queryset=EstadoInventario.objects.all(), source='estado', write_only=True)
-    ubicacion_id = serializers.PrimaryKeyRelatedField(
-        queryset=Ubicacion.objects.all(), source='ubicacion', write_only=True)
+    # --- POST  ---
+    tipo_id = serializers.PrimaryKeyRelatedField(queryset=TipoTecnologia.objects.all(), source='tipo', write_only=True)
+    marca_id = serializers.PrimaryKeyRelatedField(queryset=Marca.objects.all(), source='marca', write_only=True)
+    ubicacion_id = serializers.PrimaryKeyRelatedField(queryset=Ubicacion.objects.all(), source='ubicacion', write_only=True)
+    
+    def validate_serie_fabricante(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Serie de fabricante debe tener al menos 4 caracteres.")
+        return value
+    
+    def validate_serie_sena(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Serie SENA debe tener al menos 4 caracteres.")
+        return value
+        
+    def validate_estado(self, value):
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El campo estado solo debe contener texto (sin números).")
+        return value
 
     class Meta:
         model = Tecnologia
+        fields = '__all__' 
+        extra_kwargs = {
+            'tipo': {'required': False, 'write_only': True}, 
+            'marca': {'required': False, 'write_only': True},
+            'ubicacion': {'required': False, 'write_only': True},
+        }
+    
+    class Meta:
+        model = Tecnologia
         fields = '__all__'
-        
-        #  EXTRA_KWARGS: Evita que DRF pida los campos originales ('tipo', 'marca', etc.) al momento de la escritura
-        #  proporcionando sus valores a través de los *_id.
         extra_kwargs = {
             'tipo': {'required': False},
             'marca': {'required': False},
@@ -121,24 +187,44 @@ class TecnologiaSerializer(serializers.ModelSerializer):
         }
 
 class MaterialDidacticoSerializer(serializers.ModelSerializer):
-    #  (GET) ---
-    estado_nombre = serializers.StringRelatedField(source='estado', read_only=True)
+    # --- GET  ---
     ubicacion_nombre = serializers.StringRelatedField(source='ubicacion', read_only=True)
     
-    # (POST/PUT) ---
-    estado_id = serializers.PrimaryKeyRelatedField(
-        queryset=EstadoInventario.objects.all(), source='estado', write_only=True
-    )
+    # --- POST/PUT  ---
     ubicacion_id = serializers.PrimaryKeyRelatedField(
-        queryset=Ubicacion.objects.all(), source='ubicacion', write_only=True
+        queryset=Ubicacion.objects.all(), 
+        source='ubicacion', 
+        write_only=True
     )
+
+    def validate_serie_fabricante(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Serie de fabricante debe tener al menos 4 caracteres.")
+        return value
+    
+    def validate_serie_sena(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Serie SENA debe tener al menos 4 caracteres.")
+        return value
+    
+
+    def validate_estado(self, value):
+        if any(char.isdigit() for char in value):
+            raise serializers.ValidationError("El campo estado solo debe contener texto (sin números).")
+        return value
+        
+    def validate_cantidad(self, value):
+        if value < 1:
+            raise serializers.ValidationError("La cantidad debe ser 1 o mayor.")
+        return value
+    
     
     class Meta:
         model = MaterialDidactico
         fields = '__all__'
         extra_kwargs = {
-            'estado': {'required': False},
-            'ubicacion': {'required': False},
+            'estado': {'required': False, 'write_only': True},
+            'ubicacion': {'required': False, 'write_only': True},
         }
 
 
@@ -301,18 +387,58 @@ class ReporteSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    rol = serializers.StringRelatedField()
-    tipo_documento = serializers.StringRelatedField()
-    centro = serializers.StringRelatedField()
+    
+    #GET 
+    rol = serializers.CharField(source='get_rol_display', read_only=True) 
+    tipo_documento = serializers.StringRelatedField(read_only=True)
+    centro = serializers.StringRelatedField(read_only=True)
+
+    # POST/Creación/Actualización
+    email = serializers.EmailField(required=True) 
     class Meta:
         model = Usuario
-        exclude = ["groups", "user_permissions", "password", "last_login", "is_active", "is_staff", "is_superuser", "date_joined", "contrasena_establecida_en", 'contrasena_expira_en', 'historial_contrasenas']
-
+        # Campos excluidos por seguridad
+        exclude = [
+            "groups", "user_permissions", "password", "last_login", 
+            "is_active", "is_staff", "is_superuser", "date_joined", 
+            "contrasena_establecida_en", 'contrasena_expira_en', 
+            'historial_contrasenas'
+        ]
+        
+        # Solo lectura
+        read_only_fields = ('documento',)
+        
     def create(self, validated_data):
+        """
+        Maneja la lógica de creación y generación de contraseña.
+        El envío del correo se delega a los signals.
+        """
+        #Generar Contraseña
         alfabeto = string.ascii_letters + string.digits + "!@#$%^&*()"
         contrasena_generada = ''.join(secrets.choice(alfabeto) for _ in range(12))
+        
+        # Crear instancia (sin guardar todavía)
         usuario = Usuario(**validated_data)
-        usuario.set_password(contrasena_generada)
+        
+        # Hashear la contraseña
+        usuario.establecer_contrasena(contrasena_generada, dias_validez=90, guardar=False)
+        
+        # Adjuntar la contraseña plana a la instancia temporalmente (llama el services)
+        usuario._contrasena_plana_temporal = contrasena_generada
+        
+        # Guardar el objeto en la DB. Esto dispara el services.
         usuario.save()
-        usuario._contrasena_plana = contrasena_generada
         return usuario
+        
+    def update(self, instance, validated_data):
+        """Maneja la lógica para PATCH/PUT (Actualización)."""
+        
+        # Si se quiere actualizar la contraseña, se debe hacer con un endpoint separado 
+        # (ej: /set_password) o se debe usar .establecer_contrasena().
+        # Aquí solo manejamos la actualización de campos normales (ej: nombre, contacto).
+        
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+            
+        instance.save()
+        return instance

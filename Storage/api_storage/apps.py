@@ -7,6 +7,5 @@ class ApiStorageConfig(AppConfig):
     verbose_name = 'Gestión de Almacén'
     
     def ready(self):
-    
         import api_storage.signals  
 
