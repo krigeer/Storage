@@ -100,7 +100,7 @@ class Usuario(AbstractUser):
         default=EstadoUsuario.ACTIVO,
         verbose_name="Estado"
     )
-    configuracion = models.ForeignKey(Configuracion, on_delete=models.PROTECT,verbose_name="configuracion", default="1")
+    configuracion = models.ForeignKey(Configuracion, on_delete=models.PROTECT,verbose_name="configuracion", blank=True)
 
     # --- Gestión de contraseña ---
     contrasena_establecida_en = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de establecimiento")

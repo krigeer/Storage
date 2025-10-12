@@ -10,12 +10,12 @@ from .services import enviar_credenciales_por_correo
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, permissions
-from .permissions import IsAdministrador
+from .permissions import IsAdministrador, UserBasic
 from rest_framework.decorators import action 
 from rest_framework.response import Response
 
 #modelos
-from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario
+from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario, Configuracion
 from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
 
 
@@ -32,12 +32,11 @@ class LoginWiew(APIView):
                 "Access": str(refresh.access_token),
                 "user":{
                     "id": user.id,
-                    "username": user.username,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "email": user.email,
                     "documento": user.documento,
-                    "rol": user.rol.id,
+                    "rol": user.rol,
                     "contacto": user.contacto_principal,
                 }
             }, status=status.HTTP_200_OK)
@@ -141,7 +140,7 @@ class PrestamoViewSet(viewsets.ModelViewSet):
         )
 
 class ReporteViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador, UserBasic]
     queryset = Reporte.objects.all()
     serializer_class = ReporteSerializer
     # permission_classes = [IsAdministrador]
@@ -160,7 +159,7 @@ class ReporteListViewSet(viewsets.ViewSet):
 
 
 class StadisticsViewSet(viewsets.ViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador]
     def list(self, request):
         data = {
             'total_usuarios': Usuario.objects.all().count(),
@@ -173,7 +172,7 @@ class StadisticsViewSet(viewsets.ViewSet):
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador]
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
@@ -181,17 +180,23 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class CrearUsuarioView(generics.CreateAPIView):
     queryset = Usuario.objects.all() 
     serializer_class = UsuarioSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador]
 
 class EditarUsuarioViewSet(RetrieveUpdateAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador, UserBasic]
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
 
 
 class DetalleUsuarioViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdministrador, UserBasic]
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
+
+
+# class configuracion(viewsets.ModelViewSet):
+#     permission_classes = [AllowAny]
+#     queryset = Configuracion.objects.all()
+#     serializer_class = configuracionSerializers

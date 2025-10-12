@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from .models import Usuario, Rol, TipoDocumento, Centro, EstadoUsuario, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, MaterialDidactico
-from .models import Tecnologia, Prestamo, Reporte, PrioridadReporte, EstadoReporte
+from .models import Tecnologia, Prestamo, Reporte, PrioridadReporte, EstadoReporte, Configuracion
 import secrets
 import string
 from django.contrib.contenttypes.models import ContentType
@@ -406,7 +406,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         ]
         
         # Solo lectura
-        read_only_fields = ('documento',)
+        # read_only_fields = ('documento',)
         
     def create(self, validated_data):
         """
@@ -442,3 +442,10 @@ class UsuarioSerializer(serializers.ModelSerializer):
             
         instance.save()
         return instance
+    
+
+
+# class configuracionSerializers(serializers.ModelSerializer):
+#     class Meta:
+#         model = Configuracion
+#         fields = '__all__'
