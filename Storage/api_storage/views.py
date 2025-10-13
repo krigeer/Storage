@@ -5,7 +5,11 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from .services import enviar_credenciales_por_correo
+from .services import enviar_credenciales_por_correo, PasswordService ,EmailService
+from djoser.serializers import SendEmailResetSerializer
+from django.shortcuts import get_object_or_404
+from rest_framework.parsers import JSONParser
+
 #decoradores
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -13,11 +17,15 @@ from rest_framework import generics, permissions
 from .permissions import IsAdministrador, UserBasic
 from rest_framework.decorators import action 
 from rest_framework.response import Response
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+#
 
 #modelos
 from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario, Configuracion
 from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
-
+from . serializers import RecordarContrasenaSerializer, ConfirmarResetPasswordSerializer
 
 
 class LoginWiew(APIView):
@@ -194,6 +202,127 @@ class DetalleUsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
+
+
+class RecordarContrasenaView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = RecordarContrasenaSerializer
+    # ¡Añadir esta línea es la solución!
+    parser_classes = [JSONParser] 
+    
+    def post(self, request, *args, **kwargs):
+        print("Content-Type RECEIVED:", request.content_type)
+        print("Full Headers:", request.headers)
+        
+        # El serializer ahora podrá acceder a request.data
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        documento = serializer.validated_data.get('documento')
+        
+        # Llamada al servicio
+        PasswordService().iniciar_reset_por_documento(documento, request)
+        
+        return Response(
+            {"detail": "Si la cuenta existe, recibirá un correo electrónico con un enlace para restablecer su contraseña."},
+            status=status.HTTP_200_OK
+        )
+    
+class UserViewSet(viewsets.ModelViewSet):
+    
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
+    def reset_password(self, request):
+        serializer =  RecordarContrasenaSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        
+        # Llamar al servicio de envío de email
+        EmailService.enviar_email_reset_password(email, request)
+        
+        return Response(
+            {"detail": "Si la cuenta existe, recibirá un correo."},
+            status=status.HTTP_200_OK
+        )
+
+
+class ConfirmarResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = ConfirmarResetPasswordSerializer
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        uid = serializer.validated_data['uid']
+        token = serializer.validated_data['token']
+        new_password = serializer.validated_data['new_password']
+        
+        try:
+            # Decodificar el uid
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = Usuario.objects.get(pk=user_id)
+            
+            # Validar el token
+            if not default_token_generator.check_token(user, token):
+                return Response(
+                    {"detail": "El enlace de restablecimiento es inválido o ha expirado."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Cambiar la contraseña
+            user.set_password(new_password)
+            user.save()
+            
+            return Response(
+                {"detail": "Contraseña restablecida exitosamente."},
+                status=status.HTTP_200_OK
+            )
+            
+        except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
+            return Response(
+                {"detail": "El enlace de restablecimiento es inválido."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+# Vista opcional para validar el token antes de mostrar el formulario
+class ValidarTokenResetView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request, uid, token):
+        try:
+            user_id = force_str(urlsafe_base64_decode(uid))
+            user = Usuario.objects.get(pk=user_id)
+            
+            if default_token_generator.check_token(user, token):
+                return Response(
+                    {"detail": "Token válido", "valid": True},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    {"detail": "Token inválido o expirado", "valid": False},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+                
+        except (TypeError, ValueError, OverflowError, Usuario.DoesNotExist):
+            return Response(
+                {"detail": "Token inválido", "valid": False},
+                 status=status.HTTP_400_BAD_REQUEST
+            )
+               
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # class configuracion(viewsets.ModelViewSet):

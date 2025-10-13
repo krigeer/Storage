@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import LoginWiew, CentroViewSet, TipoDocumentosViewSet, UbicacionViewSet, StadisticsViewSet, CrearUsuarioView, EditarUsuarioViewSet, DetalleUsuarioViewSet
 from  .views import  TipoTecnologiaViewSet, MarcaViewSet, TecnologiaViewSet, MaterialDidacticoViewSet, PrestamoViewSet, ReporteViewSet, ReporteListViewSet, UsuarioViewSet
-
+from .views import RecordarContrasenaView, ConfirmarResetPasswordView, ValidarTokenResetView
 
 router = DefaultRouter()
 
@@ -36,6 +36,9 @@ router.register(r'tipos_documentos', TipoDocumentosViewSet, basename='tipos_docu
 urlpatterns = [
     path('editar_usuarios/<int:id>/', EditarUsuarioViewSet.as_view(), name='editar_usuarios'), # editar usuario
     path("crear_usuarios/", CrearUsuarioView.as_view(), name="crear-usuario"), # crear usuario (L)
+    path("recordar_contrasena/", RecordarContrasenaView.as_view(), name="recordar_contrasena"), #(L)
+    path("reset-password-confirm/<str:uid>/<str:token>/", ConfirmarResetPasswordView.as_view(), name="reset_password_confirm"), #(L)
+    path("reset-password-validate/<str:uid>/<str:token>/", ValidarTokenResetView.as_view(), name="validate_reset_token"),#(L)
     path('login/', LoginWiew.as_view(), name='login'), # login
     path('', include(router.urls)), 
 ]

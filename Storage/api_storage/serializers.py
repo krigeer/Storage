@@ -443,8 +443,34 @@ class UsuarioSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class RecordarContrasenaSerializer(serializers.Serializer):
+     documento = serializers.CharField(
+        max_length=20, 
+        required=True, 
+        error_messages={'required': 'El número de documento es obligatorio.'}
+    )
 
-
+class ConfirmarResetPasswordSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8,
+        error_messages={
+            'required': 'La nueva contraseña es obligatoria.',
+            'min_length': 'La contraseña debe tener al menos 8 caracteres.'
+        }
+    )
+    confirm_password = serializers.CharField(write_only=True)
+    
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError({
+                'confirm_password': 'Las contraseñas no coinciden.'
+            })
+        return data
+    
+    
 # class configuracionSerializers(serializers.ModelSerializer):
 #     class Meta:
 #         model = Configuracion
