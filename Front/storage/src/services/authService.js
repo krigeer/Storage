@@ -1,12 +1,12 @@
 import axios from "axios";
 import { API_BASE_URL } from "../config/data";
-const API_URL = "https://inventariosena.pythonanywhere.com/inventario";
-// const API_URL = "http://127.0.0.1:8000/inventario";
+// const API_URL = "https://inventariosena.pythonanywhere.com/inventario";
+const API_URL = API_BASE_URL;
 
 export const login = async ({ documento, password }) => {
   try {
     const response = await axios.post(
-      `${API_URL}/login/`,
+      `${API_URL}login/`,
       { documento, password },
       { headers: { "Content-Type": "application/json" } }
     );

@@ -319,7 +319,83 @@ class ValidarTokenResetView(APIView):
                  status=status.HTTP_400_BAD_REQUEST
             )
                
+try:
+    client = genai.Client()
+except Exception as e:
+    print(f"Error al inicializar el cliente Gemini: {e}")
+    client = None 
+MODEL = 'gemini-2.5-flash' 
 
+function_map = {
+    'contar_activos_por_ubicacion': contar_activos_por_ubicacion,
+    'obtener_prestamos_activos_recientes': obtener_prestamos_activos_recientes,
+    'obtener_conteo_reportes_por_estado_y_prioridad': obtener_conteo_reportes_por_estado_y_prioridad,
+}
+
+class GeminiChatView(APIView):
+    permission_classes = [AllowAny]
+    """
+    Endpoint para manejar la conversación con Gemini, integrando Function Calling
+    para acceder a la base de datos  (RAG).
+    """
+    def post(self, request):
+        user_prompt = request.data.get('prompt')
+        
+        if not user_prompt:
+            return Response({"error": "Prompt (pregunta) es requerido."}, status=400)
+        
+        if not client:
+             return Response({"error": "El cliente Gemini no está inicializado. Verifica tu clave API."}, status=500)
+
+        #  historial de mensajes (solo el prompt inicial)
+        contents = [user_prompt]
+        try:
+            response = client.models.generate_content(
+                model=MODEL,
+                contents=contents,
+                config=types.GenerateContentConfig(
+                    tools=GEMINI_FUNCTIONS 
+                )
+            )
+            if response.function_calls:
+                function_call = response.function_calls[0]
+                func_name = function_call.name
+                func_args = dict(function_call.args)
+                
+                print(f"-> Gemini solicitó la función: {func_name} con argumentos: {func_args}")
+                if func_name in function_map:
+                    function_to_call = function_map[func_name]
+                    function_response_content = function_to_call(**func_args)
+                else:
+                    function_response_content = f"Error: La función '{func_name}' solicitada por Gemini no está definida en el mapeo local."
+
+                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:150]}...")
+                contents.append(
+                    types.Part.from_function_call(function_call)
+                )
+                contents.append(
+                    types.Part.from_function_response(
+                        name=func_name,
+                        response={"content": function_response_content}
+                    )
+                )
+                second_response = client.models.generate_content(
+                    model=MODEL,
+                    contents=contents,
+                    config=types.GenerateContentConfig(
+                        tools=GEMINI_FUNCTIONS
+                    )
+                )
+                final_text = second_response.text
+            else:
+
+                final_text = response.text
+
+            return Response({"response": final_text})
+
+        except Exception as e:
+            print(f"Error general en la vista GeminiChatView: {e}")
+            return Response({"error": f"Ocurrió un error en el proceso de IA: {str(e)}"}, status=500)
 
 
 
