@@ -17,6 +17,13 @@
   --home-nav-bg: white;
   --home-card-bg: white;
   --sena-green: #28a745;
+  --home-bg-primary: #f8f9fa; /* Color de fondo claro por defecto  */
+  --home-bg-secondary: white;
+  --home-text-color: #212529; /* Texto oscuro por defecto */
+  --home-text-muted: #6c757d; /* Gris oscuro por defecto */
+  --home-nav-bg: white;
+  --home-card-bg: white;
+  --sena-green: #28a745;
 
   /* Estilos específicos de la Sidebar (NAV) */
   --sidebar-panel: #145e19; /* Verde más oscuro que --primary-color */
@@ -466,7 +473,18 @@ th.num, td.num { text-align: right; }
   }
 }
 
+¡Absolutamente! Integrar el chat en tu sistema de temas con variables CSS es la mejor práctica para el Modo Oscuro/Claro (Dark/Light Mode). 🎨
 
+He ajustado el CSS del chat para que use tus variables de tema (--bg, --panel, --text, etc.) y he utilizado el color --brand (que parece ser tu azul primario) para los elementos interactivos.
+
+Aquí tienes el bloque CSS actualizado para el chat. Puedes reemplazar la sección de estilos de chat anterior con este nuevo código, asumiendo que ya tienes definidas tus variables base como var(--negro), var(--blanco), etc.
+
+Estilos del Chat de IA Adaptados al Tema
+CSS
+
+/* ========================================================= */
+/* 7. ESTILOS DEL BOTÓN Y CHAT FLOTANTE DE IA (THEMED)      */
+/* ========================================================= */
 
 /* ---------------------------------- */
 /* ESTILOS DEL BOTÓN FLOTANTE (AIChatButton) */
@@ -477,12 +495,14 @@ th.num, td.num { text-align: right; }
     bottom: 30px;
     right: 30px;
     z-index: 1000; 
+    
     /* Apariencia temática */
     width: 60px;
     height: 60px;
     border-radius: 50%;
+    /* Usa el color de marca como fondo principal del botón */
     background-color: var(--brand); 
-    color: var(--text); /* No aplica a FaRobot */
+    color: var(--text); /* No aplica a FaRobot, pero es buena práctica */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -533,6 +553,7 @@ th.num, td.num { text-align: right; }
 
 .chat-header {
     padding: 10px 15px;
+    /* Usamos el color de marca para el header del chat */
     background-color: var(--brand); 
     color: white; 
     display: flex;

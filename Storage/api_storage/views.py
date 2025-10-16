@@ -27,6 +27,8 @@ from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, Tip
 from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
 from . serializers import RecordarContrasenaSerializer, ConfirmarResetPasswordSerializer
 
+#python
+import os
 
 class LoginWiew(APIView):
     permission_classes = [AllowAny]
