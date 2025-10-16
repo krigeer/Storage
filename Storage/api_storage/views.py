@@ -27,6 +27,12 @@ from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, Tip
 from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
 from . serializers import RecordarContrasenaSerializer, ConfirmarResetPasswordSerializer
 
+#IA
+from google import genai
+from google.genai import types
+from .gemini_tools import GEMINI_FUNCTIONS, contar_activos_por_ubicacion, obtener_prestamos_activos_recientes, obtener_conteo_reportes_por_estado_y_prioridad
+
+
 #python
 import os
 
