@@ -105,7 +105,7 @@ const Nav = ({ rol }) => {
     };
     
     let navItems = [];
-    if (rol === 1) {
+    if (rol === "ADM") {
         navItems = [
             { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
             { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnología' },
@@ -117,7 +117,7 @@ const Nav = ({ rol }) => {
             { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
             { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
         ];
-    } else if (rol === 2) {
+    } else if (rol === "INS") {
         navItems = [
             { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
             { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },

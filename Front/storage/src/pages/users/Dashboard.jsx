@@ -76,6 +76,7 @@ export default function Dashboard() {
       navigate(`/dashboard/buscar?q=${q}`);
     }
   };
+  console.log(user);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
