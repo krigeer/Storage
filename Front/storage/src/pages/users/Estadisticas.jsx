@@ -79,7 +79,7 @@ const StatCard = ({ icon, title, value, color, description, isLoading }) => (
 );
 const Estadisticas = () => {
   const { rol } = useOutletContext();
-  if (rol == "1") {
+  if (rol == "ADM") {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -214,7 +214,7 @@ const Estadisticas = () => {
       </div>
     );
   } else {
-    if (rol == "2") {
+    if (rol == "INST") {
       return (
         <div className="container py-5">
           <div className="text-center mb-5 title-section">

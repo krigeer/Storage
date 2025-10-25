@@ -36,6 +36,9 @@ from .gemini_tools import GEMINI_FUNCTIONS, contar_activos_por_ubicacion, obtene
 #python
 import os
 
+
+
+
 class LoginWiew(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
@@ -318,7 +321,16 @@ class ValidarTokenResetView(APIView):
                 {"detail": "Token inválido", "valid": False},
                  status=status.HTTP_400_BAD_REQUEST
             )
+
+  
                
+class RolChoicesView(APIView):
+    def get(self, request):
+        roles = [{'id': c.value, 'nombre': c.label} for c in Rol]
+        return Response(roles)
+
+
+
 try:
     client = genai.Client()
 except Exception as e:

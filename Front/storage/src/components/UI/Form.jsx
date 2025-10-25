@@ -140,7 +140,7 @@ const handleAction = async (opt) => {
                     } else if (field.type === 'email' && !/\S+@\S+\.\S+/.test(values[field.id])) {
                         errorElement.textContent = 'Ingrese un correo electrónico válido';
                         fieldValid = false;
-                    } else if (field.type === "text" && values[field.id].length < 3) {
+                    } else if (field.type === "text" && values[field.id].length < 2) {
                         errorElement.textContent = 'El campo debe tener al menos 3 caracteres';
                         fieldValid = false;
                     } else if (field.type === "text" && !/^[a-zA-Z0-9\s.,ñÑ]+$/.test(values[field.id])) {

@@ -76,7 +76,7 @@ export default function Dashboard() {
       navigate(`/dashboard/buscar?q=${q}`);
     }
   };
-  console.log(user);
+  // console.log(user);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -85,14 +85,6 @@ export default function Dashboard() {
   return (
     
     <div className="layout">
-      <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        {Nav && (
-          <Nav
-            rol={user?.rol}
-          />
-        )}
-      </aside>
-
       <div className="content">
         {Header && (
           <Header
@@ -105,6 +97,14 @@ export default function Dashboard() {
             onToggleTheme={toggleTheme}
           />
         )}
+
+        <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        {Nav && (
+          <Nav
+            rol={user?.rol}
+          />
+        )}
+      </aside>
 
         <main className="main">
           <Outlet context={{ rol: user?.rol, documento: user?.documento }} />

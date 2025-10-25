@@ -94,14 +94,13 @@ class Usuario(AbstractUser):
     tipo_documento = models.ForeignKey(TipoDocumento, on_delete=models.PROTECT, verbose_name="Tipo de documento", default=1)
     contacto_principal = models.BigIntegerField(verbose_name="Contacto principal")
     contacto_secundario = models.BigIntegerField(null=True, blank=True, verbose_name="Contacto secundario")
-    fecha_nacimiento = models.DateField(null = True)
     estado = models.CharField(
         max_length=10,
         choices=EstadoUsuario.choices,
         default=EstadoUsuario.ACTIVO,
         verbose_name="Estado"
     )
-    configuracion = models.ForeignKey(Configuracion, on_delete=models.PROTECT,verbose_name="configuracion", blank=True)
+    configuracion = models.ForeignKey(Configuracion, on_delete=models.PROTECT,verbose_name="configuracion", blank=True, null=True)
 
     # --- Gestión de contraseña ---
     contrasena_establecida_en = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de establecimiento")

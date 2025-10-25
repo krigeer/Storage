@@ -108,12 +108,12 @@ const Nav = ({ rol }) => {
     if (rol === "ADM") {
         navItems = [
             { id: 'inicio', icon: <FaHome />, label: 'Inicio' },
-            { id: 'GestionarTecnologia', icon: <FaLaptop />, label: 'Gestionar Tecnología' },
-            { id: 'GestionarMateriales', icon: <FaBoxes />, label: 'Gestionar Materiales' },
-            { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: 'Gestionar Prestamos' },
-            { id: 'GestionarUsuarios', icon: <FaUsers />, label: 'Gestionar Usuarios' },
-            { id: 'GestionarReportes', icon: <FaChartBar />, label: 'Gestionar Reportes' },
-            { id: 'GestionarBD', icon: <FaDatabase />, label: 'Gestionar BD' },
+            { id: 'GestionarTecnologia', icon: <FaLaptop />, label: ' Tecnología' },
+            { id: 'GestionarMateriales', icon: <FaBoxes />, label: ' Materiales' },
+            { id: 'GestionarPrestamos', icon: <FaExchangeAlt />, label: ' Prestamos' },
+            { id: 'GestionarUsuarios', icon: <FaUsers />, label: 'Usuarios' },
+            { id: 'GestionarReportes', icon: <FaChartBar />, label: ' Reportes' },
+            { id: 'GestionarBD', icon: <FaDatabase />, label: ' BD' },
             { id: 'configuracion', icon: <FaCog />, label: 'Configuración' },
             { id: 'cerrarSesion', icon: <FaSignOutAlt />, label: 'Cerrar Sesión' },
         ];
@@ -134,10 +134,6 @@ const Nav = ({ rol }) => {
 
     return (
         <nav ref={navRef}>
-            <div className="brand">
-                <div className="logo">📦</div>
-                <div className="brand-text">Inventario SENA</div>
-            </div>
             <div className="menu" ref={menuRef}>
                 {navItems.map((item) => (
                     <button

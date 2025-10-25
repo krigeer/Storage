@@ -1,208 +1,208 @@
 /* ========================================================= */
-/* 1. DEFINICIÓN DE VARIABLES DE TEMA Y COLORES BASE         */
+/* COLORES BASE 
 /* ========================================================= */
 
-/* Modo Oscuro (Dark Mode - Default) */
 :root {
-  /* Fondos y Texto generales (Header, Cards, Body) */
-  --bg: var(--negro); 
-  --panel: #11161d;
-  --text: var(--blanco);
-  --muted: #8a97a7;
-  --border: #1f2937;
-  --home-bg-primary: #f8f9fa; /* Color de fondo claro por defecto  */
-  --home-bg-secondary: white;
-  --home-text-color: #212529; /* Texto oscuro por defecto */
-  --home-text-muted: #6c757d; /* Gris oscuro por defecto */
-  --home-nav-bg: white;
-  --home-card-bg: white;
-  --sena-green: #28a745;
-  --home-bg-primary: #f8f9fa; /* Color de fondo claro por defecto  */
-  --home-bg-secondary: white;
-  --home-text-color: #212529; /* Texto oscuro por defecto */
-  --home-text-muted: #6c757d; /* Gris oscuro por defecto */
-  --home-nav-bg: white;
-  --home-card-bg: white;
-  --sena-green: #28a745;
+/* Fondos y Texto generales (Header, Cards, Body) */
+--negro: #000;
+--blanco: #fff;
+--bg: #11161d;
+--panel: #11161d;
+--text: var(--blanco);
+--muted: #8a97a7;
+--border: #1f2937;
+--sena-green: #28a745;
+--primary-color: #28a745;
 
-  /* Estilos específicos de la Sidebar (NAV) */
-  --sidebar-panel: #145e19; /* Verde más oscuro que --primary-color */
-  --sidebar-text: #d1d5db; /* Texto gris claro sobre verde oscuro */
+/* (NAV) */
+--sidebar-panel: #145e19; /* Verde más oscuro */
+--sidebar-text: #d1d5db; /* Texto gris claro sobre verde oscuro */
 
-  /* Colores de marca y sistema */
-  --brand: #4f46e5;
-  --brand-600: #4338ca;
-  --success: var(--success-color, #16a34a);
-  --warning: var(--warning-color, #f59e0b);
+/* Colores de marca y sistema */
+--brand: #4f46e5;
+--brand-600: #4338ca;
+--success: var(--success-color, #16a34a);
+--warning: var(--warning-color, #f59e0b);
 }
 
 body.light {
-  /* Fondos y Texto generales */
-  --bg: #f8fafc;
-  --panel: var(--blanco);
-  --text: var(--negro);
-  --muted: #667085;
-  --border: #e5e7eb;
+/* Fondos y Texto generales */
+--bg: #f8fafc;
+--panel: var(--blanco);
+--text: var(--negro);
+--muted: #667085;
+--border: #e5e7eb;
 
-  /* Estilos específicos de la Sidebar (NAV) */
-  --sidebar-panel: var(--primary-color); /* Fondo verde principal */
-  --sidebar-text: var(--blanco); /* Texto blanco sobre verde */
+/*  (NAV) */
+--sidebar-panel: var(--primary-color); /* Fondo verde principal */
+--sidebar-text: var(--blanco); /* Texto blanco sobre verde */
 
-  /* Colores de marca y sistema */
-  --brand: #4f46e5;
-  --brand-600: #4338ca;
-  --success: var(--success-color, #28aa45);
-  --warning: var(--warning-color, #ffc107);
+/* Colores de marca y sistema */
+--brand: #4f46e5;
+--brand-600: #4338ca;
+--success: var(--success-color, #28aa45);
+--warning: var(--warning-color, #ffc107);
 }
 
 /* ========================================================= */
-/* 2. ESTILOS GLOBALES Y LAYOUT                              */
+/* ESTILOS GLOBALES Y LAYOUT               */
 /* ========================================================= */
 
 * { box-sizing: border-box; }
 html, body { height: 100%; scroll-behavior: smooth; }
 body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
-  color: var(--text); 
-  background: var(--bg); 
+margin: 0;
+font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+color: var(--text); 
+background: var(--bg); 
 }
 
+/*  (SideBar + Content) a FLEX (Header + Nav + Content) */
 .layout {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  min-height: 100vh;
+display: flex;
+flex-direction: column; 
+min-height: 100vh;
 }
 
-/* Sidebar (Nav) */
+/* Contenido Principal (Main y Footer) */
+.content { 
+display: flex; 
+flex-direction: column; 
+flex-grow: 1; 
+min-height: 100vh; 
+}
+
+/* ========================================================= */
+/* SIDEBAR (NAV)  */
+/* ========================================================= */
+
+/* La etiqueta <aside> con la clase .sidebar es la NAV  */
 .sidebar {
-  background: var(--sidebar-panel);
-  border-right: 1px solid var(--border);
-  padding: 16px 12px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+width: 100%;
+background: var(--sidebar-panel); 
+border-bottom: 1px solid var(--border); 
+padding: 0; 
+
+/* CONFIGURACIÓN CLAVE PARA ANIMACIÓN DESLIZABLE (ocultar hacia arriba) */
+max-height: 0; /* Inicialmente oculto (colapsado) */
+overflow: hidden; /* Oculta el contenido al colapsar */
+transition: max-height 0.3s ease-in-out; /* Animación para deslizar */
+z-index: 9; 
 }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  margin-bottom: 12px;
-  color: var(--sidebar-text); 
+/* CLASE ACTIVA */
+.sidebar.open {
+max-height: 600px; 
 }
-.logo { font-size: 22px; }
-.brand-text { font-weight: 700; letter-spacing: .2px; }
 
-.menu { display: grid; gap: 4px; margin-top: 8px; }
+.menu { 
+display: flex; 
+flex-wrap: wrap; 
+gap: 0; 
+padding: 8px 10px; 
+justify-content: center; 
+margin: 0; 
+}
 
 .menu-item {
-  display: flex;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: var(--sidebar-text); 
-  text-decoration: none;
-  border: 1px solid transparent;
-  text-align: left;
-  transition: background-color 0.2s, border-color 0.2s;
+display: flex;
+flex-direction: column; 
+align-items: center;
+justify-content: center;
+min-width: 80px; 
+padding: 8px 12px;
+border-radius: 8px;
+color: var(--sidebar-text); 
+text-decoration: none;
+border: none; 
+text-align: center;
+transition: background-color 0.2s;
+font-size: 0.75rem; 
 }
-.menu-item span:first-child { margin-right: 8px; }
 
-.menu-item:hover { background: rgba(79,70,229,.08); border-color: rgba(79,70,229,.25); }
-.menu-item.active { background: rgba(79,70,229,.12); border-color: rgba(79,70,229,.35); }
+.menu-item span:first-child { 
+margin-right: 0 !important; 
+font-size: 1.5em; 
+}
+.menu-item span:last-child {
+margin-top: 4px; 
+white-space: nowrap; 
+}
 
-.content { display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh; }
+.menu-item:hover { background: rgba(255, 255, 255, 0.15); }
+.menu-item.active { background: rgba(0, 0, 0, 0.25); }
 
 
 /* ========================================================= */
-/*  HEADER  .header y .header-container    */
+/* HEADER .header                            */
 /* ========================================================= */
 
-.header, .header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px; 
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  color: var(--text);
-  height: 64px; 
+.header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 12px 16px; 
+background: var(--panel);
+border-bottom: 1px solid var(--border);
+position: sticky; 
+top: 0;
+z-index: 10;
+color: var(--text);
+height: 64px; 
 }
 
-/* clases del header.jsx */
+
 .header-left { display: flex; align-items: center; gap: 10px; }
 .title { margin: 0; font-size: 18px; color: var(--text); }
 .header-right { display: flex; align-items: center; gap: 10px; }
 
 /* Barra de Búsqueda */
 .searchbar, .search-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  position: relative;
-  background: transparent;
-  border: 1px solid var(--border);
-  padding: 8px 10px;
-  border-radius: 10px;
-  min-width: 320px;
-  max-width: 500px;
+display: flex;
+align-items: center;
+gap: 8px;
+position: relative;
+background: transparent;
+border: 1px solid var(--border);
+padding: 8px 10px;
+border-radius: 10px;
+min-width: 320px;
+max-width: 500px;
 }
 
 .search-icon { 
-  opacity: .8;
-  color: var(--muted); 
+opacity: .8;
+color: var(--muted); 
 }
 
 /* Input de Búsqueda */
 .searchbar input, .search-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  width: 100%;
-  padding: 0; 
-  font-size: 14px;
+background: transparent;
+border: none;
+outline: none;
+color: var(--text);
+width: 100%;
+padding: 0; 
+font-size: 14px;
 }
-
-.searchbar input:focus, .search-input:focus {
-  border-color: transparent;
-  box-shadow: none; 
-}
-
 
 /* Botones de Icono */
 .icon-btn {
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  padding: 8px 10px;
-  border-radius: 10px;
-  cursor: pointer;
+border: 1px solid var(--border);
+background: transparent;
+color: var(--text);
+padding: 8px 10px;
+border-radius: 10px;
+cursor: pointer;
 }
 .icon-btn:hover { border-color: var(--brand); }
 
 /* Perfil de Usuario */
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.user-name {
-    font-size: 14px;
-    color: var(--text); 
-    font-weight: 500;
-}
 .avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: linear-gradient(135deg, var(--brand), var(--brand-600));
-  color: white; font-weight: 700; font-size: 12px;
+width: 35px; height: 35px; border-radius: 50%;
+display: grid; place-items: center;
+background: linear-gradient(135deg, var(--brand), var(--brand-600));
+color: white; font-weight: 700; font-size: 12px;
 }
 
 
@@ -226,25 +226,25 @@ body {
 .card-title { color: var(--muted); font-size: 13px; }
 .card-value { font-size: 22px; font-weight: 700; margin-top: 6px; }
 
-/* Estilo para el ícono */
+/*  ícono */
 .card-icon {
   font-size: 3rem; /* Icono grande */
   margin-bottom: 0.75rem;
   color: var(--brand); 
 }
 
-/* Estilo para el título de la tarjeta  */
+/*  título de la tarjeta  */
 .card-custom-title {
   font-size: 1.35rem; 
   font-weight: 700;
-  color: var(--text); /* Se adapta al tema (blanco/negro) */
+  color: var(--text); 
   margin-bottom: 0.5rem;
 }
 
-/* Estilo para la descripción de la tarjeta */
+/*descripción de la tarjeta */
 .card-custom-text {
   font-size: 1rem;
-  color: var(--muted); /* Usa el color gris */
+  color: var(--muted); 
   margin-bottom: 1.5rem;
 }
 
@@ -316,29 +316,50 @@ th.num, td.num { text-align: right; }
 /*  RESPONSIVE                                             */
 /* ========================================================= */
 
-@media (max-width: 1024px) {
-  .layout { grid-template-columns: 72px 1fr; }
-  .brand-text { display: none; }
-  /* Ajuste para modo compacto */
-  .menu-item { justify-content: center; } 
-  .menu-item span:first-child { margin-right: 0 !important; }
-  .menu-item span:last-child { display: none; }
-  .searchbar { min-width: 0; width: 250px; }
-}
 @media (max-width: 720px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { position: fixed; left: -280px; width: 260px; height: 100vh; z-index: 20; }
-  .sidebar.open { left: 0; transition: left .25s ease; }
-  .content { grid-template-rows: auto 1fr auto; }
-  .searchbar { min-width: 0; width: 52vw; }
-  .cards { grid-template-columns: 1fr; }
+
+.header-left .title {
+ display: none;
+}
+
+
+.searchbar { 
+min-width: 0; 
+width: 100%; 
+flex-grow: 1;
+margin-right: 10px;
+}
+
+
+.sidebar .menu {
+justify-content: space-around; 
+/* flex-wrap: nowrap; Forzar una sola fila */
+overflow-x: auto; 
+-webkit-overflow-scrolling: touch; 
+}
+
+.menu-item {
+min-width: 65px; 
+}
+  
+
+.cards-layout-wrapper {
+grid-template-columns: 1fr; 
+}
+}
+
+@media (max-width: 1024px) {
+.cards-layout-wrapper {
+ grid-template-columns: repeat(2, 1fr); 
+}
+
 }
 
 /* ========================================================= */
-/*  SOPORTE DE TEMAS PARA ESTADÍSTICAS DINÁMICAS           */
+/* ESTADÍSTICAS DINÁMICAS           */
 /* ========================================================= */
 
-/* Colores Dinámicos para Texto y Fondos de Íconos */
+/*  Texto y Fondos de Íconos */
 .text-color-primary { color: var(--primary-color) !important; }
 .bg-color-primary { background-color: var(--primary-color) !important; color: var(--blanco); }
 
@@ -399,7 +420,7 @@ th.num, td.num { text-align: right; }
   font-size: 1rem;
   font-weight: 700; /* fw-bold */
   margin-bottom: 4px; /* mb-1 */
-  color: var(--text); /* Se adapta al tema (blanco/negro) */
+  color: var(--text); 
   line-height: 1.2;
 }
 
@@ -407,7 +428,7 @@ th.num, td.num { text-align: right; }
 .statistic-value {
   font-size: 0.95rem; 
   font-weight: 500;
-  color: var(--muted); /* CLAVE de api Se adapta al tema (gris claro/oscuro) */
+  color: var(--muted); 
 }
 
 /* dispositivos medianos */
@@ -426,7 +447,6 @@ th.num, td.num { text-align: right; }
 
 
 /* ========================================================= */
-/* ESTILOS ESPECÍFICOS DE LA SECCIÓN DE OPCIONES CENTRADAS    */
 /* (userOptions)                                             */
 /* ========================================================= */
 
@@ -443,12 +463,9 @@ th.num, td.num { text-align: right; }
 .text-color{
   color:#28a745
 }
-/* Manejo de columnas (Reemplaza col-md-6, col-xl-4) */
-.card-option-col {
 
-}
 
-/* Cuerpo de la tarjeta para adaptar a flex-column y theme */
+/*a tarjeta  */
 .card-body-theme {
   padding: 1rem; /* p-4 */
   text-align: center;
@@ -456,14 +473,13 @@ th.num, td.num { text-align: right; }
   flex-direction: column;
   justify-content: space-between;
   height: 100%; /* H-100 */
-  color: var(--text); /* texto general herede el color del tema */
+  color: var(--text); 
 }
 
 /*  responsive  para el centrado: */
 @media (max-width: 1200px) { /* xl */
   .options-layout-centered {
-      /* Pasa a 2 columnas y el centrado sigue */
-      grid-template-columns: repeat(2, minmax(0, 350px));
+      grid-template-columns: repeat(3, minmax(0, 350px));
   }
 }
 @media (max-width: 768px) { /* md */
@@ -473,18 +489,12 @@ th.num, td.num { text-align: right; }
   }
 }
 
-¡Absolutamente! Integrar el chat en tu sistema de temas con variables CSS es la mejor práctica para el Modo Oscuro/Claro (Dark/Light Mode). 🎨
 
-He ajustado el CSS del chat para que use tus variables de tema (--bg, --panel, --text, etc.) y he utilizado el color --brand (que parece ser tu azul primario) para los elementos interactivos.
-
-Aquí tienes el bloque CSS actualizado para el chat. Puedes reemplazar la sección de estilos de chat anterior con este nuevo código, asumiendo que ya tienes definidas tus variables base como var(--negro), var(--blanco), etc.
-
-Estilos del Chat de IA Adaptados al Tema
-CSS
 
 /* ========================================================= */
 /* 7. ESTILOS DEL BOTÓN Y CHAT FLOTANTE DE IA (THEMED)      */
 /* ========================================================= */
+
 
 /* ---------------------------------- */
 /* ESTILOS DEL BOTÓN FLOTANTE (AIChatButton) */
@@ -496,13 +506,13 @@ CSS
     right: 30px;
     z-index: 1000; 
     
-    /* Apariencia temática */
+    /* Apariencia  */
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    /* Usa el color de marca como fondo principal del botón */
+    /*  fondo del botón */
     background-color: var(--brand); 
-    color: var(--text); /* No aplica a FaRobot, pero es buena práctica */
+    color: var(--text); 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -531,7 +541,6 @@ CSS
     right: 30px;
     z-index: 999; 
     
-    /* Dimensiones y apariencia temática */
     width: 350px;
     height: 450px;
     background-color: var(--panel); /* Fondo del panel  */
@@ -553,7 +562,6 @@ CSS
 
 .chat-header {
     padding: 10px 15px;
-    /* Usamos el color de marca para el header del chat */
     background-color: var(--brand); 
     color: white; 
     display: flex;
@@ -600,7 +608,7 @@ CSS
 
 /* Mensajes del usuario (derecha) */
 .message.user {
-    background-color: var(--brand); /* Usa color de marca */
+    background-color: var(--brand); 
     color: white;
     margin-left: auto; 
     border-bottom-right-radius: 2px; 
@@ -608,17 +616,16 @@ CSS
 
 /* Mensajes de la IA (izquierda) */
 .message.ai {
-    /* Usa un color un gris claro */
-    background-color: var(--panel); 
-    color: var(--text); /* Color de texto del tema */
-    margin-right: auto; 
-    border: 1px solid var(--border); /* borde para mejor separación en modo light */
-    border-bottom-left-radius: 2px; 
+  background-color: var(--panel); 
+  color: var(--text); /* Color de texto del tema */
+  margin-right: auto; 
+  border: 1px solid var(--border); /* borde para mejor separación en modo light */
+  border-bottom-left-radius: 2px; 
 }
 
 .loading-indicator {
     font-size: 12px;
-    color: var(--muted); /* Color silenciado del tema */
+    color: var(--muted); 
     margin-bottom: 10px;
     font-style: italic;
     text-align: center;
@@ -630,8 +637,8 @@ CSS
 .chat-footer {
     display: flex;
     padding: 10px;
-    border-top: 1px solid var(--border); /* Borde del tema */
-    background-color: var(--panel); /* Fondo del panel del tema */
+    border-top: 1px solid var(--border); /* Borde  */
+    background-color: var(--panel); /* Fondo del panel  */
 }
 
 .chat-footer input {
@@ -642,7 +649,7 @@ CSS
     margin-right: 10px;
     font-size: 14px;
     background-color: var(--bg); /* Fondo del input es el fondo general */
-    color: var(--text); /* Color de texto del tema */
+    color: var(--text); /* Color de texto  */
 }
 
 .chat-footer input:focus {

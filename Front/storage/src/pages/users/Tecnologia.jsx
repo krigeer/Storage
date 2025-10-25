@@ -14,7 +14,6 @@ const options = [
 ]
 
 const headers = {
-  nombre: "Nombre",
   Tipo: "Tipo",
   serie_fabricante: "Serial fabricante",
   serie_sena: "Serial sena",
@@ -22,7 +21,6 @@ const headers = {
   marca: "Marca",
 }
 const campos = {
-  nombre: "nombre",
   tipo: "tipo_nombre", 
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",

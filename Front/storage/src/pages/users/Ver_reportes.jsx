@@ -101,7 +101,7 @@ const Reportes = () => {
     },
   ];
 
-  if  (rol == "1"){
+  if  (rol == "ADM"){
     return (
       <div className="container py-5">
         <Titulo
@@ -124,7 +124,7 @@ const Reportes = () => {
     );
 
   }else{
-    if (rol == "2"){
+    if (rol == "INS"){
       return(
         <div className="container py-5">
         <Titulo

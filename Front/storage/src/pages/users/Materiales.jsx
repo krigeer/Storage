@@ -14,13 +14,11 @@ const options = [
 ]
 
 const headers = {
-  nombre: "nombre",
   serie_fabricante: "serial fabricante",
   serie_sena: "serial sena",
   estado: "estado",
 }
 const campos = {
-  nombre: "nombre",
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
   estado: "estado_nombre",
@@ -46,12 +44,12 @@ const MaterialDidacticoManager = () => {
     } finally {
       setLoading(false);
     }
-  }, []); // No tiene dependencias externas
+  }, []); 
 
   useEffect(() => {
     fetchMateriales();
   }, [fetchMateriales])
-
+console.log(materiales)
   if (loading) {
     return <div className="text-center mt-5">Cargando datos...</div>;
   }

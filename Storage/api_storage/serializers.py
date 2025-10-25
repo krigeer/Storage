@@ -94,8 +94,8 @@ class UbicacionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("el campo no debe estar vacio")
         if len(value)>50:
             raise serializers.ValidationError("Elnombre no debe contener mas de 50 caracteres")
-        if any(char.isdigit() for char in value):
-            raise serializers.ValidationError("El campo no debe contener numeros")
+        # if any(char.isdigit() for char in value):
+        #     raise serializers.ValidationError("El campo no debe contener numeros")
         return value
     
     def validate_descripcion(self, value):
@@ -395,6 +395,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     # POST/Creación/Actualización
     email = serializers.EmailField(required=True) 
+    # Text Choices
+    
+    rol_opciones = serializers.SerializerMethodField()
+    # estado_opciones = serializers.SerializerMethodField()
+    # lenguaje_opciones = serializers.SerializerMethodField()
+    # diseno_opciones = serializers.SerializerMethodField()
     class Meta:
         model = Usuario
         # Campos excluidos por seguridad
@@ -429,6 +435,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
         # Guardar el objeto en la DB. Esto dispara el services.
         usuario.save()
         return usuario
+    
+    def get_rol_opciones(self, obj):
+        return [{'value': c.value, 'label': c.label} for c in Rol]
         
     def update(self, instance, validated_data):
         """Maneja la lógica para PATCH/PUT (Actualización)."""

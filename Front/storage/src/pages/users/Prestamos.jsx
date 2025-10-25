@@ -44,7 +44,7 @@ const PrestamoElementos = () => {
       // Pide todos los préstamos para la tabla principal
       const response = await apiCall("prestamos"); 
       
-      if (rol == "1"){
+      if (rol == "ADM"){
         if (response && Array.isArray(response.results)) {
           // Filtra para mostrar solo los préstamos activos en la tabla de gestión
           const activos = response.results.filter(p => !p.fecha_devolucion);
@@ -54,7 +54,7 @@ const PrestamoElementos = () => {
           setPrestamos([]);
         }
         }  else {
-          if (rol == "2"){
+          if (rol == "INST"){
             if (response && Array.isArray(response.results)){
               const activos = response.results.filter(p => p.documento = documentoUser )
             }
@@ -85,7 +85,7 @@ const PrestamoElementos = () => {
     return <div className="text-center mt-5">Cargando datos...</div>
   }
 
-  if (rol == "1"){
+  if (rol == "ADM"){
     return (
       <div className="container py-5">
       <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras buscar elementos prestados o prestar elementos" />
@@ -134,7 +134,7 @@ const PrestamoElementos = () => {
     )
 
   }else{
-    if (rol == "2"){
+    if (rol == "INST"){
       return (
         <div className="container py-5">
           <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras ver tus elementos prestados" />
