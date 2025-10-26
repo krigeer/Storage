@@ -1,20 +1,21 @@
 /* ========================================================= */
-/* FORMULARIO SWEETALERT ADAPTADO A TEMAS OSCURO Y CLARO     */
+/* FORMULARIO SWEETALERT ADAPTADO A TEMAS OSCURO Y CLARO     */
 /* ========================================================= */
 
 .improved-form-container {
-  width: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  text-align: left;
-  padding: 0;
+    width: 100%;
+    max-width: 520px; /* Un poco más ancho para desktop */
+    margin: 0 auto;
+    text-align: left;
+    padding: 0;
 }
 
 /* ===== GRUPOS DE CAMPOS ===== */
 .form-group {
-  position: relative;
-  margin-bottom: 1.4rem;
-  animation: fadeInUp 0.5s ease forwards;
+    position: relative;
+    margin-bottom: 1.6rem; /* Aumento ligero de margen para mejor legibilidad */
+    /* Mantenemos la animación de fade-in */
+    animation: fadeInUp 0.5s ease forwards;
 }
 
 .form-group:nth-child(2) { animation-delay: 0.1s; }
@@ -25,241 +26,243 @@
 
 /* ===== LABEL ===== */
 .form-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 6px;
-  transition: color 0.3s ease;
+    display: block;
+    font-size: 14px; /* Ligeramente más grande */
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
 }
 
 .form-label .required {
-  color: var(--warning-color, #ef4444);
-  margin-left: 2px;
+    color: var(--warning-color, #ef4444);
+    margin-left: 2px;
 }
 
-/* ===== INPUTS Y SELECTS ===== */
+/* ===== INPUTS Y SELECTS (Mejoras de Estética y UX) ===== */
 .form-input,
 .form-select {
-  width: 100% !important;
-  padding: 12px 16px !important;
-  border: 2px solid var(--border) !important;
-  border-radius: 12px !important;
-  font-size: 14px !important;
-  transition: all 0.3s ease !important;
-  background: var(--panel) !important;
-  color: var(--text) !important;
-  outline: none !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  text-align: center;
-  line-height: 1.5;
+    width: 100% !important;
+    padding: 12px 16px !important;
+    border: 1px solid var(--border) !important; /* Borde más sutil */
+    border-radius: 12px !important;
+    font-size: 15px !important; /* Ligeramente más grande para mejor tacto */
+    transition: all 0.3s ease !important;
+    background: var(--panel) !important;
+    color: var(--text) !important;
+    outline: none !important;
+    margin: 0 !important;
+    line-height: 1.5;
+    /* Sombras internas sutiles para dar profundidad */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 transparent !important;
+    text-align: left; /* Alineación estándar profesional */
 }
 
-/* Centrar placeholder */
+/* Centrar placeholder (si es necesario) */
 .form-input::placeholder,
 .form-select::placeholder {
-  text-align: center;
-  color: var(--muted);
-  opacity: 0.9;
+    text-align: left; /* Cambiado a izquierda para consistencia */
+    color: var(--muted);
+    opacity: 0.7;
+    font-style: italic;
 }
 
-/* ===== ESTADOS ===== */
+/* ===== ESTADOS (Focus y Validaciones) ===== */
 .form-input:focus,
 .form-select:focus {
-  border-color: var(--brand) !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25) !important;
-  transform: translateY(-1px);
+    border-color: var(--brand) !important;
+    /* Sombra de enfoque más limpia */
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3) !important; 
+    transform: none; /* Quitamos el translateY(-1px) para evitar saltos */
 }
 
 .form-input.error,
 .form-select.error {
-  border-color: var(--warning-color, #ef4444) !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important; /* Rojo fuerte */
+    box-shadow: 0 0 0 1px #ef4444 !important;
 }
 
 .form-input.valid,
 .form-select.valid {
-  border-color: var(--success-color, #10b981) !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+    border-color: var(--success-color, #10b981) !important;
+    box-shadow: 0 0 0 1px var(--success-color, #10b981) !important;
 }
 
-/* ===== ICONOS Y MENSAJES ===== */
+/* ===== ICONOS Y MENSAJES (Ajustes de posición) ===== */
+
+/* Contenedor relativo para el campo y el icono de estado */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .success-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--success-color, #10b981);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  font-weight: bold;
+    position: absolute;
+    right: 16px; /* Mismo padding que el input */
+    color: var(--success-color, #10b981);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    font-size: 1.1rem; /* Icono un poco más grande */
 }
 
 .form-input.valid + .success-icon {
-  opacity: 1;
+    opacity: 1;
 }
 
 .error-message {
-  position: absolute;
-  bottom: -18px;
-  left: 0;
-  font-size: 11px;
-  color: var(--warning-color, #ef4444);
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: all 0.3s ease;
+    /* Quitamos position: absolute para evitar solapamiento y usamos padding */
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 4px; /* Espacio debajo del input */
+    min-height: 18px; /* Reservar espacio para evitar saltos (CLS) */
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
 }
 
 .error-message.show {
-  opacity: 1;
-  transform: translateY(0);
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* ===== SWEETALERT PERSONALIZADO ===== */
+/* ===== SWEETALERT PERSONALIZADO (Ajustes del Modal) ===== */
 .swal2-popup {
-  border-radius: 16px !important;
-  padding: 2rem !important;
-  width: 95% !important;
-  max-width: 520px !important;
-  box-sizing: border-box !important;
-  background: var(--panel) !important;
-  color: var(--text) !important;
-  border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    padding: 2rem !important;
+    width: 90% !important; /* Asegurar el 90% en general */
+    max-width: 580px !important; /* Ligeramente más grande en desktop */
+    box-sizing: border-box !important;
+    background: var(--panel) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
 }
 
 .swal2-title {
-  margin-bottom: 1.5rem !important;
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  color: var(--text) !important;
+    margin-bottom: 1.2rem !important; /* Menos margen inferior para un look más compacto */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border); /* Separador visual sutil */
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+    color: var(--text) !important;
 }
 
-.swal2-html-container {
-  margin: 0 !important;
-  font-size: 14px !important;
-  color: var(--text);
-}
+/* ===== BOTONES (Mejoras Estéticas) ===== */
 
-.swal2-actions {
-  margin-top: 1.8rem !important;
-  display: flex !important;
-  justify-content: center !important;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-/* ===== BOTONES ===== */
 .swal2-confirm {
-  background: var(--brand) !important;
-  border-radius: 10px !important;
-  padding: 12px 24px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
-  border: none !important;
-  color: #fff !important;
+    /* Aplicamos un gradiente sutil para un toque premium */
+    background: var(--brand) !important;
+    background-image: linear-gradient(to bottom right, var(--brand), var(--brand-600)) !important;
+    border-radius: 12px !important; /* Más redondeado */
+    padding: 12px 28px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    color: #fff !important;
 }
 
 .swal2-confirm:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4) !important;
+    /* Incrementamos el efecto hover */
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.5), 0 0 0 3px rgba(79, 70, 229, 0.2) !important;
 }
 
 .swal2-cancel {
-  background: transparent !important;
-  border: 1px solid var(--border) !important;
-  color: var(--text) !important;
-  border-radius: 10px !important;
-  padding: 12px 24px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
+    background: transparent !important;
+    border: 1px solid var(--muted) !important; /* Borde más suave */
+    color: var(--text) !important;
+    border-radius: 12px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
 }
 
 .swal2-cancel:hover {
-  background: rgba(79, 70, 229, 0.08) !important;
+    background: rgba(79, 70, 229, 0.15) !important; /* Fondo sutil al hacer hover */
+    border-color: var(--brand) !important;
+    color: var(--brand) !important;
 }
 
-/* ===== ANIMACIONES ===== */
+/* ===== ANIMACIONES (Se mantienen) ===== */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
 }
 
-/* ===== RESPONSIVE ===== */
+/* ===== RESPONSIVE (Ajustado) ===== */
 @media (max-width: 768px) {
-  .swal2-popup {
-    padding: 1.5rem !important;
-  }
+    .swal2-popup {
+        padding: 1.5rem !important;
+        max-width: 90% !important; /* Asegurar el 90% */
+    }
 
-  .form-label {
-    font-size: 12px;
-  }
+    .form-label {
+        font-size: 13px;
+    }
 
-  .form-input,
-  .form-select {
-    padding: 10px 12px !important;
-    font-size: 13px !important;
-  }
-
-  .error-message {
-    font-size: 10px;
-  }
+    .form-input,
+    .form-select {
+        padding: 10px 12px !important;
+        font-size: 14px !important;
+        border-radius: 10px !important;
+    }
 }
 
 @media (max-width: 480px) {
-  .swal2-title {
-    font-size: 1.2rem !important;
-  }
+    .swal2-title {
+        font-size: 1.4rem !important;
+    }
 
-  .swal2-popup {
-    width: 90% !important;
-    padding: 1rem !important;
-  }
+    .swal2-popup {
+        width: 95% !important; /* Ocupa casi todo el ancho */
+        padding: 1rem !important;
+    }
 
-  .form-input,
-  .form-select {
-    font-size: 12px !important;
-    border-radius: 10px !important;
-  }
+    .swal2-actions {
+        flex-direction: column;
+    }
 
-  .swal2-actions {
-    flex-direction: column;
-  }
-
-  .swal2-confirm,
-  .swal2-cancel {
-    width: 100%;
-    font-size: 13px !important;
-  }
+    .swal2-confirm,
+    .swal2-cancel {
+        width: 100%;
+        font-size: 14px !important;
+        padding: 10px 20px !important;
+    }
 }
 
-/* ===== SELECTS ===== */
+/* ===== SELECTS (Se mantienen y se ajusta la alineación) ===== */
 .form-select {
-  text-align: center !important;
-  text-align-last: center !important;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='%23aaaaaa' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px;
-  cursor: pointer;
+text-align: left !important;
+text-align-last: left !important;
+appearance: none;
+-webkit-appearance: none;
+-moz-appearance: none;
+/* Icono SVG ajustado para el tema oscuro/claro */
+background-image: url("data:image/svg+xml;utf8,<svg fill='%23667085' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+background-repeat: no-repeat;
+background-position: right 12px center;
+background-size: 18px;
+cursor: pointer;
+}
+
+/* Revertir el color del icono en modo oscuro para visibilidad (si es necesario) */
+body.dark .form-select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23d1d5db' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
 }
 
 .form-select option[disabled] {
-  color: var(--muted);
-  text-align: center;
+color: var(--muted);
+text-align: left;
 }
 
 .form-select option {
-  text-align: left;
-  color: var(--text);
+text-align: left;
+color: var(--text);
 }

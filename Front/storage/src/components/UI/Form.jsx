@@ -4,6 +4,11 @@ import { apiCall } from "../../services/apiCutoms";
 
 import Swal from "sweetalert2";
 
+/**
+ * Muestra un formulario en un modal de SweetAlert2, maneja la validación,
+ * la carga dinámica de opciones y la lógica de dependencia/exclusión mutua.
+ * * @param {object} opt Opciones de la acción (key, onSuccess)
+ */
 const handleAction = async (opt) => {
     const formConfig = formConfigs[opt.key];
 
@@ -15,7 +20,7 @@ const handleAction = async (opt) => {
         const requiredAsterisk = isRequired && field.type !== "hidden" ? '<span class="required">*</span>' : '';
         const placeholderText = field.placeholder.toLowerCase();
         
-        // Determinar si es un campo de activo
+        // Determinar si es un campo de activo (para la lógica de préstamo)
         const isLoanItem = field.id === 'tecnologia_id' || field.id === 'material_didactico_id';
 
         if (field.type === "hidden") {
@@ -32,12 +37,13 @@ const handleAction = async (opt) => {
                     <div style="position: relative;">
                         <select 
                             id="${inputId}"
-                            class="form-input swal2-input"
+                            class="form-input"
                             data-is-loan-item="${isLoanItem}"
                             data-is-required="${isRequired}"
                             ${isLoanItem ? 'disabled' : ''} >
                             <option value="" disabled selected>Seleccione ${placeholderText}</option>
                         </select>
+                        <!-- El icono de éxito se mostrará con el CSS si el campo es 'valid' -->
                         <div class="success-icon">✓</div>
                     </div>
                     <div id="error-${field.id}" class="error-message"></div>
@@ -62,6 +68,7 @@ const handleAction = async (opt) => {
                         data-is-required="${isRequired}"
                         autocomplete="off"
                     />
+                    <!-- El icono de éxito se mostrará con el CSS si el campo es 'valid' -->
                     <div class="success-icon">✓</div>
                 </div>
                 <div id="error-${field.id}" class="error-message"></div>
@@ -77,7 +84,16 @@ const handleAction = async (opt) => {
         showCancelButton: true,
         confirmButtonText: 'Guardar',
         cancelButtonText: 'Cancelar',
-        width: '500px',
+        // *** CAMBIOS DE ESTILO Y RESPONSIVIDAD ***
+        // 1. Quitar el ancho fijo para permitir que el CSS controle la adaptabilidad.
+        width: 'auto', 
+        customClass: {
+            popup: 'responsive-swal-popup', // Clase CSS para responsividad y estética general
+            title: 'swal-title-custom',
+            confirmButton: 'swal-confirm-button',
+            cancelButton: 'swal-cancel-button',
+        },
+        // *** FIN CAMBIOS DE ESTILO Y RESPONSIVIDAD ***
         
         // Lógica de Validación Final (PreConfirm)
         preConfirm: () => {
@@ -140,7 +156,7 @@ const handleAction = async (opt) => {
                     } else if (field.type === 'email' && !/\S+@\S+\.\S+/.test(values[field.id])) {
                         errorElement.textContent = 'Ingrese un correo electrónico válido';
                         fieldValid = false;
-                    } else if (field.type === "text" && values[field.id].length < 2) {
+                    } else if (field.type === "text" && values[field.id].length < 3) {
                         errorElement.textContent = 'El campo debe tener al menos 3 caracteres';
                         fieldValid = false;
                     } else if (field.type === "text" && !/^[a-zA-Z0-9\s.,ñÑ]+$/.test(values[field.id])) {
@@ -202,6 +218,7 @@ const handleAction = async (opt) => {
             }
             
             if (!isValid) {
+                // Desplazar la vista al primer campo con error
                 const firstError = document.querySelector('.error-message.show');
                 if (firstError) {
                     firstError.closest('.form-group').scrollIntoView({
@@ -264,11 +281,8 @@ const handleAction = async (opt) => {
                     } catch (e) {
                         console.error('Error cargando opciones del select', field.id, e);
                         Swal.hideLoading();
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'No se pudieron cargar los datos necesarios. Intente de nuevo.',
-                        });
+                        // No mostramos error modal aquí para no interrumpir el flujo, pero el campo quedará vacío
+                        // Si el campo es requerido, la validación se encargará de esto.
                     }
                 }
 
@@ -284,14 +298,15 @@ const handleAction = async (opt) => {
                         // Solo manejar la validación si no está deshabilitado
                         if (!e.target.hasAttribute('disabled')) {
                             // (Lógica de validación de campos vacíos y formato)
-                            if (value.trim() === '') {
+                            const isRequired = e.target.getAttribute('data-is-required') === 'true';
+
+                            if (isRequired && value.trim() === '') {
                                 errorElement.textContent = 'Este campo es requerido';
                                 errorElement.classList.add('show');
                                 e.target.classList.add('error');
                             } else {
                                 errorElement.textContent = '';
                                 errorElement.classList.remove('show');
-                                e.target.classList.add('valid');
 
                                 // Validaciones de formato...
                                 const isNumber = field.type === 'number' && isNaN(value);
@@ -311,6 +326,9 @@ const handleAction = async (opt) => {
                                 } else if (isSpecialChar) {
                                     errorElement.textContent = 'El campo no debe contener caracteres especiales';
                                     e.target.classList.remove('valid'); e.target.classList.add('error');
+                                } else if (value.trim() !== '') {
+                                    // Si hay valor y pasa todas las validaciones
+                                    e.target.classList.add('valid');
                                 }
 
                                 if (isNumber || isEmail || isShortText || isSpecialChar) {
@@ -325,6 +343,8 @@ const handleAction = async (opt) => {
                     } else {
                         input.addEventListener('input', handler);
                         input.addEventListener('blur', (e) => {
+                            // Validar al perder el foco y si no hay errores, marcar como válido
+                            handler(e);
                             if (e.target.value.trim() !== '' && !e.target.classList.contains('error')) {
                                 e.target.classList.add('valid');
                             }
@@ -362,6 +382,14 @@ const handleAction = async (opt) => {
                             materialDidacticoInput.setAttribute('disabled', 'disabled');
                             materialDidacticoInput.value = '';
                         }
+                        // Limpiar validaciones al deshabilitar
+                        [tecnologiaInput, materialDidacticoInput].forEach(input => {
+                            if (input.hasAttribute('disabled')) {
+                                input.classList.remove('error', 'valid');
+                                document.getElementById(`error-${input.id}`).textContent = '';
+                                document.getElementById(`error-${input.id}`).classList.remove('show');
+                            }
+                        });
                     };
                     
                     // FUNCIÓN DE EXCLUSIÓN MUTUA (Al seleccionar un activo)
@@ -369,11 +397,11 @@ const handleAction = async (opt) => {
                         if (changedInput.value) {
                             // Si el campo modificado TIENE valor, DESHABILITAR y limpiar el otro.
                             otherInput.value = '';
+                            otherInput.classList.remove('error', 'valid');
                             otherInput.setAttribute('disabled', 'disabled');
                             // Limpiar el error si existía en el campo deshabilitado
                             document.getElementById(`error-${otherInput.id}`).textContent = ''; 
-                            otherInput.classList.remove('error');
-
+                            document.getElementById(`error-${otherInput.id}`).classList.remove('show');
                         } else if (solicitanteInput.value) {
                             // Si el campo modificado SE VACIÓ, y hay solicitante, RE-HABILITAR el otro.
                             otherInput.removeAttribute('disabled');
@@ -381,7 +409,6 @@ const handleAction = async (opt) => {
                     };
 
                     // Listeners de Dependencia (al seleccionar el usuario)
-                    // Nota: Se debe usar una función que se pueda remover
                     const solicitanteChangeHandler = (e) => toggleActiveFields(e.target.value);
                     solicitanteInput.addEventListener('change', solicitanteChangeHandler);
 
@@ -405,7 +432,7 @@ const handleAction = async (opt) => {
             }
         }
     });
-    console.log(formValues);
+
     // --- 4. Envío del Formulario (Si la validación fue exitosa) ---
     if (formValues) {
         // Limpiar valores vacíos antes de enviar
