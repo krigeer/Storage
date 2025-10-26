@@ -1,43 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Spinner, Alert } from "react-bootstrap";
-// Nota: 'react-bootstrap' se mantiene para Spinner y Alert, pero el resto usa Tailwind con los colores del tema oscuro.
-
-// --- Funciones mock para hacer el componente runnable en el canvas ---
-// RECUERDA: Reemplaza estas con tus importaciones reales: getUser, updateUser.
-const MOCK_CURRENT_USER = {
-    id: 1,
-    first_name: 'Ana',
-    last_name: 'García Pérez',
-    email: 'ana.g.perez@example.com',
-    documento: 1017000123,
-    rol: 'ADMIN',
-    centro: { id: 1, nombre: 'Centro Regional 1' }, // Suponiendo que Centro es un objeto FK
-    tipo_documento: { id: 1, nombre: 'CC' }, // Suponiendo que TipoDocumento es un objeto FK
-    contacto_principal: 3101234567,
-    contacto_secundario: 3009876543,
-    estado: 'ACTIVO',
-    contrasena_expira_en: '2025-12-31T23:59:59Z',
-};
-const getUser = () => MOCK_CURRENT_USER;
-const updateUser = async (userId, data) => {
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simular latencia de red
-    console.log(`Usuario ${userId} actualizado con datos:`, data);
-    return { 
-        ...MOCK_CURRENT_USER, 
-        first_name: data.first_name, 
-        last_name: data.last_name,
-        email: data.email,
-        contacto_principal: data.contacto_principal,
-        contacto_secundario: data.contacto_secundario,
-        documento: data.documento,
-    };
-};
-// --- Fin funciones mock ---
+import React, { useState, useEffect, useCallback } from 'react';
+import { getUser } from '../../services/authContext.js';
+import { updateUser } from '../../services/apiService.js'; 
+import { apiCall } from '../../services/apiCutoms.js';
+import { Container, Row, Col, Card, Button, Form, Spinner, Alert } from 'react-bootstrap';
 
 
-// Iconos SVG (Ajustados al color primario verde)
+// --- Iconos SVG ---
+
 const IconWrapper = ({ children }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#28a745] min-w-[20px]">{children}</svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--primary-color)', minWidth: '20px' }}>{children}</svg>
 );
 
 const UserIcon = () => (<IconWrapper><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconWrapper>);
@@ -53,107 +24,116 @@ const SaveIcon = () => (<IconWrapper><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1
 const XIcon = () => (<IconWrapper><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconWrapper>);
 
 
-// Helper component to render a field (Read-only or Editable)
+const id = getUser()?.id || 'N/A';
+
+//  component para renderizar un campo
 const ProfileField = ({ icon, label, value, isEditing, fieldName, handleInputChange, type = 'text', readOnly = false }) => {
+    // valor
     const displayValue = (typeof value === 'object' && value !== null && value.nombre) ? value.nombre : value || 'N/A';
     
-    // Color de texto claro por defecto
-    const textColorClass = 'text-white';
-    const mutedTextColorClass = 'text-[#8a97a7]';
-    const borderColorClass = 'border-[#1f2937]';
-    const focusRingClass = 'focus:ring-[#28a745] focus:border-[#28a745]';
-    
+    // CSS 
+    const textStyle = { color: 'var(--text)' };
+    const mutedTextStyle = { color: 'var(--muted)' };
+    const borderStyle = { borderColor: 'var(--border)' };
+    const inputStyle = { 
+        ...textStyle,
+        ...borderStyle,
+        backgroundColor: 'var(--bg)',
+    };
+
     return (
-        <div className={`flex flex-col md:flex-row md:items-center py-3 border-b ${borderColorClass}`}>
-            <div className="flex items-center w-full md:w-1/3 mb-1 md:mb-0">
+        <Row className="align-items-center py-2 border-bottom" style={borderStyle}>
+            <Col xs={12} md={4} className="d-flex align-items-center mb-1 mb-md-0">
                 {icon}
-                <span className={`ml-3 font-medium ${mutedTextColorClass}`}>{label}:</span>
-            </div>
-            <div className="w-full md:w-2/3">
+                <span className="ms-2 fw-medium" style={mutedTextStyle}>{label}:</span>
+            </Col>
+            <Col xs={12} md={8}>
                 {isEditing && !readOnly ? (
-                    <input
+                    <Form.Control
                         type={type}
                         value={value || ''}
                         onChange={(e) => handleInputChange(fieldName, e.target.value)}
-                        className={`w-full border-2 ${borderColorClass} rounded-lg px-3 py-2 bg-[#1f2937] ${textColorClass} ${focusRingClass} outline-none transition duration-150`}
                         placeholder={label}
+                        className="rounded-lg p-2"
+                        style={inputStyle}
                     />
                 ) : (
-                    <span className={`font-semibold ml-3 md:ml-0 ${textColorClass} ${displayValue === 'N/A' ? 'italic text-gray-500' : ''}`}>
+                    <span className={`fw-semibold ${displayValue === 'N/A' ? 'fst-italic' : ''}`} style={textStyle}>
                         {displayValue}
                     </span>
                 )}
-            </div>
-        </div>
+            </Col>
+        </Row>
     );
 };
 
 
-const PerfilUsuarioDark = () => {
+const PerfilUsuarioBootstrap = () => {
     const [isEditing, setIsEditing] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
+    const [userInfo, setUserInfo] = useState({}); 
     const [editedInfo, setEditedInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
 
-    // Definición de colores principales
-    const primaryGreen = '#28a745';
-    const backgroundDark = '#11161d';
-    const panelDark = '#1f2937';
-    const textMuted = '#8a97a7';
-    const textWhite = '#fff';
-
     const formatDate = (isoString) => {
         if (!isoString) return 'N/A';
         try {
             return new Date(isoString).toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit',
             });
         } catch {
             return 'N/A';
         }
     };
 
+    const fetchUser = useCallback(async () => {
+        try {
+            setLoading(true);
+            const userResponse = await apiCall(`detalle_usuario/${id}`);
+            
+            if (userResponse && userResponse.id) { 
+                setUserInfo(userResponse); 
+            } else {
+                setUserInfo({}); 
+                console.error("Respuesta inesperada al obtener los datos del usuario:", userResponse);
+            }
+        } catch (error) {
+            console.error("Error al obtener los datos del usuario:", error);
+            setUserInfo({});
+            setError("Error al cargar los datos del usuario.");
+        } finally{
+            setLoading(false);
+        }
+    }, [id]); 
+
 
     useEffect(() => {
-        const currentUser = getUser();
-        if (currentUser) {
-            const userData = {
-                id: currentUser?.id,
-                firstName: currentUser?.first_name || '',
-                lastName: currentUser?.last_name || '',
-                email: currentUser?.email || '',
-                documento: currentUser?.documento ? String(currentUser.documento) : '',
-                rol: currentUser?.rol || 'N/A',
-                centro: currentUser?.centro || 'N/A', 
-                tipoDocumento: currentUser?.tipo_documento || 'N/A', 
-                contactoPrincipal: currentUser?.contacto_principal ? String(currentUser.contacto_principal) : '',
-                contactoSecundario: currentUser?.contacto_secundario ? String(currentUser.contacto_secundario) : '',
-                estado: currentUser?.estado || 'N/A',
-                contrasenaExpiraEn: currentUser?.contrasena_expira_en || null,
-            };
-            setUserInfo(userData);
-            setEditedInfo(userData);
-        }
-    }, []);
+        fetchUser();
+    }, [fetchUser]); 
+  
 
-    if (!userInfo) {
+
+
+    if (loading && Object.keys(userInfo).length === 0) {
         return (
-            <div className={`flex justify-center items-center h-full min-h-[400px] bg-[${backgroundDark}]`}>
-                <Spinner animation="border" variant="success" className={`text-[${primaryGreen}]`} />
-                <span className={`ml-2 text-[${textMuted}]`}>Cargando datos del usuario...</span>
-            </div>
+            <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '400px', backgroundColor: 'var(--bg)' }}>
+                <Spinner animation="border" variant="success" />
+                <span className="ms-2" style={{ color: 'var(--muted)' }}>Cargando datos del usuario...</span>
+            </Container>
         );
     }
 
     const handleEdit = () => {
         setIsEditing(true);
-        setEditedInfo({ ...userInfo });
+        setEditedInfo({ 
+            firstName: userInfo.first_name, 
+            lastName: userInfo.last_name, 
+            email: userInfo.email,
+            documento: userInfo.documento,
+            contactoPrincipal: userInfo.contacto_principal,
+            contactoSecundario: userInfo.contacto_secundario,
+        });
         setError(null);
         setSuccess(false);
     };
@@ -161,236 +141,194 @@ const PerfilUsuarioDark = () => {
     const handleSave = async () => {
         setLoading(true);
         setError(null);
-        
         try {
+           
             const dataToSend = {
-                first_name: editedInfo.firstName,
-                last_name: editedInfo.lastName,
+                first_name: editedInfo.firstName, 
+                last_name: editedInfo.lastName, 
                 email: editedInfo.email,
-                contacto_principal: editedInfo.contactoPrincipal,
+                contacto_principal: editedInfo.contactoPrincipal, 
                 contacto_secundario: editedInfo.contactoSecundario || null,
                 documento: editedInfo.documento,
             };
-
             const updatedUser = await updateUser(userInfo.id, dataToSend);
             
             const mergedUser = {
                 ...userInfo,
-                firstName: updatedUser?.first_name ?? editedInfo.firstName,
-                lastName: updatedUser?.last_name ?? editedInfo.lastName,
+                ...updatedUser,
+              
+                first_name: updatedUser?.first_name ?? editedInfo.firstName, 
+                last_name: updatedUser?.last_name ?? editedInfo.lastName,
                 email: updatedUser?.email ?? editedInfo.email,
-                contactoPrincipal: updatedUser?.contacto_principal != null ? String(updatedUser.contacto_principal) : editedInfo.contactoPrincipal,
-                contactoSecundario: updatedUser?.contacto_secundario != null ? String(updatedUser.contacto_secundario) : editedInfo.contactoSecundario,
-                documento: updatedUser?.documento != null ? String(updatedUser.documento) : editedInfo.documento,
+                contacto_principal: updatedUser?.contacto_principal != null ? updatedUser.contacto_principal : editedInfo.contactoPrincipal,
+                contacto_secundario: updatedUser?.contacto_secundario != null ? updatedUser.contacto_secundario : editedInfo.contactoSecundario,
+                documento: updatedUser?.documento != null ? updatedUser.documento : editedInfo.documento,
             };
-
+            
             setUserInfo(mergedUser);
-            setEditedInfo(mergedUser);
             setSuccess(true);
             setIsEditing(false);
         } catch (err) {
-            console.error(err);
-            const apiError = err?.response?.data;
-            if (apiError) {
-                const errorMessages = Object.entries(apiError).map(([key, value]) => 
-                    `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-                ).join('; ');
-                setError(`Error de validación: ${errorMessages}`);
-            } else {
-                setError(err?.message || 'Error al actualizar el perfil. Intenta de nuevo.');
-            }
+            setError(err?.message || 'Error al actualizar el perfil. Intenta de nuevo.');
         } finally {
             setLoading(false);
         }
     };
 
     const handleCancel = () => {
-        setEditedInfo({ ...userInfo });
+        setEditedInfo({}); 
         setIsEditing(false);
         setError(null);
         setSuccess(false);
     };
 
     const handleInputChange = (fieldName, value) => {
-        setEditedInfo(prev => ({
-            ...prev,
-            [fieldName]: value
-        }));
+        setEditedInfo(prev => ({ ...prev, [fieldName]: value }));
     };
     
-    const isPasswordExpired = userInfo.contrasenaExpiraEn && new Date() >= new Date(userInfo.contrasenaExpiraEn);
+   
+    const isPasswordExpired = userInfo.contrasena_expira_en && new Date() >= new Date(userInfo.contrasena_expira_en);
 
     return (
-        // Contenedor principal con el fondo oscuro general
-        <div className={`min-h-screen p-4 sm:p-8 flex justify-center items-start bg-[${backgroundDark}]`}>
-            <div className={`w-full max-w-4xl bg-[${panelDark}] shadow-2xl rounded-xl overflow-hidden border border-[#1f2937]`}>
+        <Card className="shadow-lg border-0" style={{ backgroundColor: 'var(--panel)', border: '1px solid var(--border)' }}>
+            <Card.Header 
+                className="position-relative p-4 border-bottom" 
+                style={{ 
+                    backgroundColor: 'var(--sidebar-panel)', 
+                    color: 'var(--sidebar-text)', 
+                    borderColor: 'var(--border)' 
+                }}
+            >
+                <h1 className="h3 fw-bolder">
+                    {userInfo.first_name || ''} {userInfo.last_name || ''}
+                </h1>
+                <p className="mb-0 opacity-75">ID: {userInfo.documento || 'N/A'}</p> 
                 
-                {/* Header con acento de color de marca */}
-                <div className="relative bg-[#145e19] p-8 text-white border-b border-[#1f2937]">
-                    <h1 className="text-3xl font-extrabold text-[${textWhite}]">
-                        {userInfo.firstName} {userInfo.lastName}
-                    </h1>
-                    <p className={`mt-1 text-[${textMuted}]`}>ID: {userInfo.documento}</p>
-                    
-                    {/* Botones de acción */}
-                    <div className="absolute top-4 right-4 flex space-x-2">
-                        {!isEditing ? (
-                            <button
-                                onClick={handleEdit}
-                                className={`bg-[${primaryGreen}] text-white px-4 py-2 rounded-lg hover:opacity-90 transition-all flex items-center gap-2 font-medium shadow-lg shadow-black/30`}
+                {/* Botones de acción */}
+                <div className="position-absolute top-0 end-0 p-3 d-flex gap-2">
+                    {!isEditing ? (
+                        <Button
+                            onClick={handleEdit}
+                            variant="success"
+                            className="d-flex align-items-center gap-2 fw-medium shadow-sm"
+                            style={{ backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
+                        >
+                            <EditIcon />
+                            Editar
+                        </Button>
+                    ) : (
+                        <div className="d-flex gap-2">
+                            <Button
+                                onClick={handleSave}
+                                disabled={loading}
+                                variant="success"
+                                className="d-flex align-items-center gap-2 fw-medium shadow-sm"
+                                style={{ backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
                             >
-                                <EditIcon />
-                                Editar
-                            </button>
-                        ) : (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={handleSave}
-                                    disabled={loading}
-                                    className={`bg-[${primaryGreen}] text-white px-4 py-2 rounded-lg hover:opacity-90 transition-colors flex items-center gap-2 font-medium shadow-lg shadow-black/30 disabled:opacity-50`}
-                                >
-                                    {loading ? (
-                                        <Spinner animation="border" size="sm" className="me-1" />
-                                    ) : (
-                                        <SaveIcon />
-                                    )}
-                                    {loading ? 'Guardando...' : 'Guardar'}
-                                </button>
-                                <button
-                                    onClick={handleCancel}
-                                    disabled={loading}
-                                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 font-medium shadow-lg shadow-black/30 disabled:opacity-50"
-                                >
-                                    <XIcon />
-                                    Cancelar
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                                {loading ? (<Spinner animation="border" size="sm" className="me-1" />) : (<SaveIcon />)}
+                                {loading ? 'Guardando...' : 'Guardar'}
+                            </Button>
+                            <Button
+                                onClick={handleCancel}
+                                disabled={loading}
+                                variant="danger" 
+                                className="d-flex align-items-center gap-2 fw-medium shadow-sm"
+                            >
+                                <XIcon />
+                                Cancelar
+                            </Button>
+                        </div>
+                    )}
                 </div>
+            </Card.Header>
 
-                <div className="p-6 sm:p-8">
-                    {/* Mensajes de Alerta */}
-                    {error && (
-                        <Alert variant="danger" className="mb-4 bg-red-800 text-white border-none" dismissible onClose={() => setError(null)}>
-                            {error}
-                        </Alert>
-                    )}
-                    {success && (
-                        <Alert variant="success" className={`mb-4 bg-[${primaryGreen}] text-white border-none`} dismissible onClose={() => setSuccess(false)}>
-                            Perfil actualizado correctamente.
-                        </Alert>
-                    )}
-                    {isPasswordExpired && (
-                        <Alert variant="warning" className="mb-4 bg-[#f59e0b] text-black border-none">
-                            <span className="font-bold">¡Atención!</span> Tu contraseña ha expirado. Por favor, cámbiala pronto.
-                        </Alert>
-                    )}
+            <Card.Body className="p-4 p-sm-5">
+                
+                {error && (<Alert variant="danger" className="mb-4" onClose={() => setError(null)} dismissible>{error}</Alert>)}
+                {success && (<Alert variant="success" className="mb-4" onClose={() => setSuccess(false)} dismissible>Perfil actualizado correctamente.</Alert>)}
+                {isPasswordExpired && (
+                    <Alert variant="warning" className="mb-4">
+                        <span className="fw-bold">¡Atención!</span> Tu contraseña ha expirado. Por favor, cámbiala pronto.
+                    </Alert>
+                )}
+                
+                <Row className="g-4">
                     
-                    {/* Contenido en dos columnas para desktop */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        
-                        {/* Columna 1: Información Personal y Contacto (Editable) */}
-                        <div className={`p-6 rounded-xl border border-[#1f2937] bg-[${backgroundDark}]`}>
-                            <h2 className={`text-xl font-bold mb-4 flex items-center text-[${textWhite}]`}>
-                                <UserIcon /> 
-                                <span className="ml-2">Información Personal y Contacto</span>
-                            </h2>
-                            
-                            <div className="space-y-2">
-                                {/* Nombre */}
-                                <ProfileField 
-                                    icon={<UserIcon />} label="Nombre" 
-                                    value={editedInfo.firstName} isEditing={isEditing} 
-                                    fieldName="firstName" handleInputChange={handleInputChange} 
-                                />
-                                {/* Apellido */}
-                                <ProfileField 
-                                    icon={<UserIcon />} label="Apellido" 
-                                    value={editedInfo.lastName} isEditing={isEditing} 
-                                    fieldName="lastName" handleInputChange={handleInputChange} 
-                                />
-                                {/* Email */}
-                                <ProfileField 
-                                    icon={<MailIcon />} label="Email" 
-                                    value={editedInfo.email} isEditing={isEditing} 
-                                    fieldName="email" handleInputChange={handleInputChange} 
-                                    type="email"
-                                />
-                                {/* Contacto Principal */}
-                                <ProfileField 
-                                    icon={<PhoneIcon />} label="Contacto Principal" 
-                                    value={editedInfo.contactoPrincipal} isEditing={isEditing} 
-                                    fieldName="contactoPrincipal" handleInputChange={handleInputChange} 
-                                    type="tel"
-                                />
-                                {/* Contacto Secundario */}
-                                <ProfileField 
-                                    icon={<PhoneIcon />} label="Contacto Secundario" 
-                                    value={editedInfo.contactoSecundario} isEditing={isEditing} 
-                                    fieldName="contactoSecundario" handleInputChange={handleInputChange} 
-                                    type="tel"
-                                />
-                            </div>
-                        </div>
+                    {/* Columna 1: INFORMACIÓN PERSONAL */}
+                    <Col lg={4}>
+                        <Card className="h-100" style={{ backgroundColor: 'var(--panel)', border: '1px solid var(--border)' }}>
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-4 d-flex align-items-center" style={{ color: 'var(--text)' }}>
+                                    <UserIcon /> 
+                                    <span className="ms-2">Datos Personales</span>
+                                </h5>
+                                <div className="d-flex flex-column gap-2">
+                                    <ProfileField icon={<UserIcon />} label="Nombre(s)" 
+                                        value={isEditing ? editedInfo.firstName : userInfo.first_name} 
+                                        isEditing={isEditing} fieldName="firstName" handleInputChange={handleInputChange} 
+                                    />
+                                    <ProfileField icon={<UserIcon />} label="Apellido(s)" 
+                                        value={isEditing ? editedInfo.lastName : userInfo.last_name} 
+                                        isEditing={isEditing} fieldName="lastName" handleInputChange={handleInputChange} 
+                                    />
+                                    <ProfileField icon={<IdCardIcon />} label="N° Documento" 
+                                        value={isEditing ? editedInfo.documento : userInfo.documento} 
+                                        isEditing={isEditing} fieldName="documento" handleInputChange={handleInputChange} type="number" 
+                                    />
+                                    {/* Usar el nombre del API: tipo_documento */}
+                                    <ProfileField icon={<IdCardIcon />} label="Tipo Doc." value={userInfo.tipo_documento} isEditing={false} readOnly={true} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                        {/* Columna 2: Detalles del Sistema (Solo Lectura) */}
-                        <div className={`p-6 rounded-xl border border-[#1f2937] bg-[${backgroundDark}]`}>
-                            <h2 className={`text-xl font-bold mb-4 flex items-center text-[${textWhite}]`}>
-                                <BriefcaseIcon />
-                                <span className="ml-2">Detalles del Sistema y Seguridad</span>
-                            </h2>
-                            <div className="space-y-2">
-                                
-                                {/* Documento (Identificación) */}
-                                <ProfileField 
-                                    icon={<IdCardIcon />} label="Documento" 
-                                    value={editedInfo.documento} isEditing={isEditing} 
-                                    fieldName="documento" handleInputChange={handleInputChange} 
-                                    type="number" // Mantengo editable como en tu código original
-                                />
+                    {/* Columna 2: CONTACTO Y ACCESO */}
+                    <Col lg={4}>
+                        <Card className="h-100" style={{ backgroundColor: 'var(--panel)', border: '1px solid var(--border)' }}>
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-4 d-flex align-items-center" style={{ color: 'var(--text)' }}>
+                                    <MailIcon />
+                                    <span className="ms-2">Contacto y Acceso</span>
+                                </h5>
+                                <div className="d-flex flex-column gap-2">
+                                    <ProfileField icon={<MailIcon />} label="Correo Electrónico" 
+                                        value={isEditing ? editedInfo.email : userInfo.email} 
+                                        isEditing={isEditing} fieldName="email" handleInputChange={handleInputChange} type="email" 
+                                    />
+                                    <ProfileField icon={<PhoneIcon />} label="Tel. Principal" 
+                                        value={isEditing ? editedInfo.contactoPrincipal : userInfo.contacto_principal} 
+                                        isEditing={isEditing} fieldName="contactoPrincipal" handleInputChange={handleInputChange} type="tel" 
+                                    />
+                                    <ProfileField icon={<PhoneIcon />} label="Tel. Secundario" 
+                                        value={isEditing ? editedInfo.contactoSecundario : userInfo.contacto_secundario} 
+                                        isEditing={isEditing} fieldName="contactoSecundario" handleInputChange={handleInputChange} type="tel" 
+                                    />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
-                                {/* Tipo de Documento */}
-                                <ProfileField 
-                                    icon={<IdCardIcon />} label="Tipo Doc." 
-                                    value={userInfo.tipoDocumento} isEditing={false} 
-                                    readOnly={true}
-                                />
-                                
-                                {/* Rol */}
-                                <ProfileField 
-                                    icon={<BriefcaseIcon />} label="Rol" 
-                                    value={userInfo.rol} isEditing={false} 
-                                    readOnly={true}
-                                />
-                                
-                                {/* Centro */}
-                                <ProfileField 
-                                    icon={<MapPinIcon />} label="Centro Asignado" 
-                                    value={userInfo.centro} isEditing={false} 
-                                    readOnly={true}
-                                />
-
-                                {/* Estado */}
-                                <ProfileField 
-                                    icon={<ActivityIcon />} label="Estado" 
-                                    value={userInfo.estado} isEditing={false} 
-                                    readOnly={true}
-                                />
-
-                                {/* Fecha de Expiración de Contraseña */}
-                                <ProfileField 
-                                    icon={<ClockIcon />} label="Contraseña Expira" 
-                                    value={formatDate(userInfo.contrasenaExpiraEn)} isEditing={false} 
-                                    readOnly={true}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    {/* Columna 3: DETALLES DEL SISTEMA (Solo Lectura) */}
+                    <Col lg={4}>
+                        <Card className="h-100" style={{ backgroundColor: 'var(--panel)', border: '1px solid var(--border)' }}>
+                            <Card.Body className="p-4">
+                                <h5 className="fw-bold mb-4 d-flex align-items-center" style={{ color: 'var(--text)' }}>
+                                    <BriefcaseIcon />
+                                    <span className="ms-2">Detalles del Sistema</span>
+                                </h5>
+                                <div className="d-flex flex-column gap-2">
+                                    <ProfileField icon={<BriefcaseIcon />} label="Rol Asignado" value={userInfo.rol} isEditing={false} readOnly={true} />
+                                    <ProfileField icon={<MapPinIcon />} label="Centro" value={userInfo.centro} isEditing={false} readOnly={true} />
+                                    <ProfileField icon={<ActivityIcon />} label="Estado de Cuenta" value={userInfo.estado} isEditing={false} readOnly={true} />
+                                    <ProfileField icon={<ClockIcon />} label="Contraseña Expira" value={formatDate(userInfo.contrasena_expira_en)} isEditing={false} readOnly={true} />
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Card.Body>
+        </Card>
     );
 };
 
-export default PerfilUsuarioDark;
+export default PerfilUsuarioBootstrap;

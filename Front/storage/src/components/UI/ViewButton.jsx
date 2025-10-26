@@ -1,104 +1,396 @@
 import React from 'react';
 import { FaEye } from 'react-icons/fa';
 import Swal from 'sweetalert2';
-import { API_BASE_URL } from '../../config/data'; 
+import { API_BASE_URL } from '../../config/data';
 
-// Función auxiliar para formatear los datos para el cuerpo del SweetAlert como una tabla
+// ======================================================================
+// FORMATO DE TÍTULOS Y VALORES
+// ======================================================================
+
+/**
+ * título legible
+ * @param {string} key 
+ * @returns {string} 
+ */
+const formatKeyAsTitle = (key) => {
+    return key
+        .replace(/_/g, ' ') 
+        .replace(/\b\w/g, c => c.toUpperCase()); 
+};
+
+/**
+ * Obtiene el valor formateado para mostrar
+ * @param {*} value 
+ * @returns {string} 
+ */
+const getDisplayValue = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return '<span class="modern-empty-value">No Disponible</span>';
+    }
+
+    if (typeof value === 'boolean') {
+        return value 
+            ? '<span class="modern-badge modern-badge-success">✓ Sí</span>' 
+            : '<span class="modern-badge modern-badge-danger">✗ No</span>';
+    }
+
+    if (Array.isArray(value) || (typeof value === 'object' && value !== null)) {
+        const jsonString = JSON.stringify(value, null, 2);
+        return `<pre class="modern-json-block">${jsonString}</pre>`;
+    }
+
+    return `<span class="modern-value-text">${value.toString()}</span>`;
+};
+
+/**
+ * Formatea los datos del objeto para mostrar en el modal
+ * @param {object} data 
+ * @returns {string} 
+ */
 const formatDataForSwal = (data) => {
-    let htmlContent = `
-        <div style="text-align: left; max-height: 400px; overflow-y: auto;">
-        <table class="table table-striped table-sm" style="width: 100%;">
-            <tbody>
-    `;
-    
-    // **PASO 1: Identificar las claves a IGNORAR (los *_id que tienen un campo relacionado).**
-    const keysToIgnore = new Set();
     const relatedKeys = new Set();
+    const keysToIgnore = new Set();
     
-    // Primero, encuentra todas las claves de relación (sin _id) y marca las claves *_id para ignorar
     for (const key of Object.keys(data)) {
         if (key.endsWith('_id')) {
-            const relatedKey = key.slice(0, -3); // Ejemplo: 'solicitante'
-            
-            // Si el campo de relación existe en la data (ej. data.solicitante existe)
-            if (data.hasOwnProperty(relatedKey)) {
-                keysToIgnore.add(key); // Ignorar 'solicitante_id'
-                relatedKeys.add(relatedKey); // Guardar 'solicitante' para asegurarnos de que se itere
+            const relatedName = key.slice(0, -3);
+            if (data.hasOwnProperty(relatedName)) {
+                keysToIgnore.add(key); 
+                relatedKeys.add(relatedName);
             }
         }
     }
-    
-    // **PASO 2: Ordenar las claves para iterar (priorizar claves de relación).**
-    const sortedKeys = Object.keys(data).sort((a, b) => {
-        // Mueve los campos de relación (ej. 'solicitante', 'tecnologia') al inicio
-        if (relatedKeys.has(a) && !relatedKeys.has(b)) return -1;
-        if (!relatedKeys.has(a) && relatedKeys.has(b)) return 1;
-        return a.localeCompare(b);
-    });
 
-    // **PASO 3: Iterar y construir la tabla, aplicando el filtro y el formato.**
-    for (const key of sortedKeys) {
-        
-        // Si la clave está marcada para ignorar (es un *_id que tiene su nombre), la saltamos.
-        if (keysToIgnore.has(key)) {
-            continue;
-        }
+    // Ordenar claves: primero las relacionadas, luego el resto
+    const sortedKeys = Object.keys(data)
+        .filter(key => !keysToIgnore.has(key))
+        .sort((a, b) => {
+            const isArelated = relatedKeys.has(a);
+            const isBrelated = relatedKeys.has(b);
+            if (isArelated && !isBrelated) return -1;
+            if (!isArelated && isBrelated) return 1;
+            return a.localeCompare(b);
+        });
 
-        const value = data[key];
-        
-        // Formateamos la clave: 'first_name' -> 'First Name'
-        const formattedKey = key.replace(/_/g, ' ')
-                                     .replace(/\b\w/g, c => c.toUpperCase());
-                                     
-        // Manejo de valores para mostrar
-        let displayValue;
-        
-        if (typeof value === 'object' && value !== null) {
-            // Maneja objetos/arrays anidados mostrando el JSON formateado
-            displayValue = `<pre style="background: #f8f9fa; padding: 5px; border-radius: 4px; font-size: 0.85em;">${JSON.stringify(value, null, 2)}</pre>`;
-        } else if (value === null || value === undefined || value === '') {
-            // Maneja valores nulos o vacíos. Esto cubre los StringRelatedField que son null.
-            displayValue = '<span class="text-muted">N/A</span>';
-        } else {
-            // Maneja valores simples (cadenas, números, booleanos)
-            if (typeof value === 'boolean') {
-                displayValue = value ? 'Sí' : 'No';
-            } else {
-                displayValue = value.toString();
+    // CSS 
+    const styles = `
+        <style>
+            .modern-view-container {
+                max-height: 65vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                text-align: left;
+                padding: 1rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 12px;
             }
-        }
-        
-        // Agregar la fila a la tabla
+
+            
+
+
+            .modern-data-table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            .modern-data-row {
+                background: white;
+                border-radius: 8px;
+                margin-bottom: 0.75rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                animation: slideIn 0.4s ease-out;
+                animation-fill-mode: both;
+            }
+
+            .modern-data-row:hover {
+                box-shadow: 0 4px 16px rgba(13, 110, 253, 0.15);
+                transform: translateX(4px);
+            }
+
+            .modern-data-row:nth-child(1) { animation-delay: 0.05s; }
+            .modern-data-row:nth-child(2) { animation-delay: 0.1s; }
+            .modern-data-row:nth-child(3) { animation-delay: 0.15s; }
+            .modern-data-row:nth-child(4) { animation-delay: 0.2s; }
+            .modern-data-row:nth-child(5) { animation-delay: 0.25s; }
+            .modern-data-row:nth-child(n+6) { animation-delay: 0.3s; }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .modern-key-cell {
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: #2c3e50;
+                width: 35%;
+                padding: 1rem;
+                vertical-align: top;
+                border-right: 3px solid #176802ff;
+                border-radius: 8px 0 0 8px;
+                background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+            }
+
+            .modern-key-cell::before {
+                content: '▸';
+                color: #fd0d0dff;
+                margin-right: 0.5rem;
+                font-weight: bold;
+            }
+
+            .modern-value-cell {
+                width: 65%;
+                padding: 1rem;
+                word-break: break-word;
+                border-radius: 0 8px 8px 0;
+                background: white;
+            }
+
+            .modern-empty-value {
+                color: #000000ff;
+                font-style: italic;
+                font-size: 0.9rem;
+            }
+
+            .modern-badge {
+                display: inline-block;
+                padding: 0.35rem 0.75rem;
+                border-radius: 6px;
+                font-weight: 600;
+                font-size: 0.85rem;
+                letter-spacing: 0.3px;
+            }
+
+            .modern-badge-success {
+                background:  #1a752fff;
+                color: white;
+                box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+            }
+
+            .modern-badge-danger {
+                background: linear-gradient(135deg, #dc3545, #fd7e14);
+                color: white;
+                box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            }
+
+            .modern-json-block {
+                background: #2d3748;
+                color: #48bb78;
+                padding: 1rem;
+                border-radius: 8px;
+                font-size: 0.85rem;
+                white-space: pre-wrap;
+                word-break: break-all;
+                margin: 0;
+                border-left: 4px solid #0d6efd;
+                box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+                font-family: 'Courier New', monospace;
+            }
+
+            .modern-value-text {
+                color: #495057;
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            @media (max-width: 768px) {
+                .modern-view-container {
+                    padding: 0.75rem;
+                    max-height: 70vh;
+                }
+
+                .modern-data-row {
+                    display: block;
+                    margin-bottom: 1rem;
+                }
+
+                .modern-key-cell,
+                .modern-value-cell {
+                    display: block;
+                    width: 100% !important;
+                    border-radius: 0;
+                    border-right: none;
+                    padding: 0.75rem;
+                }
+
+                .modern-key-cell {
+                    border-radius: 8px 8px 0 0;
+                    border-bottom: 2px solid #022505ff;
+                    background:  #155c07ff;
+                    color: white;
+                }
+
+                .modern-key-cell::before {
+                    color: white;
+                }
+
+                .modern-value-cell {
+                    border-radius: 0 0 8px 8px;
+                }
+
+                .modern-json-block {
+                    font-size: 0.75rem;
+                    padding: 0.75rem;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .modern-key-cell,
+                .modern-value-cell {
+                    padding: 0.6rem;
+                    font-size: 0.85rem;
+                }
+            }
+        </style>
+    `;
+
+    let htmlContent = styles + '<div class="modern-view-container"><table class="modern-data-table"><tbody>';
+    
+    sortedKeys.forEach((key, index) => {
+        const title = formatKeyAsTitle(key);
+        const value = data[key];
+        const displayValue = getDisplayValue(value);
+
         htmlContent += `
-            <tr>
-                <td style="font-weight: bold; width: 35%; padding: 5px 10px; border-top: 1px solid #dee2e6;">${formattedKey}</td>
-                <td style="width: 65%; padding: 5px 10px; border-top: 1px solid #dee2e6; word-break: break-all;">${displayValue}</td>
+            <tr class="modern-data-row" style="animation-delay: ${index * 0.05}s;">
+                <td class="modern-key-cell">${title}</td>
+                <td class="modern-value-cell">${displayValue}</td>
             </tr>
         `;
-    }
+    });
     
-    htmlContent += `
-            </tbody>
-        </table>
-        </div>
-    `;
+    htmlContent += '</tbody></table></div>';
     return htmlContent;
 };
 
-// ----------------------------------------------------------------------
-// El componente ViewButton permanece SIN cambios
-// ----------------------------------------------------------------------
+// ======================================================================
+//  SWEETALERT2
+// ======================================================================
+const injectCustomStyles = () => {
+    const styleId = 'swal2-view-custom-styles';
+    if (document.getElementById(styleId)) return;
+
+    const styleSheet = document.createElement('style');
+    styleSheet.id = styleId;
+    styleSheet.textContent = `
+        .swal2-view-popup {
+            border-radius: 16px !important;
+            padding: 0 !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important;
+            max-width: 800px !important;
+            width: 90% !important;
+        }
+
+        .swal2-view-header {
+            padding: 2rem 2rem 1rem !important;
+            background:  #4bdf26ff 0% !important;
+            border-radius: 16px 16px 0 0 !important;
+            border-bottom: none !important;
+        }
+
+        .swal2-view-title {
+            color: black !important;
+            font-size: 1.75rem !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 0 !important;
+        }
+
+        .swal2-view-content {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .swal2-view-actions {
+            padding: 1.5rem 2rem !important;
+            background-color: #f8f9fa;
+            border-radius: 0 0 16px 16px !important;
+        }
+
+        .swal2-view-confirm {
+            background:  #1d8d07ff 0%!important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-view-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4) !important;
+        }
+
+        .swal2-view-close {
+            color: white !important;
+            font-size: 1.5rem !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-view-close:hover {
+            color: #fff !important;
+            transform: rotate(90deg) scale(1.1) !important;
+        }
+
+        @media (max-width: 768px) {
+            .swal2-view-popup {
+                width: 95% !important;
+                max-width: 100% !important;
+            }
+
+            .swal2-view-title {
+                font-size: 1.4rem !important;
+            }
+
+            .swal2-view-header {
+                padding: 1.5rem 1.5rem 1rem !important;
+            }
+
+            .swal2-view-actions {
+                padding: 1rem 1.5rem !important;
+            }
+
+            .swal2-view-confirm {
+                width: 100% !important;
+                padding: 0.65rem 1.5rem !important;
+            }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+};
+
+// ======================================================================
+// COMPONENTE PRINCIPAL (ViewButton)
+// ======================================================================
+/**
+ * @param {object} props
+ * @param {string} props.endpoint - Endpoint de la API
+ * @param {number|string} props.itemId - ID del elemento a visualizar
+ */
 export default function ViewButton({ endpoint, itemId }) {
-    
+    React.useEffect(() => {
+        injectCustomStyles();
+    }, []);
+
     const handleView = async () => {
         try {
-            // Aquí asumo que la URL base termina con un slash si el endpoint lo requiere
-            const url = `${API_BASE_URL}${endpoint}/${itemId}/`; 
+            const url = `${API_BASE_URL}${endpoint}/${itemId}/`;
             
-            // Mostrar spinner de carga
+            
             Swal.fire({
-                title: 'Cargando Detalles...',
-                text: 'Obteniendo información de la API...',
+                title: '<div style="color: #0d6efd;">Cargando Detalles...</div>',
+                html: '<div style="color: #6c757d;">Obteniendo información, por favor espere</div>',
+                showConfirmButton: false,
                 didOpen: () => {
                     Swal.showLoading();
                 },
@@ -106,45 +398,51 @@ export default function ViewButton({ endpoint, itemId }) {
                 allowEscapeKey: false
             });
             
-            // Se asume que la petición debe incluir autenticación si la API lo requiere
-            const token = localStorage.getItem('accessToken'); 
+            // Obtener datos de la API
+            const token = localStorage.getItem('accessToken');
             const response = await fetch(url, {
                 headers: {
-                    // Agregar el token de autenticación si está disponible
-                    ...(token && { Authorization: `Bearer ${token}` }), 
+                    ...(token && { Authorization: `Bearer ${token}` }),
                     'Content-Type': 'application/json',
                 },
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Error ${response.status}: ${errorData.detail || response.statusText}`);
+                const errorData = response.status !== 404 
+                    ? await response.json().catch(() => ({})) 
+                    : {};
+                throw new Error(
+                    `Error ${response.status}: ${errorData.detail || response.statusText || 'Error desconocido del servidor'}`
+                );
             }
 
             const itemData = await response.json();
             
-            // Cerrar el SweetAlert de carga y mostrar los datos en una tabla
-            Swal.close(); 
             
             Swal.fire({
-                title: `<span style="color: #0d6efd;">Detalle del Elemento #${itemId}</span>`,
-                html: formatDataForSwal(itemData), 
-                icon: 'info',
-                confirmButtonText: 'Cerrar',
+                title: `Detalles del Elemento `,
+                html: formatDataForSwal(itemData),
+                showConfirmButton: true,
+                confirmButtonText: '✓ Cerrar',
                 showCloseButton: true,
-                // Personaliza el ancho del modal
                 customClass: {
-                    container: 'swal2-container',
-                    popup: 'swal2-responsive' 
+                    popup: 'swal2-view-popup',
+                    header: 'swal2-view-header',
+                    title: 'swal2-view-title',
+                    htmlContainer: 'swal2-view-content',
+                    actions: 'swal2-view-actions',
+                    confirmButton: 'swal2-view-confirm',
+                    closeButton: 'swal2-view-close'
                 }
             });
             
         } catch (error) {
-            // Mostrar error si la petición falla
             Swal.fire({
                 icon: 'error',
-                title: 'Error de Carga',
-                text: `No se pudo obtener el detalle: ${error.message}`
+                title: ' Error de Carga',
+                text: `No se pudo obtener el detalle: ${error.message}`,
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#dc3545'
             });
         }
     };
@@ -154,6 +452,18 @@ export default function ViewButton({ endpoint, itemId }) {
             className="btn btn-primary btn-sm" 
             onClick={handleView}
             title="Ver Detalle"
+            style={{
+                transition: 'all 0.3s ease',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            }}
         >
             <FaEye />
         </button>

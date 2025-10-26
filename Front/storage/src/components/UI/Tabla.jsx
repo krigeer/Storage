@@ -5,12 +5,11 @@ import EditButton from "./EditButton";
 import DeleteButton from "./DeleteButton";
 
 /**
- * Componente de Tabla genérico con paginación e iconos de acción.
  * * @param {string} title - Título de la tabla.
- * @param {object} headers - Objeto de títulos de columna (ej: {id: 'ID'}).
+ * @param {object} headers -  títulos
  * @param {Array} data - Array de datos de la API.
- * @param {object} campos - Objeto que mapea los campos de 'data' a las columnas (ej: {id: 'id'}).
- * @param {string} apiEndpoint - La ruta final de la API (ej: "reportes").
+ * @param {object} campos - Objeto que mapea los campos de 'data' a las columnas
+ * @param {string} apiEndpoint - La ruta final de la API 
  * @param {function} onDataChange - Función que se llama para refrescar los datos después de una acción (DELETE/EDIT).
  */
 export default function Tabla({ title, headers, data, campos, apiEndpoint, onDataChange }) {
@@ -66,7 +65,7 @@ export default function Tabla({ title, headers, data, campos, apiEndpoint, onDat
             {currentItems.length > 0 ? (
               currentItems.map((item, index) => (
                 <tr key={item.id || index}>
-                  {/* Renderiza las celdas de datos según el mapeo de 'campos' */}
+                 
                   {Object.keys(campos).map((key) => {
                     const campo = campos[key];
                     const rawValue = typeof campo === 'function' ? campo(item) : item[campo];
@@ -76,7 +75,7 @@ export default function Tabla({ title, headers, data, campos, apiEndpoint, onDat
                       return (
                         <td key={key}>
                           <span
-                            className={`badge ${rawValue === "activo"
+                            className={`badge ${rawValue === "ACT"
                                 ? "bg-success"
                                 : "bg-warning text-dark"
                               }`}
