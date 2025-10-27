@@ -14,7 +14,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, permissions
-from .permissions import IsAdministrador, UserBasic
+from .permissions import IsAdministrador
 from rest_framework.decorators import action 
 from rest_framework.response import Response
 from django.contrib.auth.tokens import default_token_generator
@@ -30,8 +30,16 @@ from . serializers import RecordarContrasenaSerializer, ConfirmarResetPasswordSe
 #IA
 from google import genai
 from google.genai import types
-from .gemini_tools import GEMINI_FUNCTIONS, contar_activos_por_ubicacion, obtener_prestamos_activos_recientes, obtener_conteo_reportes_por_estado_y_prioridad
 
+from .gemini_tools import (
+    GEMINI_FUNCTIONS, # diccionarios 
+    consultar_activos_por_ubicacion_y_tipo,
+    obtener_prestamos_activos_recientes,
+    obtener_conteo_reportes_por_estado_y_prioridad,
+    registrar_prestamo_activo,
+    registrar_devolucion_prestamo,
+    crear_nuevo_reporte
+)
 
 #python
 import os
@@ -65,42 +73,42 @@ class LoginWiew(APIView):
 class CentroViewSet(viewsets.ModelViewSet):
     queryset = Centro.objects.all()
     serializer_class = CentroSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 class TipoDocumentosViewSet(viewsets.ModelViewSet):
     queryset = TipoDocumento.objects.all()
     serializer_class = TipoDocumentoSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 class UbicacionViewSet(viewsets.ModelViewSet):
     queryset = Ubicacion.objects.all()
     serializer_class = UbicacionSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 class TipoTecnologiaViewSet(viewsets.ModelViewSet):
     queryset = TipoTecnologia.objects.all()
     serializer_class = TipoTecnologiaSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class MarcaViewSet(viewsets.ModelViewSet):
     queryset = Marca.objects.all()
     serializer_class = MarcaSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 
 
 class TecnologiaViewSet(viewsets.ModelViewSet):
     queryset = Tecnologia.objects.all()
     serializer_class = TecnologiaSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class MaterialDidacticoViewSet(viewsets.ModelViewSet):
     queryset = MaterialDidactico.objects.all()
     serializer_class = MaterialDidacticoSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class PrestamoViewSet(viewsets.ModelViewSet):
    queryset = Prestamo.objects.all().select_related('solicitante', 'tecnologia', 'material_didactico')
@@ -159,7 +167,7 @@ class PrestamoViewSet(viewsets.ModelViewSet):
         )
 
 class ReporteViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdministrador, UserBasic]
+    permission_classes = [AllowAny]
     queryset = Reporte.objects.all()
     serializer_class = ReporteSerializer
     # permission_classes = [IsAdministrador]
@@ -191,7 +199,7 @@ class StadisticsViewSet(viewsets.ViewSet):
 
 
 class UsuarioViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
@@ -202,14 +210,15 @@ class CrearUsuarioView(generics.CreateAPIView):
     permission_classes = [IsAdministrador]
 
 class EditarUsuarioViewSet(RetrieveUpdateAPIView):
-    permission_classes = [IsAdministrador, UserBasic]
+    permission_classes = [IsAdministrador]
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
 
 
 class DetalleUsuarioViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdministrador, UserBasic]
+    permission_classes = [IsAdministrador]
+    # permission_classes = [AllowAny]
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer
@@ -218,7 +227,6 @@ class DetalleUsuarioViewSet(viewsets.ModelViewSet):
 class RecordarContrasenaView(APIView):
     permission_classes = [AllowAny]
     serializer_class = RecordarContrasenaSerializer
-    # ¡Añadir esta línea es la solución!
     parser_classes = [JSONParser] 
     
     def post(self, request, *args, **kwargs):
@@ -240,7 +248,6 @@ class RecordarContrasenaView(APIView):
         )
     
 class UserViewSet(viewsets.ModelViewSet):
-    
     @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def reset_password(self, request):
         serializer =  RecordarContrasenaSerializer(data=request.data)
@@ -296,7 +303,7 @@ class ConfirmarResetPasswordView(APIView):
             )
 
 
-# Vista opcional para validar el token antes de mostrar el formulario
+
 class ValidarTokenResetView(APIView):
     permission_classes = [AllowAny]
     
@@ -325,6 +332,7 @@ class ValidarTokenResetView(APIView):
   
                
 class RolChoicesView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         roles = [{'id': c.value, 'nombre': c.label} for c in Rol]
         return Response(roles)
@@ -338,18 +346,19 @@ except Exception as e:
     client = None 
 MODEL = 'gemini-2.5-flash' 
 
+# Mapeo de nombres de función (de la declaración JSON) a funciones Python
 function_map = {
-    'contar_activos_por_ubicacion': contar_activos_por_ubicacion,
+    'consultar_activos_por_ubicacion_y_tipo': consultar_activos_por_ubicacion_y_tipo,
     'obtener_prestamos_activos_recientes': obtener_prestamos_activos_recientes,
     'obtener_conteo_reportes_por_estado_y_prioridad': obtener_conteo_reportes_por_estado_y_prioridad,
+    'registrar_prestamo_activo': registrar_prestamo_activo,
+    'registrar_devolucion_prestamo': registrar_devolucion_prestamo,
+    'crear_nuevo_reporte': crear_nuevo_reporte,
 }
 
 class GeminiChatView(APIView):
     permission_classes = [AllowAny]
-    """
-    Endpoint para manejar la conversación con Gemini, integrando Function Calling
-    para acceder a la base de datos  (RAG).
-    """
+    
     def post(self, request):
         user_prompt = request.data.get('prompt')
         
@@ -359,48 +368,57 @@ class GeminiChatView(APIView):
         if not client:
              return Response({"error": "El cliente Gemini no está inicializado. Verifica tu clave API."}, status=500)
 
-        #  historial de mensajes (solo el prompt inicial)
-        contents = [user_prompt]
+        # Usamos types.Content para formatear la entrada del usuario
+        contents = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
+        
         try:
+            # 1. Primera llamada a Gemini con las herramientas disponibles (la lista de diccionarios)
             response = client.models.generate_content(
                 model=MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    tools=GEMINI_FUNCTIONS 
+                    tools=GEMINI_FUNCTIONS # Usa la lista de diccionarios JSON
                 )
             )
+
+            # 2. Manejo de la Solicitud de Función
             if response.function_calls:
                 function_call = response.function_calls[0]
                 func_name = function_call.name
                 func_args = dict(function_call.args)
                 
                 print(f"-> Gemini solicitó la función: {func_name} con argumentos: {func_args}")
+                
                 if func_name in function_map:
                     function_to_call = function_map[func_name]
+                    # Ejecuta la función de Python (lectura o registro)
                     function_response_content = function_to_call(**func_args)
                 else:
                     function_response_content = f"Error: La función '{func_name}' solicitada por Gemini no está definida en el mapeo local."
 
-                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:150]}...")
-                contents.append(
-                    types.Part.from_function_call(function_call)
-                )
-                contents.append(
-                    types.Part.from_function_response(
+                print(f"-> Resultado de la BD (retorno al modelo):\n{function_response_content[:200]}...")
+                
+                # 3. Envío del resultado de la función de vuelta a Gemini
+                contents.append(types.Content(role="model", parts=[types.Part.from_function_call(function_call)]))
+                contents.append(types.Content(
+                    role="function", 
+                    parts=[types.Part.from_function_response(
                         name=func_name,
                         response={"content": function_response_content}
-                    )
-                )
+                    )]
+                ))
+                
+                # 4. Segunda llamada para obtener la respuesta final en lenguaje natural
                 second_response = client.models.generate_content(
                     model=MODEL,
                     contents=contents,
                     config=types.GenerateContentConfig(
-                        tools=GEMINI_FUNCTIONS
+                        tools=GEMINI_FUNCTIONS 
                     )
                 )
                 final_text = second_response.text
             else:
-
+                # Si Gemini no llamó a ninguna función, usa la respuesta directa
                 final_text = response.text
 
             return Response({"response": final_text})
@@ -408,8 +426,6 @@ class GeminiChatView(APIView):
         except Exception as e:
             print(f"Error general en la vista GeminiChatView: {e}")
             return Response({"error": f"Ocurrió un error en el proceso de IA: {str(e)}"}, status=500)
-
-
 
 
 

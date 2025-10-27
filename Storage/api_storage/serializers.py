@@ -392,6 +392,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     rol = serializers.CharField(source='get_rol_display', read_only=True) 
     tipo_documento = serializers.StringRelatedField(read_only=True)
     centro = serializers.StringRelatedField(read_only=True)
+    configuracion = serializers.StringRelatedField( read_only=True)
 
     # POST/Creación/Actualización
     email = serializers.EmailField(required=True) 
@@ -441,10 +442,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
         
     def update(self, instance, validated_data):
         """Maneja la lógica para PATCH/PUT (Actualización)."""
-        
-        # Si se quiere actualizar la contraseña, se debe hacer con un endpoint separado 
-        # (ej: /set_password) o se debe usar .establecer_contrasena().
-        # Aquí solo manejamos la actualización de campos normales (ej: nombre, contacto).
         
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

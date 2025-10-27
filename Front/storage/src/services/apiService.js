@@ -133,3 +133,22 @@ export const callGeminiChatApi = async (data) => {
         throw new Error(errorMessage);
     }
 };
+
+
+export const recordad_contrasena = async (endpoint, data) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}${endpoint}/`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error al registrar en ${endpoint}:`, error.response?.data || error.message);
+    throw error;
+  }
+};

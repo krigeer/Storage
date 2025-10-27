@@ -2,39 +2,65 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEnvelope, FaPaperPlane, FaSpinner } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import {recordad_contrasena} from '../services/apiService';
 import 'react-toastify/dist/ReactToastify.css';
 import Footer from '../components/Footer';
 import Icon from '../assets/img/cgti.png';
 
 function Recordar_contrasena() {
-    const [email, setEmail] = useState('');
+    const [documento, setDocumento] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!email) {
-            toast.error('Por favor ingresa tu correo electrónico');
-            return;
-        }
+   const handleSubmit = async (e) => {
+  e.preventDefault();
 
-        setIsLoading(true);
+  try {
+    if (!documento.trim()) {
+      toast.warning('Por favor, ingresa tu número de documento.');
+      return;
+    }
 
-        try {
-            // API para recuperar la contraseña
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            toast.success('Se ha enviado un enlace de recuperación a tu correo');
-            setTimeout(() => {
-                navigate('/login');
-            }, 2000);
-        } catch (error) {
-            toast.error('Error al enviar el correo. Intenta nuevamente.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    setIsLoading(true);
+
+    const data = { documento };
+    const response = await recordad_contrasena('recordar_contrasena', data);
+
+  
+    const message =
+      response?.data?.detail || 
+      response?.detail ||       
+      response?.data?.message || 
+      'Solicitud procesada.';
+
+
+    if (message.includes('recibirá un correo')) {
+      await Swal.fire({
+        icon: 'success',
+        title: '¡Enlace enviado!',
+        text: message,
+        showConfirmButton: false,
+        timer: 1800,
+        timerProgressBar: true,
+      });
+
+      setDocumento('');
+    } else {
+      toast.error(message);
+    }
+  } catch (error) {
+    const mensajeError =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      error.message ||
+      'Error al enviar el enlace. Intenta nuevamente.';
+
+    toast.error(mensajeError);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center pt-8 sm:pt-12 pb-12">
@@ -53,7 +79,7 @@ function Recordar_contrasena() {
                         Recuperar contraseña
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+                        Ingresa tu documento y te enviaremos un enlace para restablecer tu contraseña.
                     </p>
                 </div>
 
@@ -61,20 +87,17 @@ function Recordar_contrasena() {
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         <div className="mb-4"> 
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Correo electrónico
+                                Documento
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <FaEnvelope className="h-5 w-5 text-gray-400" />
-                                </div>
                                 <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
+                                    id="documento"
+                                    name="documento"
+                                    type="number"
+                                    autoComplete="document"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={documento}
+                                    onChange={(e) => setDocumento(e.target.value)}
                                     className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
                                 />
                             </div>
