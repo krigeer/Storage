@@ -33,7 +33,7 @@ export const updateUser = async (userId, userData) => {
     }
     
     const response = await axios.patch( // Cambiado de PUT a PATCH
-      `http://127.0.0.1:8000/inventario/editar_usuarios/${userId}/`,
+      `${API_BASE_URL}/editar_usuarios/${userId}/`,
       userData,
       {
         headers: {
@@ -57,7 +57,7 @@ export const updateData = async (endpoint, data) => {
     }
     
     const response = await axios.put(
-      `http://127.0.0.1:8000/inventario/${endpoint}/`,
+      `${API_BASE_URL}${endpoint}/`,
       data,
       {
         headers: {
