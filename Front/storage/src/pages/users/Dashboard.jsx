@@ -82,7 +82,12 @@ export default function Dashboard() {
 
   if (loading) return null;
 
-  return (
+  if (!user) {
+    return <div>No autorizado. Por favor, inicie sesión.</div>;
+  }
+
+  if (user.rol === 'ADM') {
+    return (
     
     <div className="layout">
       <div className="content">
@@ -115,4 +120,39 @@ export default function Dashboard() {
       </div>
     </div>
   );
+  } else{
+    if (user.rol === 'INS') {
+      return (    
+    <div className="layout">
+      <div className="content">
+        {Header && (
+          <Header
+            userName={user?.first_name}
+            search={search}
+            onSearchChange={onSearchChange}
+            onSearchSubmit={onSearchSubmit}
+            onToggleSidebar={toggleSidebar}
+            isLight={isLight}
+            onToggleTheme={toggleTheme}
+          />
+        )}
+
+        <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        {Nav && (
+          <Nav
+            rol={user?.rol}
+          />
+        )}
+      </aside>
+
+        <main className="main">
+          <Outlet context={{ rol: user?.rol, documento: user?.documento }} />
+        </main>
+
+        {Footer && <Footer />}
+      </div>
+    </div>
+  );
+    }
+  }
 }

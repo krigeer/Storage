@@ -6,7 +6,10 @@ import handleAction from "../../components/UI/Form";
 import { apiCall } from "../../services/apiCutoms";
 import ReturnForm from "../../components/UI/ReturnForm";
 import {useOutletContext} from "react-router-dom";
+import { getUser } from "../../services/authContext.js";
 
+const firstname = getUser().first_name;
+const lastName = getUser().last_name;
 
 const options = [
   { title: "Prestar", description: "Prestar un elemento", key: "prestamos" },
@@ -15,13 +18,12 @@ const options = [
 
 const header = {
   solicitante: "Solicitante",
-  observacion: "Observacion",
   elemento: "Elemento",
+
 }
 
 const campos = {
   solicitante: "solicitante",
-  observacion: "observacion",
   elemento: (item) => item?.elemento || (
     item?.tecnologia
       ? `Tecnología (${item.tecnologia})`
@@ -33,20 +35,18 @@ const campos = {
 
 const PrestamoElementos = () => {
   const {rol} = useOutletContext();
-  const {documentoUser} = useOutletContext();
+  
   const [prestamos, setPrestamos] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Función para obtener préstamos 
+  
   const fetchPrestamos = useCallback(async () => {
     try {
       setLoading(true);
-      // Pide todos los préstamos para la tabla principal
       const response = await apiCall("prestamos"); 
       
       if (rol == "ADM"){
         if (response && Array.isArray(response.results)) {
-          // Filtra para mostrar solo los préstamos activos en la tabla de gestión
           const activos = response.results.filter(p => !p.fecha_devolucion);
           setPrestamos(activos);
         } else {
@@ -54,16 +54,15 @@ const PrestamoElementos = () => {
           setPrestamos([]);
         }
         }  else {
-          if (rol == "INST"){
+          if (rol == "INS"){
             if (response && Array.isArray(response.results)){
-              const activos = response.results.filter(p => p.documento = documentoUser )
+              const activos_user = response.results.filter(p => String(p.solicitante) == String(firstname + " " + lastName) && !p.fecha_devolucion);
+              setPrestamos(activos_user);
             }
           } else{
             return ("rol no encontrado")
           }
-
       }
-     
     } catch (error) {
       console.error("Error obteniendo los datos:", error);
       setPrestamos([]);
@@ -75,8 +74,7 @@ const PrestamoElementos = () => {
   useEffect(() => {
     fetchPrestamos();
   }, [fetchPrestamos]); 
-
-  // Función para refrescar la tabla después de una acción (como la devolución)
+  // Función para refrescar la tabla después de una acción
   const handleSuccessAction = () => {
     fetchPrestamos();
   };
@@ -88,8 +86,7 @@ const PrestamoElementos = () => {
   if (rol == "ADM"){
     return (
       <div className="container py-5">
-      <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras buscar elementos prestados o prestar elementos" />
-      
+      <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras buscar elementos prestados o prestar elementos" /> 
       {/* Zona de opciones (Prestar / Devolver) */}
       <div className="options-layout-centered">
         {options.map((opt, index) => (
@@ -101,13 +98,12 @@ const PrestamoElementos = () => {
                   <p className="card-custom-text">{opt.description}</p>
                 </div>
                 
-                {/* 🎯 Lógica de Renderizado Condicional para Devolución */}
+                {/* Condicional para Devolución */}
                 <div className="d-grid mt-3">
                   {opt.key === 'devolucion' ? (
                     // Si es 'Devolucion', renderizamos el componente con la lógica de búsqueda/devolución
                     <ReturnForm onSuccess={handleSuccessAction} />
                   ) : (
-                    // Si es 'Prestar', usamos el botón que ejecuta el formulario genérico
                     <Button onClick={() => handleAction(opt)} className="btn primary">
                       Seleccionar
                     </Button>
@@ -117,9 +113,9 @@ const PrestamoElementos = () => {
             </div>
           </div>
         ))}
-      </div> {/* <--- Este es el cierre del div. Debe estar en la línea 105 o cercana */}
+      </div>
 
-      {/* Tabla de préstamos activos */}
+      {/* Tabla */}
       <div className="mt-5">
         <Tabla
           data={prestamos}
@@ -134,7 +130,7 @@ const PrestamoElementos = () => {
     )
 
   }else{
-    if (rol == "INST"){
+    if (rol == "INS"){
       return (
         <div className="container py-5">
           <Titulo titulo="Gestionar Prestamos" descripcion="En este apartado podras ver tus elementos prestados" />

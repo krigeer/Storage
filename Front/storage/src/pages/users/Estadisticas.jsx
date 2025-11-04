@@ -10,34 +10,37 @@ import {
   FaHandHoldingUsd
 } from "react-icons/fa";
 import { apiCall } from "../../services/apiCutoms";
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext } from "react-router-dom";
 
+// ============================
+// Configuración de estadísticas
+// ============================
 const STATS_MAP = {
-  "total_usuarios": {
+  total_usuarios: {
     title: "Usuarios Registrados",
     description: "Total de usuarios en el sistema",
     icon: <FaUsers size={24} />,
     color: "primary",
   },
-  "total_tecnologias": {
+  total_tecnologias: {
     title: "Elementos Tecnológicos",
     description: "Equipos y dispositivos registrados",
     icon: <FaLaptop size={24} />,
     color: "success",
   },
-  "total_material": {
+  total_material: {
     title: "Materiales Didácticos",
     description: "Recursos educativos disponibles",
     icon: <FaBook size={24} />,
     color: "purple",
   },
-  "total_reportes": {
+  total_reportes: {
     title: "Reportes Activos",
     description: "Incidencias y reportes pendientes",
     icon: <FaExclamationTriangle size={24} />,
     color: "warning",
   },
-  "total_prestamos": {
+  total_prestamos: {
     title: "Préstamos en Curso",
     description: "Elementos actualmente prestados",
     icon: <FaHandHoldingUsd size={24} />,
@@ -45,14 +48,15 @@ const STATS_MAP = {
   },
 };
 
+// ============================
+// Componente de tarjeta
+// ============================
 const StatCard = ({ icon, title, value, color, description, isLoading }) => (
   <div className="card-col">
     <div className="card h-100">
       <div className="card-body-theme">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <div className={`p-3 rounded bg-icon-light text-color-${color}`}>
-            {icon}
-          </div>
+          <div className={`p-3 rounded bg-icon-light text-color-${color}`}>{icon}</div>
           <FaChartLine className="text-color-success" />
         </div>
 
@@ -77,57 +81,57 @@ const StatCard = ({ icon, title, value, color, description, isLoading }) => (
     </div>
   </div>
 );
+
+// ============================
+// Hook personalizado para cargar estadísticas
+// ============================
+const useEstadisticas = () => {
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await apiCall("estadisticas");
+        if (response && typeof response === "object" && !Array.isArray(response)) {
+          setData(response);
+        } else {
+          console.error("Formato de datos incorrecto:", response);
+          setError("Formato de datos incorrecto recibido de la API.");
+        }
+      } catch (err) {
+        console.error("Error al obtener datos:", err);
+        setError("Error al obtener las estadísticas. Intenta de nuevo.");
+        Swal.fire({
+          icon: "error",
+          title: "Error de Carga",
+          text: "Hubo un problema al obtener los datos de la API.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  return { data, loading, error };
+};
+
+
 const Estadisticas = () => {
   const { rol } = useOutletContext();
-  if (rol == "ADM") {
-    const [data, setData] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const { data, loading, error } = useEstadisticas();
 
-    useEffect(() => {
-      const fecthEstadisticas = async () => {
-        try {
-          setLoading(true);
-          setError(null);
-
-          const response = await apiCall("estadisticas");
-
-          if (response && typeof response === 'object' && !Array.isArray(response)) {
-            setData(response);
-          } else {
-            console.error("La información recibida no es el objeto de estadísticas esperado:", response);
-            setError("Formato de datos incorrecto recibido de la API.");
-            setData({});
-          }
-        } catch (err) {
-          console.error("Error al obtener datos:", err);
-          setError("Error al obtener las estadísticas. Intenta de nuevo.");
-          Swal.fire({
-            icon: 'error',
-            title: 'Error de Carga',
-            text: 'Hubo un problema al obtener los datos de la API.',
-          });
-          setData({});
-        } finally {
-          setLoading(false);
-        }
-      };
-      fecthEstadisticas();
-    }, []);
-
-
-    const tarjetasData = Object.keys(data).map(key => {
-      const config = STATS_MAP[key];
-      if (config) {
-        return {
-          key,
-          value: data[key],
-          ...config
-        };
-      }
-      return null;
-    }).filter(stat => stat !== null);
-
+  // ============================
+  //  ADM
+  // ============================
+  if (rol === "ADM") {
+    const tarjetasData = Object.keys(data)
+      .map((key) => (STATS_MAP[key] ? { key, value: data[key], ...STATS_MAP[key] } : null))
+      .filter(Boolean);
 
     if (loading) {
       return (
@@ -159,7 +163,7 @@ const Estadisticas = () => {
       );
     }
 
-    if (tarjetasData.length === 0) {
+    if (!tarjetasData.length) {
       return (
         <div className="text-center mt-5 p-5">
           <FaExclamationTriangle className="text-warning" size={30} />
@@ -170,22 +174,18 @@ const Estadisticas = () => {
 
     return (
       <div className="container py-5">
-        {/* Título y subtítulo con clases temáticas */}
         <div className="text-center mb-5 title-section">
           <h1 className="main-title">Bienvenido</h1>
           <p className="subtitle">Resumen general del sistema de inventario</p>
-
-          {/* Widget de estado de datos adaptado al tema */}
           <div className="d-inline-flex align-items-center px-3 py-2 rounded-pill bg-status-widget shadow-sm">
             <div
-              className={`rounded-circle bg-color-success me-2`}
+              className="rounded-circle bg-color-success me-2"
               style={{ width: "10px", height: "10px" }}
             ></div>
             <span className="small">Datos actualizados</span>
           </div>
         </div>
 
-        {/* Tarjetas de Estadísticas con layout temático */}
         <div className="cards-layout-wrapper mb-5">
           {tarjetasData.map((stat) => (
             <StatCard
@@ -200,7 +200,6 @@ const Estadisticas = () => {
           ))}
         </div>
 
-        {/* Widget de última actualización adaptado al tema */}
         <div className="text-center mt-5">
           <div className="card bg-status-widget mx-auto" style={{ maxWidth: "300px" }}>
             <div className="card-body-theme p-3">
@@ -213,20 +212,41 @@ const Estadisticas = () => {
         </div>
       </div>
     );
-  } else {
-    if (rol == "INST") {
-      return (
-        <div className="container py-5">
-          <div className="text-center mb-5 title-section">
-            <h1 className="main-title">Bienvenido</h1>
-            {/* <p className="subtitle">Resumen general del sistema de inventario</p> */}
+  }
+
+  // ============================
+  //  INST
+  // ============================
+  if (rol === "INS") {
+    return (
+      <div className="container py-5">
+         <div className="text-center mb-5 title-section">
+          <h1 className="main-title">Bienvenido</h1>
+          <p className="subtitle">Al sistema de inventario</p>
+          <div className="d-inline-flex align-items-center px-3 py-2 rounded-pill bg-status-widget shadow-sm">
+            <div
+              className="rounded-circle bg-color-success me-2"
+              style={{ width: "10px", height: "10px" }}
+            ></div>
+            <span className="small">Datos actualizados</span>
           </div>
         </div>
-
-      )
-
-    }
+        <div className="text-center mt-5">
+          <div className="card bg-status-widget mx-auto" style={{ maxWidth: "300px" }}>
+            <div className="card-body-theme p-3">
+              <small className="statistic-value d-block mb-1">Última actualización</small>
+              <span className="fw-semibold card-statistic-title">
+                {new Date().toLocaleString("es-ES")}
+              </span>
+            </div>
+          </div>
+        </div>
+      
+     </div>
+    );
   }
+
+  return null;
 };
 
 export default Estadisticas;
