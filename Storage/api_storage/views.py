@@ -207,7 +207,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class CrearUsuarioView(generics.CreateAPIView):
     queryset = Usuario.objects.all() 
     serializer_class = UsuarioSerializer
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
 
 class EditarUsuarioViewSet(RetrieveUpdateAPIView):
     permission_classes = [IsAdministrador]
