@@ -346,7 +346,7 @@ except Exception as e:
     client = None 
 MODEL = 'gemini-2.5-flash' 
 
-# Mapeo de nombres de función (de la declaración JSON) a funciones Python
+# Mapeo de  función 
 function_map = {
     'consultar_activos_por_ubicacion_y_tipo': consultar_activos_por_ubicacion_y_tipo,
     'obtener_prestamos_activos_recientes': obtener_prestamos_activos_recientes,
@@ -368,20 +368,20 @@ class GeminiChatView(APIView):
         if not client:
              return Response({"error": "El cliente Gemini no está inicializado. Verifica tu clave API."}, status=500)
 
-        # Usamos types.Content para formatear la entrada del usuario
+        #  types.Content formatear la entrada del usuario
         contents = [types.Content(role="user", parts=[types.Part(text=user_prompt)])]
         
         try:
-            # 1. Primera llamada a Gemini con las herramientas disponibles (la lista de diccionarios)
+            # ( diccionarios)
             response = client.models.generate_content(
                 model=MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    tools=GEMINI_FUNCTIONS # Usa la lista de diccionarios JSON
+                    tools=GEMINI_FUNCTIONS 
                 )
             )
 
-            # 2. Manejo de la Solicitud de Función
+           
             if response.function_calls:
                 function_call = response.function_calls[0]
                 func_name = function_call.name
@@ -391,7 +391,7 @@ class GeminiChatView(APIView):
                 
                 if func_name in function_map:
                     function_to_call = function_map[func_name]
-                    # Ejecuta la función de Python (lectura o registro)
+                    #  (lectura o registro)
                     function_response_content = function_to_call(**func_args)
                 else:
                     function_response_content = f"Error: La función '{func_name}' solicitada por Gemini no está definida en el mapeo local."
@@ -408,7 +408,7 @@ class GeminiChatView(APIView):
                     )]
                 ))
                 
-                # 4. Segunda llamada para obtener la respuesta final en lenguaje natural
+                #  lenguaje natural
                 second_response = client.models.generate_content(
                     model=MODEL,
                     contents=contents,
@@ -418,7 +418,7 @@ class GeminiChatView(APIView):
                 )
                 final_text = second_response.text
             else:
-                # Si Gemini no llamó a ninguna función, usa la respuesta directa
+                # respuesta directa
                 final_text = response.text
 
             return Response({"response": final_text})
@@ -437,7 +437,4 @@ class GeminiChatView(APIView):
 
 
 
-# class configuracion(viewsets.ModelViewSet):
-#     permission_classes = [AllowAny]
-#     queryset = Configuracion.objects.all()
-#     serializer_class = configuracionSerializers
+

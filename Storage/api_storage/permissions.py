@@ -11,7 +11,7 @@ class IsAdministrador(permissions.BasePermission):
             return False
             
         user_rol = request.user.rol
-        # rol del usuario está en la lista de permitidos, concede el acceso a la vista.
+       
         return user_rol in self.ROLES_PERMITIDOS
     
 

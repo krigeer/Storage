@@ -373,7 +373,7 @@ class PrestamoSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
 
-# ReporteSerializer y UsuarioSerializer (Se mantienen iguales)
+# ReporteSerializer y UsuarioSerializer 
 class ReporteSerializer(serializers.ModelSerializer):
     usuario = serializers.StringRelatedField()
     centro = serializers.StringRelatedField()
@@ -477,7 +477,4 @@ class ConfirmarResetPasswordSerializer(serializers.Serializer):
         return data
     
     
-# class configuracionSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Configuracion
-#         fields = '__all__'
+
