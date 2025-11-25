@@ -8,7 +8,7 @@ import ReturnForm from "../../components/UI/ReturnForm";
 import { useOutletContext } from "react-router-dom";
 import { getUser } from "../../services/authContext.js";
 
-// <- ya no llamamos getUser() aquí a nivel módulo
+
 
 const options = [
   { title: "Prestar", description: "Prestar un elemento", key: "prestamos" },
@@ -39,15 +39,15 @@ const PrestamoElementos = () => {
   const [prestamos, setPrestamos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // obtener user en cliente (evita leer en tiempo de import)
+
   useEffect(() => {
     try {
-      const u = getUser?.(); // si getUser es indefinido protegemos
+      const u = getUser?.(); 
       if (u) {
         setFirstName(u.first_name ?? "");
         setLastName(u.last_name ?? "");
       } else {
-        // si no hay usuario aún, ponemos strings vacíos (o podrías manejar redirección)
+        
         setFirstName("");
         setLastName("");
       }
@@ -72,9 +72,9 @@ const PrestamoElementos = () => {
           setPrestamos([]);
         }
       } else if (rol === "INS") {
-        // si aún no tenemos nombre, evitamos filtrar hasta que esté cargado
+      
         if (!first_name && !last_name) {
-          // opcional: podrías esperar hasta tener el nombre o filtrar por ID si lo tienes
+          
           setPrestamos([]);
         } else {
           if (response && Array.isArray(response.results)) {
@@ -98,7 +98,7 @@ const PrestamoElementos = () => {
     } finally {
       setLoading(false);
     }
-  // dependencias importantes: rol, first_name y last_name
+
   }, [rol, first_name, last_name]);
 
   useEffect(() => {
