@@ -210,7 +210,7 @@ class CrearUsuarioView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 class EditarUsuarioViewSet(RetrieveUpdateAPIView):
-    permission_classes = [IsAdministrador]
+    permission_classes = [AllowAny]
     queryset = Usuario.objects.all()
     lookup_field = 'id'
     serializer_class = UsuarioSerializer

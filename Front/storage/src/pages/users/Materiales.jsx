@@ -14,14 +14,14 @@ const options = [
 ]
 
 const headers = {
-  serie_fabricante: "serial fabricante",
-  serie_sena: "serial sena",
-  estado: "estado",
+  serie_fabricante: "Serial fabricante",
+  serie_sena: "Serial sena",
+  cantidad: "Cantidad",
 }
 const campos = {
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
-  estado: "estado_nombre",
+  cantidad: "cantidad",
 }
 
 const MaterialDidacticoManager = () => {

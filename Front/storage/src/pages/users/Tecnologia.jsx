@@ -24,7 +24,7 @@ const campos = {
   tipo: "tipo_nombre", 
   serie_fabricante: "serie_fabricante",
   serie_sena: "serie_sena",
-  estado: "estado_nombre",
+  estado: "estado",
   marca: "marca_nombre", 
 }
 
