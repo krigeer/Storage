@@ -259,6 +259,7 @@ class PrestamoSerializer(serializers.ModelSerializer):
         ]
         # is_active se añade a read_only_fields
         read_only_fields = ['id', 'fecha_prestamo', 'fecha_devolucion', 'elemento', 'is_active'] 
+        
 
     # ------------------ Métodos Helper ------------------
 
@@ -375,7 +376,9 @@ class PrestamoSerializer(serializers.ModelSerializer):
 
 # ReporteSerializer y UsuarioSerializer 
 class ReporteSerializer(serializers.ModelSerializer):
-    usuario = serializers.StringRelatedField()
+    usuario = serializers.PrimaryKeyRelatedField(queryset=Usuario.objects.all(), write_only=True)
+    usuario_display = serializers.StringRelatedField(source='usuario', read_only=True)
+    
     centro = serializers.StringRelatedField()
     ubicacion = serializers.StringRelatedField()
     estado = serializers.StringRelatedField()
@@ -385,6 +388,10 @@ class ReporteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reporte
         fields = '__all__'
+        extra_kwargs = {
+            'usuario': {'write_only': True}  
+        }
+
 
 class UsuarioSerializer(serializers.ModelSerializer):
     

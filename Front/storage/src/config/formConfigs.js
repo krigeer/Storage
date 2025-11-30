@@ -1,3 +1,5 @@
+
+
 export const formConfigs = {
   "tipos_documentos": {
     title: "Registrar Tipo de Documento",
@@ -84,15 +86,16 @@ export const formConfigs = {
     ],
   },
   "reportes": {
-    title: "Reportes",
+    title: "Registrar Tecnologia",
     fields: [
       { id: "titulo", placeholder: "Titulo", type: "text" },
-      { id: "usuario", placeholder: "Usuario", type: "hidden", options: { endpoint: "usuarios", valueKey: "id", textKey: ["documento"] } },
-      { id: "prioridad", placeholder: "Prioridad", type: "select", options: { endpoint: "prioridades_reporte", valueKey: "id", textKey: "nombre" } },
-      { id: "estado", placeholder: "Estado", type: "select", options: { endpoint: "estados_reporte", valueKey: "id", textKey: "nombre" } },
-      { id: "observacion", placeholder: "Observacion", type: "text" },
-    ]
+      { id: "observacion", placeholder: "Observacion", type: "text",  rows: 80},
+      { id: "estado", placeholder: "Ubicación", type: "hidden", defaultValue: "NUE" },
+      { id: "prioridad", placeholder: "Estado", type: "hidden", defaultValue: "B" },
+      { id: "tipo", placeholder: "Tipo", type: "hidden", defaultValue: "TEC"},
+      { id: "usuario", type: "hidden", defaultValueFn: "currentUserId" }
 
+    ],
   },
   "prestamos": {
     title: "Registrar Préstamo",

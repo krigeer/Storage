@@ -12,17 +12,22 @@ import { apiCall } from "../../services/apiCutoms";
 import { useOutletContext } from "react-router-dom";
 import Button from "../../components/UI/Button";
 import handleAction from "../../components/UI/Form";
+import {getUser} from "../../services/authContext.js"
+
+
+
+
 
 
 const headers = {
   titulo: "Titulo",
-  usuario: "Usuario",
+  usuario: "Solicitante",
   prioridad: "Prioridad",
   estado: "Estado",
 };
 const campos = {
   titulo: "titulo",
-  usuario: "usuario",
+  usuario: "usuario_display",
   prioridad: "prioridad",
   estado: "estado",
 };
@@ -31,9 +36,11 @@ const Reportes = () => {
   const [reportes, setReportes] = useState([]);
   const [reporteStats, setReporteStats] = useState({});
   const [loading, setLoading] = useState(true);
-  const {rol} = useOutletContext();
-  // const {} = useOutletContext();
+  const { rol } = useOutletContext();
+  const [user, setUser] = useState(null);
 
+  useEffect(() => { setUser(getUser()); }, []);
+ 
 
   const fetchReportes = useCallback(async () => {
     try {
@@ -47,7 +54,7 @@ const Reportes = () => {
       console.error("Error al obtener los reportes:", error);
       setReportes([]);
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -55,7 +62,7 @@ const Reportes = () => {
         setLoading(true);
         const [statsResponse] = await Promise.all([
           apiCall("reporte_list"),
-          fetchReportes(), 
+          fetchReportes(),
         ]);
 
         if (statsResponse) {
@@ -72,7 +79,7 @@ const Reportes = () => {
     };
 
     fetchAllData();
-  }, [fetchReportes]); 
+  }, [fetchReportes]);
 
   if (loading) {
     return <div className="text-center mt-5">Cargando datos...</div>;
@@ -100,8 +107,8 @@ const Reportes = () => {
       icon: <FaExclamation size={32} className="text-warning" />,
     },
   ];
-
-  if  (rol == "ADM"){
+ console.log(reportes);
+  if (rol === "ADM") {
     return (
       <div className="container py-5">
         <Titulo
@@ -109,46 +116,54 @@ const Reportes = () => {
           descripcion="Aquí podrás consultar el estado y las estadísticas de los reportes generados."
         />
         <Estadistica estadisticas={estadisticas} />
-        
-        
-  
+
         <Tabla
           data={reportes}
           headers={headers}
           campos={campos}
           title="Reportes"
-          apiEndpoint="reportes" 
-          onDataChange={fetchReportes} 
+          apiEndpoint="reportes"
+          onDataChange={fetchReportes}
         />
       </div>
+     
     );
-
-  }else{
-    if (rol == "INS"){
-      return(
+  } else {
+    if (rol === "INS") {
+      return (
         <div className="container py-5">
-        <Titulo
-        titulo="Visualización de Reportes"
-        descripcion="Aquí podrás consultar el estado de tus reportes"
-      />
+          <Titulo
+            titulo="Visualización de Reportes"
+            descripcion="Aquí podrás consultar el estado de tus reportes"
+          />
 
-      <Button onClick={() => handleAction("reportes")}>
-        Crear reporte
-      </Button>
 
-      <Tabla
-        data={reportes}
-        headers={headers}
-        campos={campos}
-        title="Reportes"
-        apiEndpoint="reportes" 
-        onDataChange={fetchReportes} 
-      />
-      </div>
+          <div className="mb-3 d-flex gap-2">
+            <Button
+              onClick={() => handleAction({ key: "reportes", onSuccess: fetchReportes,  userId: user?.id, })}
+            >
+              Crear reporte
+            </Button>
+
+            <Button
+              onClick={() => handleAction({ key: "seguimiento", onSuccess: fetchReportes,  userId: user?.id, })}
+            >
+              Conteo
+            </Button>
+          </div>
+
+          <Tabla
+            data={reportes}
+            headers={headers}
+            campos={campos}
+            title="Reportes"
+            apiEndpoint="reportes"
+            onDataChange={fetchReportes}
+          />
+        </div>
       );
     }
   }
-  
 };
 
 export default Reportes;
