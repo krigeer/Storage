@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from .models import Usuario, Rol, TipoDocumento, Centro, EstadoUsuario, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, MaterialDidactico
-from .models import Tecnologia, Prestamo, Reporte, PrioridadReporte, EstadoReporte, Configuracion
+from .models import Tecnologia, Prestamo, Reporte, PrioridadReporte, EstadoReporte, Configuracion, Seguimiento
 import secrets
 import string
 from django.contrib.contenttypes.models import ContentType
@@ -485,3 +485,7 @@ class ConfirmarResetPasswordSerializer(serializers.Serializer):
     
     
 
+class SeguimientoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seguimiento
+        fields = '__all__'

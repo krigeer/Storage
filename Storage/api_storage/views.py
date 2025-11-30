@@ -23,8 +23,8 @@ from django.utils.encoding import force_str
 #
 
 #modelos
-from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario, Configuracion
-from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer
+from .models import Rol, Centro, TipoDocumento, Ubicacion, EstadoInventario, TipoTecnologia, Marca, TipoReporte, PrioridadReporte, EstadoReporte, Tecnologia, MaterialDidactico, Prestamo, Reporte, Usuario, Configuracion, Seguimiento
+from .serializers import LoginSerializer, CentroSerializer, TipoDocumentoSerializer, UbicacionSerializer,  TipoTecnologiaSerializer, MarcaSerializer,  TecnologiaSerializer, MaterialDidacticoSerializer, PrestamoSerializer, ReporteSerializer, UsuarioSerializer, SeguimientoSerializer
 from . serializers import RecordarContrasenaSerializer, ConfirmarResetPasswordSerializer
 
 #IA
@@ -337,6 +337,13 @@ class RolChoicesView(APIView):
         roles = [{'id': c.value, 'nombre': c.label} for c in Rol]
         return Response(roles)
 
+
+
+class SeguimientoViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Seguimiento.objects.all()
+    serializer_class = SeguimientoSerializer
+    
 
 
 try:

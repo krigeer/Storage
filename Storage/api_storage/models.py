@@ -330,19 +330,19 @@ class Seguimiento(models.Model):
     def __str__(self):
         return f"Seguimiento por {self.usuario.get_full_name()} en {self.ubicacion} ({self.fecha_registro.strftime('%Y-%m-%d')})"
 
-    def clean(self):
-        """
-        Valida que el usuario que intenta registrar el seguimiento
-        tenga el rol de 'instructor'.
-        """
-        if self.usuario:
-            rol_esperado = "instructor" 
-            if self.usuario.rol.lower() != rol_esperado:
-                raise ValidationError(
-                    {
-                        'usuario': f'Permiso denegado: Solo los usuarios con el rol de Instructor pueden registrar un Seguimiento. El rol actual es: {self.usuario.rol}.'
-                    }
-                )
+    # def clean(self):
+    #     """
+    #     Valida que el usuario que intenta registrar el seguimiento
+    #     tenga el rol de 'instructor'.
+    #     """
+    #     if self.usuario:
+    #         rol_esperado = "INS" 
+    #         if self.usuario.rol.lower() != rol_esperado:
+    #             raise ValidationError(
+    #                 {
+    #                     'usuario': f'Permiso denegado: Solo los usuarios con el rol de Instructor pueden registrar un Seguimiento. El rol actual es: {self.usuario.rol}.'
+    #                 }
+    #             )
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)

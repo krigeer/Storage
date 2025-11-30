@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import LoginWiew, CentroViewSet, TipoDocumentosViewSet, UbicacionViewSet, StadisticsViewSet, CrearUsuarioView, EditarUsuarioViewSet, DetalleUsuarioViewSet
 from  .views import  TipoTecnologiaViewSet, MarcaViewSet, TecnologiaViewSet, MaterialDidacticoViewSet, PrestamoViewSet, ReporteViewSet, ReporteListViewSet, UsuarioViewSet
-from .views import RecordarContrasenaView, ConfirmarResetPasswordView, ValidarTokenResetView, RolChoicesView
+from .views import RecordarContrasenaView, ConfirmarResetPasswordView, ValidarTokenResetView, RolChoicesView, SeguimientoViewSet
 
 router = DefaultRouter()
 
@@ -23,6 +23,9 @@ router.register(r'reporte_list', ReporteListViewSet, basename='reporte_list') # 
 #prestamos
 router.register(r'prestamos', PrestamoViewSet, basename='prestamos') # prestamos
 router.register(r'estadisticas', StadisticsViewSet, basename='estadisticas') # estadisticas  (L)
+
+#seguimiento
+router.register(r'seguimiento', SeguimientoViewSet, basename='seguimiento')
 
 #IA
 from .views import GeminiChatView

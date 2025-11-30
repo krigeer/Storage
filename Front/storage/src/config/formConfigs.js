@@ -114,5 +114,16 @@ export const formConfigs = {
       { id: "tecnologia_id", placeholder: "Serial Tecnología", type: "select", options: { endpoint: "tecnologias", valueKey: "id", textKey: "serie_fabricante" }, allowEmpty: true }, 
       { id: "observacion", placeholder: "Observación", type: "text" }, 
     ],
+  },
+  "seguimiento":{
+    title: "Cantidad de elementos por Ambiente",
+    fields:[
+      { id: "usuario", type: "hidden", defaultValueFn: "currentUserId" },
+      {id: "ubicacion", placeholder:"Ambiente de formación" ,type:"select", options: {endpoint: "ubicaciones", valueKey: "id", textKey: "nombre"}},
+      { id: "cantidad_equipos", type: "number", placeholder: "Cantidad de equipos"},
+      { id: "cantidad_cargadores", type: "number", placeholder: "Cantidad de cargadores"},
+      { id: "cantidad_mouses", type: "number", placeholder: "Cantidad de mous"},
+      { id: "cantidad_teclados", type: "number", placeholder: "Cantidad de teclados"}
+    ]
   }
 };
